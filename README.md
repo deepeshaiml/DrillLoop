@@ -4,6 +4,8 @@
 
 After an emergency exercise, teams often have notes, event logs, and transcripts in different files. DrillLoop puts them in one place, links each proposed finding to the exact source record, and tracks improvement tasks until a human reviewer checks the completion evidence.
 
+The proposed first use case is hospital preparedness evaluators reviewing exercise records for an after-action report. The current demo uses one fictional hospital power-outage scenario; it has not been tested with a hospital team or an unfamiliar exercise. Other sectors are possible future markets, not validated customers.
+
 **Example:** The fictional hospital log records a power failure at 09:02 (`EL-01`) and essential power restored at 09:06 (`EL-02`). The exercise target is 60 seconds. DrillLoop can propose that restoration took about four minutes and cite those two records. It cannot tell from those records *why* the delay happened, so the cause remains unknown. An evaluator must approve or reject the proposal.
 
 All included exercise records are invented for demonstration. The generated **After-Action Report and Improvement Plan (AAR/IP)** uses ideas from FEMA’s **Homeland Security Exercise and Evaluation Program (HSEEP)**. It is not FEMA-certified and is not a clinical procedure or operational advice.
@@ -79,11 +81,11 @@ soffice --headless --convert-to pdf --outdir . DrillLoop_Pitch_Deck.pptx
 
 The idea PDF is exported from the editable Word document when LibreOffice is available (otherwise the script writes a ReportLab fallback). The PowerPoint is editable and contains presenter notes on every slide. LibreOffice is used here to export the slide PDF.
 
-The Business Review deck was generated from the retained 14-slide template. That template is not included in this public repository because its redistribution terms are not established. To regenerate the deck, provide a local copy of the template and run these commands from the project root:
+The Business Review deck was generated from a retained 14-slide template that is not included in this public repository because its redistribution terms are not established. To regenerate from that template, provide a local copy. To revise the existing editable deck, use the current PPTX as the input template; the generator reads it before replacing the output:
 
 ```bash
 npm --prefix presentation ci
-export DRILLLOOP_BUSINESS_REVIEW_TEMPLATE=/path/to/reference.pptx
+export DRILLLOOP_BUSINESS_REVIEW_TEMPLATE="$PWD/DrillLoop_Business_Review.pptx"
 .venv/bin/python scripts/generate_business_review.py
 soffice --headless --convert-to pdf --outdir . DrillLoop_Business_Review.pptx
 ```
@@ -113,8 +115,8 @@ Uploaded source bytes and extracted text are stored in the local database. Use f
 ## Deliverables
 
 - [Idea document (DOCX)](DrillLoop_Idea_Document.docx) and [PDF](DrillLoop_Idea_Document.pdf)
-- [Pitch deck (PPTX)](DrillLoop_Pitch_Deck.pptx) and [PDF](DrillLoop_Pitch_Deck.pdf)
-- [Business Review deck (PPTX)](DrillLoop_Business_Review.pptx) and [PDF](DrillLoop_Business_Review.pdf) — 14-slide copy of the retained Business Review template, with speaker notes, editable tables, and editable charts.
+- [Eureka pitch deck (PPTX)](DrillLoop_Pitch_Deck.pptx) and [PDF](DrillLoop_Pitch_Deck.pdf) — 13 slides with speaker notes, hospital-first pilot hypothesis, and synthetic demo evidence.
+- [Business Review deck (PPTX)](DrillLoop_Business_Review.pptx) and [PDF](DrillLoop_Business_Review.pdf) — separate 14-slide internal review; the Eureka pitch deck is the primary product pitch.
 - [Business case](DrillLoop_Business_Case.pdf), [evaluation report](DrillLoop_Evaluation_Report.pdf), and [architecture SVG](DrillLoop_Architecture.svg)
 - [Technical design](DrillLoop_Technical_Design.md), [demo guide](DEMO_GUIDE.md), and [plain-language Reader Guide with an AI-agent example](DRILLLOOP_READER_GUIDE.md)
 - [Synthetic ground truth](demo/ground_truth.json), [evidence files](demo/evidence/), and [benchmark results](demo/benchmark_results.json)

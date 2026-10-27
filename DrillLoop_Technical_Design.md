@@ -134,7 +134,8 @@ Validation distinguishes malformed/unsupported files, missing PDF text, missing 
 
 - Local-first by default; no cloud model, telematics, or third-party fonts are required. Source uploads remain in the configured database.
 - The reviewer key is a shared demo secret passed in a header; it does not implement user identity, least privilege, tenant isolation, session expiry, or enterprise SSO.
-- The MVP does not encrypt database values or uploaded bytes, run malware scans, redact personal information, implement retention controls, or conduct a security assessment. Do not upload protected patient/operational data to the demo.
+- The MVP does not encrypt database values or uploaded bytes, run malware scans, redact personal information, implement retention controls, or conduct a security assessment. The packaged demo uses fictional records and has not been validated for protected patient or operational data.
+- The default workflow makes no cloud-model call. Optional faster-whisper inference uses a locally staged model; optional Ollama is configured as a local/private service for action wording. Deployment-level data-flow and security review has not been performed.
 - Production would need SSO/RBAC, encrypted transport/storage and managed backups, tenant isolation, secrets management, access logging, retention/deletion, malware and PDF resource controls, dependency scanning, threat modeling, and a clinical/emergency-management review process.
 - Report approval and closure are authorization-gated, but development credentials are intentionally visible in the demo guide. Replace them and the default Compose PostgreSQL password before exposing any environment.
 
@@ -143,6 +144,8 @@ Validation distinguishes malformed/unsupported files, missing PDF text, missing 
 Recorded verification: Python 3.12.13, FastAPI 0.162.0, Pydantic 2.14.1, SQLAlchemy 2.0.48, React 19.3.1, TypeScript 5.9.3, Vite 8.3.5, local SQLite. `pytest` exercises parsers, source-byte downloads, evidence citations, status gates, incomplete objectives, and PDF export. `ruff check backend` and the TypeScript/Vite production build are run separately. Docker/PostgreSQL and optional ASR/Ollama are configuration paths; their inference path is not part of the recorded benchmark.
 
 The fixture benchmark measures observation precision/recall, finding precision/recall, supported-citation rate, exact event-log citations, timeline timestamp matches, corrective-action field completion, rule latency, and process RSS. It intentionally does not report manual report time, reviewer correction time, ASR WER, local LLM quality, or dollar savings. Read [DrillLoop_Evaluation_Report.pdf](DrillLoop_Evaluation_Report.pdf) and `demo/benchmark_results.json` for actual results and limitations.
+
+The proposed first validation segment is hospital preparedness teams reviewing tabletop exercises. A next evaluation would interview two or three prospective users, establish a current-process baseline, and compare both workflows on the same permitted records. Evaluator-labeled evidence from an unfamiliar exercise would measure missed and incorrect findings, citation support, and timeline agreement. One relevant alternative would be selected with the pilot partner for a same-workflow comparison. Success thresholds, partner access, and schedule are not yet established; the partner would set the thresholds before measurement.
 
 ## 10. References
 

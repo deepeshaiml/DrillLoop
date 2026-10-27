@@ -1,157 +1,107 @@
 # Eureka Submission Draft — DrillLoop
 
-This draft is based on the project files and recorded synthetic benchmark. It distinguishes current prototype evidence from proposed pilot work and unverified assumptions.
+This is a working copy of the Eureka form text. Contact information is omitted here because the public repository is not the place to publish a work email. The portal form contains the lead’s contact details.
 
 ## Idea details
 
-### 1. What are you submitting?
+### Submission route
 
-**Submission route:** Employee idea (as currently represented in the submission). No department challenge name is identified.
+Individual employee idea.
 
-### 2. Which theme fits best?
+### Theme
 
-**Public Safety Intelligence.** DrillLoop is a governed evidence-review workflow for emergency exercise evaluations. Its current MVP uses fixed, inspectable rules for finding candidates and requires a human reviewer to approve findings and corrective-action closure. Optional local AI can reword an action draft; it does not plan or execute operational decisions.
+Public Safety Intelligence.
 
-### 3. Idea title
+### Title
 
-**DrillLoop: Evidence-Linked Exercise Reviews and Action Closure**
+DrillLoop: Evidence-Linked Exercise Review and Action Closure
 
-### 4. One-line summary
+### One-line summary
 
-**DrillLoop is a local-first prototype designed to help emergency-preparedness evaluators turn exercise records into evidence-linked After-Action Reports and Improvement Plans, with explicit human approval and evidence-backed corrective-action closure. Its deterministic workflow preserves source references and unresolved timing issues; a proposed pilot would test reporting effort, citation accuracy and follow-up completeness against existing practice.**
+DrillLoop helps hospital preparedness evaluators turn exercise records into draft after-action reports and improvement plans, link findings to their sources, and track corrective actions through human review and proof of completion.
 
-### 5. What problem are you solving?
+### Problem
 
-The proposed first pilot segment is hospital preparedness teams. In one exercise-to-report workflow, evaluators reconcile notes, event logs, timelines, and transcripts to prepare an After-Action Report and Improvement Plan (AAR/IP). Findings can be difficult to verify later without exact source references, and corrective actions can remain incomplete when ownership, due dates, acceptance criteria, or closure evidence are missing.
+The proposed first use case is a hospital preparedness evaluator reviewing records from a tabletop exercise and preparing an After-Action Report and Improvement Plan (AAR/IP). Evaluators may need to reconcile notes, event logs, timelines, and transcripts. A finding is harder to verify when its source is unclear, and corrective actions can lack an owner, due date, or completion evidence.
 
-The project materials contain no customer interviews, reporting-time baseline, exercise-frequency data, willingness-to-pilot evidence, or measured monetary cost. The operational problem and potential workload reduction remain hypotheses to validate with a hospital preparedness team. Candidate user: exercise evaluator or preparedness staff. Candidate report approver: preparedness lead or exercise sponsor. Budget owner and procurement path: not yet identified.
+The candidate report preparer is an exercise evaluator or preparedness staff member. A preparedness lead or exercise sponsor is a candidate report approver. The budget owner and procurement path have not been identified. Exercise frequency, reporting time, verification effort, willingness to pilot, and monetary cost have not been measured.
 
-### 6. What is your AI solution?
+### Solution
 
-DrillLoop is a local-first web prototype for the hospital exercise-to-report workflow. A user defines an exercise and its objectives, then imports notes, CSV event logs, JSON timeline/transcript records, or selectable-text PDFs. The system preserves the source and records a locator such as a CSV row, note line, PDF page, or transcript segment. It builds a timeline while leaving missing times unplaced and conflicting times unresolved.
+DrillLoop is a local-first web application. A user defines an exercise and objectives, then imports notes, CSV event logs, JSON event/transcript records, or selectable-text PDFs. It preserves original files and exact source locators, such as a CSV row, note line, PDF page, or transcript segment. Missing times remain unplaced and conflicting times remain visible.
 
-The included MVP uses a fixed, deterministic workflow to extract observations, match the fictional scenario’s signals, map candidate findings to objectives, attach exact evidence IDs, draft corrective actions, and prepare an AAR/IP. Proposed findings remain visibly separate from evaluator-approved findings. A reviewer must approve or reject findings; action approval and closure have reviewer gates, and closure requires evidence.
+The current MVP uses a fixed, deterministic workflow to extract observations, identify candidate findings, map them to stated objectives, attach evidence IDs, draft corrective actions, and prepare an AAR/IP. Findings remain proposed until a human reviewer approves or rejects them. Action approval and closure require reviewer checks and closure evidence.
 
-Optional local extensions are available but are not needed for the demo: faster-whisper can transcribe audio when a compatible model is already installed locally, and a local Ollama model can reword an action the rules have already proposed. The project has not measured ASR accuracy, multilingual performance, speaker diarization, or local LLM quality. The sample transcript is pre-generated and includes a labeled synthetic recognition error.
+The rules were built around one fictional hospital power-outage exercise. Performance on an unfamiliar exercise and the incremental value of optional AI have not been measured. Optional faster-whisper transcription requires a locally staged model; optional Ollama can reword an action already proposed by the rules. Neither path was included in the benchmark. The sample transcript is pre-generated and contains a labeled synthetic recognition error.
 
-The differentiation hypothesis is source-level evidence traceability combined with explicit reviewer decisions and closure evidence. Veoci advertises after-action reporting and corrective-action follow-up; D4H advertises emergency-team readiness software. The project has not compared either product against DrillLoop on the same exercise-to-report workflow, and traceability differentiation is not validated. A relevant Presight delivery advantage has not been established in the project materials.
+Veoci markets after-action reporting and corrective-action follow-up. DrillLoop’s proposed distinction—source-level traceability, explicit reviewer decisions, and evidence-backed closure—has not been validated in a comparable workflow. A possible fit with Presight public-safety work is also unverified; no integration or customer demand is established.
 
-### 7. Technology readiness
+### Technology readiness
 
-**Provisional self-assessment: TRL 4 on the conventional 1–9 scale; not independently established.**
+TRL 4, provisional self-assessment on the conventional 1–9 scale. The evidence is a working local prototype and technical checks on one closed synthetic fixture. There has been no operational pilot, independent TRL assessment, evaluator study, or validation on unfamiliar exercise records. The Eureka program’s TRL definitions may differ from the conventional scale.
 
-The repository records a local web prototype with API, UI, persistent demo storage, evidence ingestion, timeline, proposed findings, reviewer decisions, action tracking, PDF export, automated tests, and a fictional end-to-end exercise. The technical check used one closed synthetic fixture. Prototype performance and TRL have not been independently validated from an operational deployment, customer pilot, user study, or real exercise records. Optional ASR/LLM paths were not benchmarked. The program’s TRL definitions may differ from the conventional scale.
+### Tags
 
-### 8. Tags
+Emergency preparedness, exercise evaluation, evidence traceability, human-in-the-loop AI, corrective action management, AAR/IP, local-first AI, hospital resilience.
 
-Emergency preparedness, exercise evaluation, evidence traceability, human-in-the-loop AI, corrective action management, AAR/IP, local-first AI, hospital resilience
+### Submission type
 
-### 9. What are you submitting as?
+Web app. DrillLoop is a functional local MVP, not a hosted production service or an autonomous AI agent.
 
-**Prototype.** DrillLoop is a functional local web MVP, but it is not a hosted production service or an autonomous AI agent. The current analysis is a controlled workflow with deterministic rules and human review.
+## Expected impact and validation plan
 
-### 10. Expected impact
+The initial segment hypothesis is hospital preparedness teams. The primary user is an exercise evaluator or preparedness staff member. A preparedness lead or exercise sponsor is a candidate report approver. The budget owner is unknown. Other sectors in the project materials are possible future markets, not validated customers.
 
-**Initial target segment:** hospital preparedness teams. **Primary user:** exercise evaluator or preparedness staff. **Potential report approver:** preparedness lead or exercise sponsor. **Budget owner:** not yet identified. Other possible future segments include municipal emergency-management teams, civil-defense organizations, airports, critical-infrastructure operators, exercise providers, and defense-support training organizations.
+A proposed discovery and pilot sequence is:
 
-**Proposed pilot comparison:** prepare an AAR/IP from the same permitted exercise records using the current process and DrillLoop, then compare:
+1. Interview two or three prospective hospital-preparedness users and observe one existing review process with permission.
+2. Establish a baseline for report preparation, evidence verification, reviewer corrections, and action follow-up.
+3. If a partner agrees, compare the current process and DrillLoop using the same permitted exercise records.
+4. Use evaluator-labeled records from an unfamiliar exercise to measure missed findings, incorrect findings, unsupported claims, and timeline agreement.
+5. Select one relevant alternative with the pilot partner and compare source-location precision, reviewer decisions, and closure evidence on the same workflow.
+6. Agree success thresholds with the partner before measuring results.
 
-- Time to assemble an AAR/IP, measured against the organization’s existing process.
-- Evaluator review and correction workload for proposed findings.
-- Whether each finding has an accurate, usable source citation.
-- Whether conflicting or missing times remain visible instead of being silently resolved.
-- Completion of action ownership, due dates, acceptance criteria, reviewer decisions, and closure evidence.
+These are proposed activities, not completed interviews or a confirmed pilot. No success thresholds, savings, customer revenue, or field performance have been measured. The first commercial model proposed for discovery is a per-exercise pilot fee; no price, willingness-to-pay evidence, staffing plan, or delivery-cost model is established. Annual subscriptions, private deployment, custom templates, and support services remain later hypotheses. The separate Business Case lists validation inputs without inventing prices or costs.
 
-No success thresholds are set; a pilot partner would define them against its baseline. The project has no measured staff time saved, labor-cost reduction, customer revenue, or field performance. The first commercial model to test is a **per-exercise pilot fee**, without a proposed price. Annual organizational subscriptions, private deployment, custom templates, and support services are additional unvalidated options. There are no recorded sales or signed commitments.
+## Lead and team
 
-## Team and contact
+The Eureka form identifies the lead as an individual submitter in Product–Synergy / AI Engineering. The project demonstrates delivery of a working web prototype and evidence-review workflow; prior emergency-preparedness experience is not stated. Available time is not specified. Proposed support needs are a preparedness-domain adviser, evaluator participation, permitted pilot data, and security/privacy review. No adviser or pilot partner is confirmed.
 
-### 11. Who is the lead?
+## Data governance and security status
 
-- **Name:** [Not provided in project materials]
-- **Email:** [Not provided in project materials]
-- **Department:** [Not provided in project materials]
-- **Function / role:** [Not provided in project materials]
+The demo stores uploaded source bytes and extracted text in its configured database and records reviewer audit events. It uses a shared demo reviewer key, not named accounts or role-based access. Tenant isolation, encryption at rest, retention/deletion controls, malware scanning, and a security assessment are not implemented or evidenced. The default workflow makes no cloud-model call; optional ASR is local and Ollama is configured as a local/private service. The packaged benchmark uses fictional records and does not establish safe handling of protected patient or operational data.
 
-The submission is represented as an individual idea. The submitter’s relevant experience, delivery capacity, and available time are not described in the project materials.
+## Documents and prototype evidence
 
-### 12. Individual or team submission?
+### Pitch deck
 
-**Submission mode:** Individual idea, as represented in the submission.
+- [Dedicated Eureka pitch deck, editable PPTX with speaker notes](DrillLoop_Pitch_Deck.pptx)
+- [Pitch deck PDF](DrillLoop_Pitch_Deck.pdf)
 
-- **Team members and roles:** Not applicable to the individual submission.
-- **Relevant experience and skills:** Not provided in project materials.
-- **Available time / capacity:** Not provided in project materials.
-- **Support needed:** hospital preparedness or continuity adviser; evaluator feedback; a permitted pilot environment and approved evidence; security and privacy review; and product/customer discovery. No adviser, pilot partner, or support commitment is recorded.
+### Idea document
 
-### Delivery and validation plan
+- [Idea document PDF](DrillLoop_Idea_Document.pdf)
+- [Editable idea document DOCX](DrillLoop_Idea_Document.docx)
 
-1. Map one hospital preparedness team’s current exercise-to-report workflow and identify the evaluator, report approver, and budget owner.
-2. Establish a baseline for reporting time, evidence verification, reviewer corrections, and corrective-action follow-up.
-3. Compare current practice and DrillLoop on the same permitted exercise records, including missing timestamps, conflicting records, ambiguous notes, and transcription errors.
-4. Agree pilot success thresholds with the partner, review findings with an emergency-preparedness adviser, and record results and limitations.
+### Three supporting attachments
 
-No delivery schedule, partner, adviser, or evaluation-team capacity is currently documented.
+1. [Evaluation report PDF](DrillLoop_Evaluation_Report.pdf) — closed synthetic benchmark and limitations.
+2. [Business case PDF](DrillLoop_Business_Case.pdf) — commercial options and the information required before pricing or financial projections.
+3. [Architecture PDF](DrillLoop_Architecture.pdf).
 
-### Data governance and security status
+### Prototype evidence
 
-The demo stores uploaded source bytes and extracted text in its configured database and records an audit history of reviewer actions. It uses a shared demo reviewer key. Production-grade identity and role-based access, tenant isolation, encryption, retention/deletion controls, malware scanning, and a security assessment are not implemented or evidenced. Local-first operation alone does not establish security. The packaged sample uses fictional evidence; no real patient or operational records were used in its benchmark.
+- Public repository: [github.com/deepeshaiml/DrillLoop](https://github.com/deepeshaiml/DrillLoop)
+- Screenshots: [Overview](assets/DrillLoop_Demo_Overview.png), [Findings](assets/DrillLoop_Demo_Findings.png), [Corrective Actions](assets/DrillLoop_Demo_Actions.png).
+- Hosted demo URL: none.
+- Web build ZIP: not prepared; the full workflow requires the API and database.
 
-### Commercial and delivery hypothesis
+### How judges can test it
 
-The first commercial model proposed for discovery is a per-exercise pilot fee. Willingness to pay, procurement ownership, delivery cost, and sales cycle have not been validated. No specific Presight capability or customer access advantage is evidenced in the project materials; any such advantage would need to be substantiated before inclusion in a final value proposition.
+The demo uses fictional records. Clone the repository, run `cp .env.example .env` and `docker compose up --build`, then open `http://localhost:8000`. Demo login: `Exercise Reviewer` / `demo-reviewer`.
 
-## Documents and prototype
+Select **Night Shift: Extended Power Loss** (`HOSP-PO-2026-01`). Review the timeline and the unresolved 09:10/09:11 discrepancy. Open a proposed finding and follow its source links. Review the action with the intentionally missing owner, then try the reviewer-gated approval and closure flow. Export the AAR/IP PDF. Full details are in [DEMO_GUIDE.md](DEMO_GUIDE.md).
 
-### 13. Pitch deck
+## Portal upload checklist
 
-- [Editable 13-slide PowerPoint](DrillLoop_Pitch_Deck.pptx) — includes speaker notes on every slide.
-- [Pitch deck PDF](DrillLoop_Pitch_Deck.pdf).
-
-### 14. Idea document
-
-- [Idea document PDF](DrillLoop_Idea_Document.pdf).
-- [Editable idea document DOCX](DrillLoop_Idea_Document.docx).
-
-### 15. Optional attachments (choose up to three)
-
-Recommended attachments:
-
-1. [Evaluation report PDF](DrillLoop_Evaluation_Report.pdf) — synthetic benchmark scope, metrics, and limitations.
-2. [Technical design](DrillLoop_Technical_Design.md) — architecture, workflow, data model, and security boundaries.
-3. [Architecture diagram PDF](DrillLoop_Architecture.pdf). The editable [SVG source](DrillLoop_Architecture.svg) is also available.
-
-The synthetic benchmark data is in [`demo/benchmark_results.json`](demo/benchmark_results.json), and labeled fictional findings are in [`demo/ground_truth.json`](demo/ground_truth.json). These can replace an attachment if the form accepts raw data files.
-
-### 16. Prototype evidence
-
-- **Public code repository:** [https://github.com/deepeshaiml/DrillLoop](https://github.com/deepeshaiml/DrillLoop)
-- **Screenshots:** [Overview](assets/DrillLoop_Demo_Overview.png), [Findings](assets/DrillLoop_Demo_Findings.png), and [Corrective Actions](assets/DrillLoop_Demo_Actions.png).
-- **Live demo URL:** none is currently documented; the prototype runs locally.
-- **Web build ZIP:** not currently prepared.
-
-### 17. How should judges test it?
-
-The project includes fictional demo records only and has not been validated for protected patient or operationally sensitive evidence.
-
-**Docker path:** clone the repository, run `cp .env.example .env`, then `docker compose up --build`. Open `http://localhost:8000`. The demo reviewer name/key are `Exercise Reviewer` / `demo-reviewer`; these are laptop-demo credentials, not production authentication.
-
-**Walkthrough:**
-
-1. Select **Night Shift: Extended Power Loss** (`HOSP-PO-2026-01`).
-2. Open the timeline. See the 09:02 power failure, 09:06 restoration, and the unresolved 09:10 / 09:11 acknowledgement conflict.
-3. Open **Findings**. Inspect the proposed power-restoration finding and follow its links to `EL-01` and `EL-02` in the source log. Confirm it is marked proposed until a reviewer decides.
-4. Review the communication-delay finding and the synthetic low-confidence transcript segment. The incorrect transcript wording is flagged; the response-time discrepancy relies on the independent event log.
-5. Open **Corrective Actions**. See the intentionally missing owner. Assign a fictional demo owner if testing the approval flow; action approval requires an approved linked finding, owner, and due date.
-6. Record fictional closure evidence and confirm that a reviewer decision is needed to close the action.
-7. Export the AAR/IP PDF and inspect the separate observation, interpretation, evidence links, reviewer status, and action register.
-
-Full setup and error-case details are in [`DEMO_GUIDE.md`](DEMO_GUIDE.md). There is no hosted demo URL at present. In the review that generated this feedback, the repository, screenshots, and documents were not available to the reviewer for inspection; prototype evidence therefore remains independently unverified in that review.
-
-## Applicant details not present in the project materials
-
-- Lead name, email, department, and function.
-- Submitter experience, delivery capacity, and available time.
-- Identified hospital pilot partner, report approver, and budget owner.
-- Program-specific TRL definition and any independent TRL evidence.
-- A substantiated Presight delivery advantage, if applicable.
+The previous AI Coach review reported that linked materials were unavailable for inspection, although screenshots and a repository were listed. The portal should show the actual screenshot and document files as uploaded and previewable. The Business Review deck is a separate artifact; the dedicated 13-slide Eureka Pitch Deck is the primary pitch presentation. Lead email belongs in the Eureka form, not this public repository copy.

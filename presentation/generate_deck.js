@@ -67,10 +67,10 @@ function cardTitle(slide, title, x, y, w) {
   s.addShape(pptx.ShapeType.ellipse, { x: 8.85, y: 1.05, w: 3.65, h: 3.65, fill: { color: '0D8F89', transparency: 26 }, line: { color: '0D8F89', transparency: 100 } });
   s.addShape(pptx.ShapeType.ellipse, { x: 9.65, y: 1.82, w: 2.1, h: 2.1, fill: { color: C.dark }, line: { color: '8ED5CC', width: 1.2 } });
   txt(s, 'D', 10.32, 2.31, 0.75, 0.78, { fontFace: 'Aptos Display', fontSize: 45, bold: true, color: C.white, align: 'center' });
-  txt(s, 'EUREKA  /  PRODUCT PITCH', 0.85, 0.82, 6.6, 0.28, { fontSize: 10, bold: true, color: '71C6BD', charSpacing: 1.5 });
+  txt(s, 'EUREKA  /  PUBLIC SAFETY INTELLIGENCE', 0.85, 0.82, 6.9, 0.28, { fontSize: 9.5, bold: true, color: '71C6BD', charSpacing: 1.2 });
   txt(s, 'DrillLoop', 0.82, 1.42, 7, 0.95, { fontFace: 'Aptos Display', fontSize: 46, bold: true, color: C.white });
-  txt(s, 'From exercise notes to findings a person can review and improvements a person can verify.', 0.86, 2.65, 7.0, 1.3, { fontFace: 'Aptos Display', fontSize: 25, bold: true, color: 'D7E7E8', breakLine: false, valign: 'top' });
-  txt(s, 'Every proposed finding links back to its source.', 0.87, 4.2, 6.5, 0.48, { fontSize: 15, color: 'B5C9CD' });
+  txt(s, 'Evidence-Linked Exercise Review and Action Closure', 0.86, 2.65, 7.0, 1.3, { fontFace: 'Aptos Display', fontSize: 25, bold: true, color: 'D7E7E8', breakLine: false, valign: 'top' });
+  txt(s, 'For hospital preparedness evaluators · synthetic demo', 0.87, 4.2, 6.5, 0.48, { fontSize: 14, color: 'B5C9CD' });
   pill(s, 'WORKING MVP', 0.88, 5.36, 1.45, '21505C', 'A6E0D8');
   txt(s, 'Fictional hospital prolonged power outage · 27 October 2026', 0.88, 6.66, 7.0, 0.25, { fontSize: 9, color: '99B2B9' });
   txt(s, 'Evidence', 8.9, 5.26, 1.35, 0.28, { fontSize: 11, bold: true, color: C.white, align: 'center' });
@@ -79,7 +79,7 @@ function cardTitle(slide, title, x, y, w) {
   line(s, 9.8, 4.58, 9.35, 5.1, '79BCB9', 1.2);
   line(s, 11.16, 4.52, 11.55, 5.1, '79BCB9', 1.2);
   txt(s, 'The claim stays connected to its source and its reviewer decision.', 8.9, 6.16, 3.75, 0.58, { fontSize: 12, color: 'C2D4D6', align: 'center' });
-  addNotes(s, 'Open with the product promise: after a simulation exercise, evidence lives across notes, logs, timelines, and recordings. DrillLoop makes a reviewable path from that evidence to a proposed finding and then to a corrective action whose closure needs evidence. The interface and the hospital exercise shown in this deck are synthetic. This is a working hackathon MVP, not a certified emergency management product.');
+  addNotes(s, 'Open with the proposed first use case: hospital preparedness evaluators reviewing an exercise. DrillLoop makes a reviewable path from exercise records to a proposed finding and then to a corrective action whose closure needs evidence. The interface and hospital outage records are synthetic. This is a working local MVP, not a certified emergency management product.');
 }
 
 // 2 — Problem
@@ -250,15 +250,15 @@ function cardTitle(slide, title, x, y, w) {
 // 9 — Buyer and wedge
 {
   const s = pptx.addSlide('BASE');
-  header(s,'Customer wedge','Start where exercise evidence and follow-through meet','A hospital preparedness team is the first pilot hypothesis, not a validated customer segment.');
+  header(s,'Customer wedge','Start with a hospital exercise review','This is a proposed first use case; no pilot partner or buyer has been confirmed.');
   box(s,0.78,2.0,3.5,3.45,C.navy,C.navy);
   pill(s,'FIRST PILOT HYPOTHESIS',1.08,2.3,1.95,'21505C','A6E0D8');
-  txt(s,'Hospital\npreparedness lead',1.08,2.92,2.8,0.93,{fontSize:22,bold:true,color:C.white,valign:'top',fontFace:'Aptos Display'});
-  txt(s,'Owns exercise planning, evaluation coordination, and improvement follow-up.',1.08,4.17,2.75,0.76,{fontSize:11,color:'C2D4D6',valign:'top'});
+  txt(s,'Hospital\ntabletop review',1.08,2.92,2.8,0.93,{fontSize:22,bold:true,color:C.white,valign:'top',fontFace:'Aptos Display'});
+  txt(s,'Initial segment hypothesis. The included outage exercise is synthetic; no hospital partner is confirmed.',1.08,4.17,2.75,0.82,{fontSize:10.5,color:'C2D4D6',valign:'top'});
   const roles=[
-    ['Evaluator','Captures observations and confirms findings.'],
-    ['Action owner','Delivers task and submits closure evidence.'],
-    ['Preparedness director','Reviews open risks, trends, and readiness.'],
+    ['Report preparer','Exercise evaluator / preparedness staff (candidate user).'],
+    ['Report approver','Preparedness lead or exercise sponsor (candidate).'],
+    ['Budget owner','Not identified; role to validate in discovery.'],
   ];
   roles.forEach((r,i)=>{
     const y=2.02+i*1.1;
@@ -266,47 +266,41 @@ function cardTitle(slide, title, x, y, w) {
     txt(s,r[0],5.02,y+0.15,2.9,0.23,{fontSize:12,bold:true,color:C.navy});
     txt(s,r[1],5.02,y+0.46,3.02,0.25,{fontSize:9,color:C.muted});
   });
-  txt(s,'Adjacent customer candidates',8.92,2.03,3.4,0.29,{fontSize:13,bold:true,color:C.navy});
-  const sectors=['Municipal emergency teams','Airports & critical infrastructure','Civil defense & training providers'];
-  sectors.forEach((t,i)=>{
-    box(s,8.9,2.52+i*0.85,3.55,0.66,C.pale,C.line);
-    dot(s,9.14,2.77+i*0.85,0.13,C.teal);
-    txt(s,t,9.43,2.68+i*0.85,2.72,0.32,{fontSize:10,color:C.ink});
+  txt(s,'Roles to validate',8.92,2.03,3.4,0.29,{fontSize:13,bold:true,color:C.navy});
+  const roleChecks=[['1','Who prepares the AAR/IP?'],['2','Who approves findings?'],['3','Who controls the budget?']];
+  roleChecks.forEach((r,i)=>{
+    const y=2.55+i*0.95;
+    box(s,8.9,y,3.55,0.76,C.pale,C.line);
+    pill(s,r[0],9.08,y+0.2,0.35,C.mint,C.teal);
+    txt(s,r[1],9.58,y+0.17,2.55,0.4,{fontSize:10.4,bold:true,color:C.ink});
   });
   box(s,4.78,5.55,7.67,0.71,C.sand,'EBD9B9');
-  txt(s,'Pilot question: Is source-level traceability painful enough to buy or integrate?',5.02,5.78,7.12,0.25,{fontSize:11,bold:true,color:'805E2B'});
-  addNotes(s, 'Name the likely user and buyer separately. The evaluator uses the product in the after-action workflow; the preparedness lead is the likely buyer or sponsor. Action owners and directors have different review needs. Hospitals are a practical first wedge because power-loss exercises and preparedness planning have public examples, but that does not establish demand. Other candidate sectors are listed for discovery interviews.');
+  txt(s,'No interviews or purchasing-path validation are recorded yet.',5.02,5.78,7.12,0.25,{fontSize:11,bold:true,color:'805E2B'});
+  addNotes(s, 'The hospital tabletop review is the proposed initial use case, not a confirmed customer or pilot. The candidate user is an exercise evaluator or preparedness staff member. A preparedness lead or exercise sponsor may approve the report; the actual buyer and budget owner are unknown. Discovery needs to identify who prepares the report, approves findings, owns the budget, and controls access to exercise data. No customer interviews or purchasing-path validation are recorded.');
 }
 
 // 10 — Commercial model
 {
   const s = pptx.addSlide('BASE');
-  header(s,'Commercial hypotheses','Test pricing against measured value and delivery cost','All prices and financials are illustrative assumptions, not market quotes or a forecast.');
-  box(s,0.75,1.9,4.15,3.9,C.white,C.line);
-  txt(s,'PRICE PROBES',1.0,2.15,2.5,0.25,{fontSize:8.5,bold:true,color:C.teal,charSpacing:0.8});
-  const prices=[['Per exercise','$1,500'],['Annual organization · up to 12','$18,000'],['Private deployment','$65,000 / year'],['Custom template','$6,000'],['Support services','$1,500 / day']];
-  prices.forEach((r,i)=>{
-    const y=2.6+i*0.56;
-    txt(s,r[0],1.0,y,2.35,0.27,{fontSize:10,color:C.ink});
-    txt(s,r[1],3.32,y,1.2,0.27,{fontSize:10,bold:true,color:C.navy,align:'right'});
-    if(i<4) line(s,1.0,y+0.42,4.5,y+0.42,'E5EBEC',0.7);
+  header(s,'Commercial hypothesis','Start with a per-exercise pilot fee','This is the first model to validate; no price, buyer demand, or revenue has been established.');
+  box(s,0.82,2.0,3.65,3.85,C.navy,C.navy);
+  pill(s,'FIRST MODEL TO TEST',1.12,2.34,1.9,'21505C','A6E0D8');
+  txt(s,'Per-exercise\npilot fee',1.12,2.96,2.95,0.9,{fontSize:27,bold:true,color:C.white,fontFace:'Aptos Display',valign:'top'});
+  txt(s,'Price to be set with the prospective buyer after delivery effort and procurement path are understood.',1.12,4.27,2.98,0.86,{fontSize:11,color:'C2D4D6',valign:'top'});
+  const valueChecks=[
+    ['BUYER','Who owns the budget and approves an exercise-level purchase?'],
+    ['VALUE','Does evidence lookup, review, or action follow-up improve on the current process?'],
+    ['DELIVERY','What setup, security, support, and evidence-handling work does each exercise require?'],
+  ];
+  valueChecks.forEach((r,i)=>{
+    const y=2.02+i*1.22;
+    box(s,4.92,y,7.42,1.0,C.white,C.line);
+    txt(s,r[0],5.18,y+0.17,1.1,0.2,{fontSize:8.5,bold:true,color:C.teal,charSpacing:.8});
+    txt(s,r[1],6.32,y+0.14,5.62,0.68,{fontSize:12,bold:true,color:C.navy,valign:'top'});
   });
-  txt(s,'Simple annual scenarios',5.32,1.98,5.8,0.29,{fontSize:14,bold:true,color:C.navy});
-  const rows=[['Revenue','Costs*','After costs*'],['$177k','$385k','−$208k'],['$488k','$645k','−$157k'],['$2.05m','$1.87m','+$180k']];
-  const labels=['','Conservative','Base','High scale'];
-  rows.forEach((r,i)=>{
-    const y=2.48+i*0.63;
-    if(i===0){txt(s,'SCENARIO',5.36,y,1.45,0.2,{fontSize:8,bold:true,color:C.teal});}
-    else txt(s,labels[i],5.36,y,1.45,0.28,{fontSize:9.5,bold:i===3,color:C.ink});
-    txt(s,r[0],6.82,y,1.35,0.28,{fontSize:i===0?8:10,bold:i===0||i===3,color:i===0?C.teal:C.navy,align:'right'});
-    txt(s,r[1],8.45,y,1.25,0.28,{fontSize:i===0?8:10,bold:i===0,color:i===0?C.teal:C.ink,align:'right'});
-    txt(s,r[2],10.02,y,1.75,0.28,{fontSize:i===0?8:10,bold:true,color:i===0?C.teal:(i===3?C.green:C.red),align:'right'});
-  });
-  txt(s,'*Revenue minus assumed staffing and other costs; not net profit.',5.35,5.12,6.4,0.42,{fontSize:8.5,color:C.muted,valign:'top'});
-  box(s,5.3,5.72,6.5,0.75,C.mint,'C9E4E0');
-  txt(s,'Time-value illustration: 96 capacity hours / year ≈ $6,240 at $65 loaded hourly cost. Not cash savings.',5.52,5.9,6.05,0.42,{fontSize:10,bold:true,color:C.navy});
-  txt(s,'20 h/exercise × 40% potential reduction × 12 exercises × $65/h. Assumptions need pilot measurement.',0.82,6.4,11.7,0.23,{fontSize:8.5,color:C.muted,italic:true});
-  addNotes(s, 'All commercial inputs are hypotheses in US dollars. “After costs” means assumed sales revenue minus assumed staffing and other operating costs; it is not net profit. FTE means full-time equivalent, or one person’s full-year workload. The base example combines 15 annual plans at $18,000 ($270,000), 40 single exercises at $1,500 ($60,000), one private deployment ($65,000), eight templates ($48,000), and 30 service days ($45,000), for $488,000 revenue. Assumed costs total $645,000, so the example is negative $157,000. The time-value example is 20 hours × 40% = 8 hours freed per exercise; 8 × 12 exercises = 96 hours; 96 × $65 = $6,240 of staff capacity. Capacity is not cash unless paid hours, overtime, or staffing cost actually falls.');
+  box(s,4.92,5.82,7.42,.66,C.sand,'EBD9B9');
+  txt(s,'Annual plans and private deployment remain later hypotheses.',5.18,6.02,6.85,.24,{fontSize:10.5,bold:true,color:'805E2B'});
+  addNotes(s, 'The proposed first commercial model is a per-exercise pilot fee. No price or willingness-to-pay evidence exists, so the pitch does not present an assumed quote as a selected price. Discovery should identify the user, approver, budget owner, procurement path, and actual delivery costs. Annual organizational plans, private deployment, templates, and support are possible later models if pilot evidence and buyers support them. The separate Business Case contains illustrative price and staffing assumptions; they are not market rates, a forecast, or revenue.');
 }
 
 // 11 — Architecture
@@ -331,9 +325,9 @@ function cardTitle(slide, title, x, y, w) {
   txt(s,'Original file + file-change checksum + extracted quote + location + reviewer decision + completion proof',1.1,4.86,6.65,.49,{fontSize:13,bold:true,color:C.white,valign:'top'});
   box(s,8.72,4.18,3.56,1.52,C.sand,'EBD9B9');
   txt(s,'DEMO SECURITY BOUNDARY',8.96,4.42,2.9,.24,{fontSize:8.5,bold:true,color:'946A2E'});
-  txt(s,'One shared demo password. No individual accounts, separate customer workspaces, or deployment security controls.',8.96,4.82,3.0,.65,{fontSize:9.4,color:C.ink,valign:'top'});
+  txt(s,'Shared demo key; no named accounts, tenant separation, retention controls, or security assessment.',8.96,4.82,3.0,.65,{fontSize:9.2,color:C.ink,valign:'top'});
   txt(s,'Exact library versions and licenses are listed in the Technical Design.',0.86,6.25,11.5,.3,{fontSize:10,bold:true,color:C.navy});
-  addNotes(s, 'The website is built with React and TypeScript. FastAPI is the web service, and Pydantic checks the data sent to it. SQLAlchemy is the database access library. SQLite stores the local demo; PostgreSQL is available through Docker Compose. SHA-256 is a file checksum that helps detect whether an uploaded file changed; it does not prove the file is true. ReportLab makes the downloadable report. faster-whisper is optional software for turning speech into text; no speech model was run in the benchmark. Ollama is an optional local language model service for rewording an action only. The reviewer key is a demo gate, not production login. The Technical Design lists versions and licenses.');
+  addNotes(s, 'The website is built with React and TypeScript. FastAPI is the web service, and Pydantic checks the data sent to it. SQLAlchemy is the database access library. SQLite stores the local demo; PostgreSQL is available through Docker Compose. Uploaded source bytes and extracted text are stored in the configured database. The demo has a shared reviewer key, but no named-user RBAC, tenant isolation, retention/deletion controls, or security assessment. The default workflow makes no cloud model call. faster-whisper runs locally with a staged model; optional Ollama is configured as a local/private service for action wording only. Neither optional path was benchmarked. The Technical Design lists versions and licenses.');
 }
 
 // 12 — Evaluation
@@ -353,11 +347,11 @@ function cardTitle(slide, title, x, y, w) {
   txt(s,'Rule request latency p50 4.61 ms · p95 9.13 ms\nPeak process RSS 78.2 MB · no model loaded',1.08,4.51,5.15,.58,{fontSize:10.2,color:C.ink,valign:'top'});
   box(s,6.88,3.86,5.58,1.55,C.sand,'EBD9B9');
   txt(s,'Not measured',7.14,4.1,1.8,.24,{fontSize:12,bold:true,color:'946A2E'});
-  txt(s,'Manual prep time · reviewer edits · semantic citation quality\nASR WER/latency · local LLM quality and latency',7.14,4.51,4.95,.58,{fontSize:10.2,color:C.ink,valign:'top'});
-  txt(s,'Reading the old shorthand: precision = proposed items matching labels; recall = expected labels found. Both were 100% here because rules and labels used the same small scenario.',0.88,5.68,11.2,.48,{fontSize:9.3,color:C.navy});
+  txt(s,'Unseen-exercise errors · reviewer edits · semantic citation quality\nASR WER/latency · local LLM quality and latency',7.14,4.51,4.95,.58,{fontSize:9.8,color:C.ink,valign:'top'});
+  txt(s,'Precision and recall were 100% because rules and labels used the same small scenario; they do not establish performance on an unfamiliar exercise.',0.88,5.68,11.2,.48,{fontSize:9.3,color:C.navy});
   txt(s,'31 / 32 action fields were filled; one owner is intentionally missing. No evaluator study was run.',0.88,6.19,11.3,.3,{fontSize:9.5,bold:true,color:C.navy});
   txt(s,'12 local test calls · no AI model loaded · results apply to this synthetic fixture only.',0.88,6.58,11.0,.23,{fontSize:8.5,color:C.muted,italic:true});
-  addNotes(s, 'The benchmark used the one fictional exercise included with the project. “Precision” means: of the items the program proposed, how many matched the expected labels? “Recall” means: of the expected labels, how many did the program find? Both were 100 percent on this closed sample, but the rules were written for these same labels. Nine of nine source-record IDs were present; that does not prove each source semantically supports the conclusion. The timeline matched eight explicit log times and displayed one disagreement. Action fields were 31 of 32 complete because an owner is intentionally missing. Request time and process memory exclude model inference. No real evaluator, speech-to-text accuracy test, or local LLM comparison was run.');
+  addNotes(s, 'The benchmark used the one fictional exercise included with the project. Precision and recall were 100 percent on this closed sample, but the rules were written for these same labels. Nine of nine source-record IDs were present; that does not prove each source semantically supports the conclusion. The timeline matched eight explicit log times and displayed one disagreement. Action fields were 31 of 32 complete because an owner is intentionally missing. Request time and process memory exclude model inference. No real evaluator, unfamiliar-exercise test, speech-to-text accuracy test, or local LLM comparison was run. A next evaluation should use evaluator-labeled evidence from an exercise not used to write the rules and report both missed and incorrect findings.');
 }
 
 // 13 — Pilot ask
@@ -367,11 +361,11 @@ function cardTitle(slide, title, x, y, w) {
   s.addShape(pptx.ShapeType.rect,{x:0,y:0,w:W,h:H,fill:{color:C.dark},line:{color:C.dark}});
   txt(s,'THE NEXT PROOF POINT',.85,.76,6,.25,{fontSize:9,bold:true,color:'71C6BD',charSpacing:1.4});
   txt(s,'Pilot the review trail.',.82,1.25,8.4,.72,{fontFace:'Aptos Display',fontSize:36,bold:true,color:C.white});
-  txt(s,'Prove that evidence traceability improves reviewer confidence and action follow-through in a real exercise workflow.',.86,2.18,8.8,.63,{fontSize:16,color:'C2D4D6',valign:'top'});
+  txt(s,'Compare the current process and DrillLoop on the same permitted hospital exercise records, then test an unfamiliar exercise.',.86,2.18,8.8,.63,{fontSize:15,color:'C2D4D6',valign:'top'});
   const asks=[
-    ['2–3 teams','Hospital or municipal exercise evaluators'],
-    ['90 days','Use synthetic or approved records with personal details removed'],
-    ['Measure','Review time · corrections · citations · closure proof'],
+    ['2–3 users','Prospective hospital-preparedness interviews (proposed)'],
+    ['Paired review','Same permitted records: existing process and DrillLoop'],
+    ['Measure','Time · misses · corrections · citations · action fields'],
   ];
   asks.forEach((a,i)=>{
     const x=.88+i*3.97;
@@ -379,10 +373,10 @@ function cardTitle(slide, title, x, y, w) {
     txt(s,a[0],x+.22,3.66,2.95,.35,{fontSize:20,bold:true,color:'85D4CA',fontFace:'Aptos Display'});
     txt(s,a[1],x+.22,4.12,3.05,.42,{fontSize:10.3,color:'D0DFE1',valign:'top'});
   });
-  txt(s,'DrillLoop keeps the evaluator in control.',.9,5.53,7,.35,{fontSize:16,bold:true,color:C.white});
-  txt(s,'Proposed findings stay proposed. Corrective actions close only after reviewer confirmation.',.9,6.03,8.3,.3,{fontSize:11,color:'B8CCCF'});
+  txt(s,'Partner-defined success thresholds.',.9,5.53,7,.35,{fontSize:16,bold:true,color:C.white});
+  txt(s,'No pilot partner, interviews, baseline, or performance targets are confirmed.',.9,6.03,9.0,.3,{fontSize:11,color:'B8CCCF'});
   txt(s,'DrillLoop · Fictional demo · Uses selected FEMA exercise guidance; not certified',.9,7.02,8,.18,{fontSize:8,color:'99B2B9'});
-  addNotes(s, 'Close with a concrete pilot request rather than a claim that the business case is proven. Ask for two or three hospital or municipal teams, a 90-day pilot, and evaluator access to synthetic or officially approved records with personal details removed. Measure source lookup time, corrections, finding evidence support, action ownership, and independent closure verification. Use a small pilot to test whether teams buy, integrate, or decline the workflow. The product borrows selected ideas from FEMA’s exercise guidance but is not certified; professional evaluator judgment remains authoritative.');
+  addNotes(s, 'This is a proposed discovery and pilot sequence, not a confirmed project commitment. First interview two or three prospective hospital-preparedness users and observe one current review with permission. If a partner agrees, compare existing practice and DrillLoop on the same permitted records. Ask the partner to set thresholds before the trial for report time, reviewer corrections, citation accuracy, and action-field completeness. Then use evaluator-labeled evidence from an unfamiliar exercise and report missed and incorrect findings. Select one relevant alternative with the partner for a comparable source-location, reviewer-decision, and closure-evidence workflow. No pilot partner, access, schedule, or thresholds are currently confirmed.');
 }
 
 pptx.writeFile({ fileName: path.join(ROOT, 'DrillLoop_Pitch_Deck.pptx') })

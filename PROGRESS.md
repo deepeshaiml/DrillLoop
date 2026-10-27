@@ -34,6 +34,16 @@ Updated: 27 October 2026
 - Visual QA: rendered the pitch PDF and document PDFs to page images; checked the deck montage, product screenshots, and Word export for layout and clipping.
 - Readability review was editorial; the project has not yet run comprehension sessions with representative nontechnical users or AI agents.
 
+## Eureka review alignment (27 Oct 2026)
+
+- [x] Updated the submission draft and public-facing descriptions to use Public Safety Intelligence and a proposed first use case: hospital-preparedness evaluators reviewing a tabletop exercise.
+- [x] Made the report preparer, candidate approver, and unknown budget owner explicit; kept interview results, partner interest, procurement path, time savings, and price unclaimed.
+- [x] Added a proposed discovery and paired-review plan, including current-practice comparison, evaluator-labeled unfamiliar exercise, partner-defined success thresholds, and security/data-handling questions.
+- [x] Refreshed the idea document, technical design, business case, evaluation report, and README. Regenerated the idea DOCX/PDF, business case PDF, and evaluation report PDF.
+- [x] Updated the dedicated Eureka pitch and the separate 14-slide Business Review to match the hospital-first discovery plan; removed the implied fixed 90-day/multi-segment pilot commitment and unsupported numerical price/cost scenarios. Commercial models remain qualitative hypotheses to validate.
+- [x] Exported the refreshed pitch and Business Review PDFs; checked PDF page counts and the PowerPoint slide/note counts. Visually reviewed the idea cover and worked example, key pitch pages, and changed Business Review slides.
+- [x] Kept app behavior and synthetic benchmark results unchanged. This update does not add customer validation, a new exercise benchmark, a security assessment, or application code changes; application tests were not rerun.
+
 ## Recorded synthetic benchmark
 
 - Observation extraction: 8/8; precision 1.00, recall 1.00, F1 1.00.

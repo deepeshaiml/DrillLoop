@@ -36,7 +36,7 @@ TEXT: dict[int, dict[str, list[str]]] = {
     1: {
         "4": ["DrillLoop Q4 Business Review"],
         "5": [
-            "Review of MVP delivery, synthetic demo results, illustrative economics, and next proof points. Customer demand, evaluator time savings, and real-world accuracy remain unvalidated."
+            "Review of MVP delivery, synthetic demo results, commercial hypotheses, and next proof points. Pricing, delivery costs, customer demand, evaluator time savings, and real-world accuracy remain unvalidated."
         ],
         "6": ["Q4 2026 · Status as of 27 October"],
         "10": ["DrillLoop · Product review"],
@@ -56,7 +56,7 @@ TEXT: dict[int, dict[str, list[str]]] = {
         ],
         "17": ["Sponsor decision requested"],
         "16": [
-            "Authorize discovery for a 90-day pilot with 2–3 hospital or municipal exercise teams, subject to partner interest and privacy approval. Measure source lookup, citation support, reviewer edits, action ownership, and verified closure."
+            "Authorize discovery for a hospital-tabletop review. Interview 2–3 prospective evaluators; compare current workflow with DrillLoop on the same permitted records, then test an unfamiliar exercise if access is approved."
         ],
         "14": ["Bottom line"],
         "18": [
@@ -79,24 +79,24 @@ TEXT: dict[int, dict[str, list[str]]] = {
         ],
         "19": ["Buyer hypothesis"],
         "18": [
-            "Hospitals and municipal teams are candidate pilots; demand and willingness to pay are untested."
+            "Hospital-preparedness evaluators are the proposed first users; approver, budget owner, and purchasing route are unknown."
         ],
         "21": ["Key risk"],
         "20": [
-            "Real data needs approval. Citation quality, reviewer edits, and action closure need pilot validation."
+            "Security controls and performance on unfamiliar exercises need review; use synthetic or explicitly approved records."
         ],
     },
     5: {
         "533": ["Priorities for the next proof point"],
         "5": [
-            "A 90-day pilot should answer three practical questions:"
+            "Discovery and a paired review should answer three practical questions:"
         ],
         "3": [
-            "Can evaluators find and verify source evidence faster?",
-            "Do cited records support each draft finding, and can teams assign and verify improvement tasks? Use synthetic or specifically approved records. Compare the process with current manual review; do not assume savings before measuring them.",
+            "Can hospital evaluators verify source evidence efficiently?",
+            "Compare current practice and DrillLoop on the same permitted records. Check whether citations support each finding and actions have owners and closure proof; measure time and corrections without assuming savings.",
         ],
-        "28": ["Recruit pilot teams"],
-        "27": ["Seek 2–3 willing hospital or municipal exercise teams and an evaluator contact."],
+        "28": ["Interview users"],
+        "27": ["Interview 2–3 hospital-preparedness evaluators; observe the current review with permission."],
         "6": ["Measure review workload"],
         "4": ["Time evidence lookup and report drafting; count reviewer edits and citation corrections."],
         "9": ["Verify action closure"],
@@ -106,7 +106,7 @@ TEXT: dict[int, dict[str, list[str]]] = {
         "4": ["Value hypotheses to test"],
         "18": ["No savings or willingness to pay have been measured."],
         "17": [
-            "The pilot should test source traceability, reviewer confidence, and action follow-through in existing exercise workflows.",
+            "A proposed review should test source traceability, evaluator corrections, and action follow-through in an existing exercise workflow.",
             "Existing platforms already offer after-action reports and follow-up tasks. DrillLoop’s positioning hypothesis is the connected trail from claim to source, reviewer decision, and verified closure—not report generation alone.",
         ],
         "6": [
@@ -127,7 +127,7 @@ TEXT: dict[int, dict[str, list[str]]] = {
         "3": ["Delivered in the MVP"],
         "534": [
             "The app sets up exercises and accepts evaluator notes, event logs, and readable PDFs. It places recorded events on a timeline, flags conflicting times, and attaches each draft finding to its source.",
-            "Reviewers can accept or reject drafts, assign owners and due dates, specify how completion will be checked, record closure proof, and export a report. A simple local database supports the demo; a deployment-ready database option is included.",
+            "Reviewers can accept or reject drafts, assign owners and due dates, specify how completion will be checked, record closure proof, and export a report. SQLite supports the local demo; PostgreSQL is available in Compose for deployment experiments.",
             "Optional speech-to-text and text-drafting models can run locally. Neither was used in the reported benchmark.",
         ],
         "2": [
@@ -139,7 +139,7 @@ TEXT: dict[int, dict[str, list[str]]] = {
     8: {
         "533": ["Target markets are hypotheses, not customers"],
         "3": [
-            "Potential segments include hospitals, municipal emergency teams, airports, civil defense and disaster agencies, training providers, defense-support teams, and critical infrastructure operators. No customer list, sales pipeline, market-size estimate, or willingness-to-pay evidence is available. Validate use cases and purchasing paths before forecasting adoption.",
+            "Start with hospital-preparedness evaluators reviewing tabletop exercises. Municipal teams, airports, civil defense and disaster agencies, training providers, defense-support teams, and critical infrastructure operators are later hypotheses. No customer list, sales pipeline, market-size estimate, or willingness-to-pay evidence is available.",
         ],
     },
     9: {
@@ -160,48 +160,48 @@ TEXT: dict[int, dict[str, list[str]]] = {
         "14": ["3 of 4 have owners; one is intentionally blank."],
     },
     11: {
-        "533": ["Annual USD cases ($000)"],
-        "3": ["$488k"],
-        "7": ["Base-case revenue under listed assumptions."],
-        "9": ["Loss"],
-        "10": ["$157k shortfall after costs; not net profit."],
+        "533": ["Commercial model to validate"],
+        "3": ["TBD"],
+        "7": ["No customer demand, revenue, or delivery-cost evidence."],
+        "9": ["Pilot fee"],
+        "10": ["Per-exercise pilot fee."],
         "19": [
-            "Base case: 15 annual plans, 40 exercises, one private deployment, eight templates, and 30 support days. Revenue / listed costs: conservative $177k / $385k; base $488k / $645k; high scale $2.05m / $1.87m. Planning assumptions, not a forecast; excludes tax and cash timing."
+            "Annual subscriptions, private deployment, templates, and support are later hypotheses. Confirm buyer, purchasing route, and delivery needs before modeling economics."
         ],
     },
     12: {
-        "11": ["Next 12 months: validate before scaling"],
-        "9": ["0–3 months"],
+        "11": ["Proposed stages: discover, compare, then decide"],
+        "9": ["Discovery"],
         "16": [
-            "Run a measured pilot",
-            "Work with 2–3 willing hospital or municipal teams. Measure source lookup, reviewer edits, citation support, action ownership, and verified closure.",
+            "Learn the workflow",
+            "Interview 2–3 prospective hospital evaluators; observe current review with permission and identify approver and budget roles.",
         ],
-        "13": ["3–6 months"],
+        "13": ["Paired review"],
         "17": [
-            "Harden what the pilot needs",
-            "If the evidence supports it, assess organization login, configurable templates, private hosting, and integrations.",
+            "Compare on the same records",
+            "With permission, compare current practice and DrillLoop; measure time, corrections, citation support, and action fields.",
         ],
-        "14": ["6–12 months"],
+        "14": ["Next decision"],
         "18": [
-            "Decide whether to add AI",
-            "Evaluate optional speech or writing models only if measured quality, privacy controls, and reviewer workload justify them.",
+            "Test generalization",
+            "If approved records are available, test evaluator-labeled evidence from an unfamiliar exercise and agree next thresholds with a partner.",
         ],
     },
     13: {
-        "533": ["Illustrative 90-day pilot workplan"],
-        "10": ["Confirm willing teams and approve data use"],
-        "9": ["Recruit evaluators; document today's workflow"],
-        "8": ["Run matched evidence-review sessions"],
-        "5": ["Score citations and reviewer corrections"],
-        "7": ["Check action owners and closure evidence"],
-        "6": ["Decision gate: continue only after approvals and evidence review"],
+        "533": ["Illustrative discovery and review sequence"],
+        "10": ["Confirm use case and evidence permissions"],
+        "9": ["Interview evaluators; map roles and current workflow"],
+        "8": ["Compare both workflows on the same records"],
+        "5": ["Measure citations, time, and reviewer corrections"],
+        "7": ["Check action ownership and closure evidence"],
+        "6": ["Propose a pilot only after access, partner interest, and review needs are clear"],
     },
     14: {
         "4": ["Decision requested"],
         "5": [
-            "Authorize discovery for a 90-day, measurement-led pilot.",
-            "Recruit 2–3 hospital or municipal teams if they are willing; use synthetic or specifically approved records after privacy review.",
-            "Return with reviewer workload, citation quality, and closure-verification results before any decision to scale.",
+            "Authorize discovery and a paired-review design for the hospital tabletop use case.",
+            "Interview 2–3 prospective evaluators and observe an existing review only with permission; confirm approver, budget owner, and evidence controls.",
+            "Compare current practice and DrillLoop on the same permitted records, then return with findings before proposing a pilot or success thresholds.",
         ],
     },
 }
@@ -212,8 +212,8 @@ TABLES: dict[int, dict[str, list[list[str]]]] = {
             ["01", "MVP status", "Build"],
             ["02", "Synthetic results", "Evidence"],
             ["03", "Customer segments", "Demand"],
-            ["04", "Pricing assumptions", "Illustrative"],
-            ["05", "Pilot priorities", "Next 90 days"],
+            ["04", "Commercial model", "Hypothesis"],
+            ["05", "Pilot priorities", "Discovery"],
             ["06", "Decision request", "Sponsor"],
         ]
     },
@@ -233,7 +233,7 @@ TABLES: dict[int, dict[str, list[list[str]]]] = {
     },
     13: {
         "4": [
-            ["Weeks 1–2", "Weeks 3–4", "Weeks 5–6", "Weeks 7–9", "Weeks 10–12"]
+            ["Scope", "Interview", "Compare", "Measure", "Decide"]
         ]
     },
 }
@@ -245,29 +245,23 @@ CHARTS = {
         "series": [("Expected", [8, 5, 9, 4]), ("Observed", [8, 5, 9, 3])],
         "hide_second_labels": True,
     },
-    "ppt/charts/chart2.xml": {
-        "title": "Illustrative annual revenue and costs (USD thousands)",
-        "categories": ["Conservative", "Base", "High scale"],
-        "series": [("Revenue", [177, 488, 2050]), ("Listed costs", [385, 645, 1870])],
-        "hide_second_labels": True,
-    },
 }
 
 NOTES = [
     "Introduce this as an internal business review of a working hackathon MVP, not an operating company with proven revenue. The fictional hospital outage is demonstration data. The product promise is to keep draft findings connected to exact source records and human review.",
-    "Use the agenda to move from what is built, to what the synthetic test measured, to what remains a market hypothesis. The figures later in the deck are either closed-fixture technical results or illustrative financial assumptions. The final section asks for a measured pilot discovery period.",
-    "Summarize the MVP and the benchmark carefully: 8 of 8 log rows, 5 of 5 expected finding labels, and 9 of 9 expected evidence IDs matched in one synthetic fixture. An ID link is not a human judgment that the source supports the claim. The requested decision is to recruit pilot partners, conditional on their interest and privacy approval.",
-    "The local demo includes exercise setup, evidence uploads, timeline, proposed findings, reviewer decisions, action tracking, and PDF export. The clean fixture results show that this workflow runs on its designed sample. They do not establish performance on new exercises. Hospitals and municipal teams are candidate users only; there is no measured buyer demand.",
-    "Frame these as proposed pilot priorities. The pilot should measure evidence lookup time, evaluator corrections, citation support, and whether actions receive owners and verifiable closure proof. Use synthetic or explicitly approved records. Do not report time savings as cash savings until both the time effect and labor-cost basis are measured.",
+    "Use the agenda to move from what is built, to what the synthetic test measured, to what remains a market hypothesis. The reported values are closed-fixture technical results only; there are no validated prices, costs, or sales estimates. The final section proposes discovery and a paired review; no pilot or schedule is confirmed.",
+    "Summarize the MVP and the benchmark carefully: 8 of 8 log rows, 5 of 5 expected finding labels, and 9 of 9 expected evidence IDs matched in one synthetic fixture. An ID link is not a human judgment that the source supports the claim. The requested decision is to conduct discovery and design a paired review, subject to interest and privacy approval.",
+    "The local demo includes exercise setup, evidence uploads, timeline, proposed findings, reviewer decisions, action tracking, and PDF export. The clean fixture results show that this workflow runs on its designed sample. They do not establish performance on new exercises. Hospital-preparedness evaluators are the proposed first users; buyer roles and demand are unknown.",
+    "Frame these as proposed discovery and review steps. Interview two or three prospective hospital evaluators, observe a current workflow with permission, and compare the process with DrillLoop on the same permitted records. Measure time, evaluator corrections, citation support, and action completeness. Do not report savings before measuring them.",
     "After-action reports and corrective-action follow-up already exist in emergency-management platforms. DrillLoop should not claim those features are unique. The positioning hypothesis is a connected source-to-claim-to-review-to-closure trail. Pilot participants should decide whether that trace helps and whether it fits their current tools.",
-    "Describe what is in the MVP and what is still missing. Optional faster-whisper speech transcription and local Ollama wording were not used in the benchmark. The sample fixture was deliberately built for the rules, so perfect scores do not predict performance elsewhere. No human workload or real-audio accuracy study was run.",
-    "The listed organizations are customer segments to investigate, not clients, opportunities, or a sales pipeline. No market-size or adoption numbers are included because none are validated in the available sources. Discovery should identify who uses the workflow, who buys it, what existing platforms cover, and what data controls are required.",
+    "Describe what is in the MVP and what is still missing. Optional faster-whisper speech transcription and local Ollama wording were not used in the benchmark. The sample fixture was deliberately built for the rules, so perfect scores do not predict performance elsewhere. No unfamiliar exercise, human workload, or real-audio accuracy study was run.",
+    "Start with hospital-preparedness evaluators reviewing tabletop exercises. Municipal teams, airports, civil defense, training providers, defense-support teams, and critical infrastructure operators remain later hypotheses. No customer list, sales pipeline, market-size, or willingness-to-pay evidence is available.",
     "Explain each benchmark result with its boundary. Event rows, finding labels, and evidence IDs are checked against one closed fictional fixture. Citation IDs being present does not prove semantic support. The conflict and untimed note remain visible. The 31-of-32 action field result includes one intentionally blank owner. The median is the middle request time; the 95th percentile is the time by which 95% of 12 local requests finished. Latency and memory exclude optional model inference.",
     "The chart compares expected with found or assigned counts in the single synthetic fixture. Categories have different denominators, so compare within a category rather than across categories. Action owners are 3 of 4 because one is intentionally missing. This is a pipeline check, not a field accuracy score.",
-    "All prices and financial scenarios are illustrative USD assumptions from the business case, not market quotes or a forecast. The base case assumes 15 annual plans, 40 individual exercise workspaces, one private deployment, eight templates, and 30 support days. It produces $488,000 of modeled revenue against $645,000 of listed costs, or negative $157,000 after those costs. This excludes tax, financing, and cash timing and is not net profit.",
-    "The roadmap is conditional. Start with a 90-day pilot if partners agree and privacy review permits the evidence used. Consider enterprise login, templates, integrations, or more AI only when pilot findings show what is needed and the added cost or risk is justified.",
-    "This Gantt is an illustrative sequence, not a committed project schedule. Partner availability, evidence permissions, and local privacy requirements may change the timing. The decision gate is whether the pilot data supports another trial; it is not an automatic scale decision.",
-    "Close with the requested next step: authorize discovery for a 90-day, measurement-led pilot and recruit two or three willing hospital or municipal exercise teams. Use synthetic or explicitly approved records only after review. Return with evidence on reviewer workload, citation quality, and verified action closure before considering scale.",
+    "No price, cost, revenue, purchase volume, or staffing assumption is validated. The first commercial model to investigate is a per-exercise pilot fee. Gather the actual buyer, procurement route, delivery effort, security requirements, and customer workload baseline before preparing a financial forecast.",
+    "These are proposed stages, not a committed schedule. First conduct discovery with hospital-preparedness evaluators, then compare current review and DrillLoop on the same permitted records. If a partner approves access to an unfamiliar exercise, evaluate generalization and agree success thresholds together. Product hardening depends on evidence and partner requirements.",
+    "The sequence is illustrative and has no confirmed dates, partner, or staffing allocation. Evidence permissions and reviewer availability determine whether each step can proceed; no pilot schedule has been agreed.",
+    "Close with the requested next step: authorize discovery and design a paired review for the hospital tabletop use case. Interview two or three prospective evaluators and observe current practice only with permission. Compare current workflow and DrillLoop on the same approved records; return with measured evidence before proposing a pilot or thresholds. No partner, date, or pilot commitment is confirmed.",
 ]
 
 
@@ -340,6 +334,105 @@ def replace_table(root: ET.Element, frame_id: str, rows: list[list[str]]) -> Non
             set_paragraph(populated[0], value)
             for p in populated[1:]:
                 set_paragraph(p, "")
+
+
+def add_commercial_inputs_callout(sp_tree: ET.Element) -> None:
+    for shape in list(sp_tree.findall("p:sp", NS)):
+        nv = shape.find("p:nvSpPr/p:cNvPr", NS)
+        if nv is not None and nv.get("name") == "Commercial inputs callout":
+            sp_tree.remove(shape)
+
+    ids = [int(x.get("id")) for x in sp_tree.findall(".//p:cNvPr", NS) if x.get("id", "").isdigit()]
+    shape_id = max(ids, default=0) + 1
+    shape = ET.SubElement(sp_tree, f"{{{P}}}sp")
+    nv = ET.SubElement(shape, f"{{{P}}}nvSpPr")
+    ET.SubElement(nv, f"{{{P}}}cNvPr", {"id": str(shape_id), "name": "Commercial inputs callout"})
+    ET.SubElement(nv, f"{{{P}}}cNvSpPr", {"txBox": "1"})
+    ET.SubElement(nv, f"{{{P}}}nvPr")
+
+    sp_pr = ET.SubElement(shape, f"{{{P}}}spPr")
+    xfrm = ET.SubElement(sp_pr, f"{{{A}}}xfrm")
+    ET.SubElement(xfrm, f"{{{A}}}off", {"x": "450000", "y": "1180000"})
+    ET.SubElement(xfrm, f"{{{A}}}ext", {"cx": "5400000", "cy": "5150000"})
+    geom = ET.SubElement(sp_pr, f"{{{A}}}prstGeom", {"prst": "roundRect"})
+    ET.SubElement(geom, f"{{{A}}}avLst")
+    fill = ET.SubElement(sp_pr, f"{{{A}}}solidFill")
+    ET.SubElement(fill, f"{{{A}}}schemeClr", {"val": "lt1"})
+    line = ET.SubElement(sp_pr, f"{{{A}}}ln", {"w": "12700"})
+    line_fill = ET.SubElement(line, f"{{{A}}}solidFill")
+    ET.SubElement(line_fill, f"{{{A}}}schemeClr", {"val": "accent2"})
+
+    tx = ET.SubElement(shape, f"{{{P}}}txBody")
+    ET.SubElement(tx, f"{{{A}}}bodyPr", {
+        "wrap": "square", "lIns": "285750", "tIns": "228600",
+        "rIns": "285750", "bIns": "228600", "anchor": "ctr",
+    })
+    ET.SubElement(tx, f"{{{A}}}lstStyle")
+    lines = [
+        ("Evidence to collect", True, 2200, "accent1"),
+        ("Who prepares, approves, and pays?", False, 1700, "tx1"),
+        ("What setup, security, hosting, and support are required?", False, 1700, "tx1"),
+        ("What does the current workflow take, and where are corrections made?", False, 1700, "tx1"),
+    ]
+    for text, bold, size, color in lines:
+        para = ET.SubElement(tx, f"{{{A}}}p")
+        ppr = ET.SubElement(para, f"{{{A}}}pPr", {"algn": "l"})
+        spacing = ET.SubElement(ppr, f"{{{A}}}lnSpc")
+        ET.SubElement(spacing, f"{{{A}}}spcPct", {"val": "105000"})
+        after = ET.SubElement(ppr, f"{{{A}}}spcAft")
+        ET.SubElement(after, f"{{{A}}}spcPts", {"val": "1000"})
+        run = ET.SubElement(para, f"{{{A}}}r")
+        attrs = {"lang": "en-US", "sz": str(size)}
+        if bold:
+            attrs["b"] = "1"
+        rpr = ET.SubElement(run, f"{{{A}}}rPr", attrs)
+        solid = ET.SubElement(rpr, f"{{{A}}}solidFill")
+        ET.SubElement(solid, f"{{{A}}}schemeClr", {"val": color})
+        ET.SubElement(rpr, f"{{{A}}}latin", {"typeface": "+mn-lt"})
+        ET.SubElement(run, f"{{{A}}}t").text = text
+        ET.SubElement(para, f"{{{A}}}endParaRPr", {"lang": "en-US", "sz": str(size)})
+
+
+def remove_commercial_chart(parts: dict[str, bytes]) -> None:
+    slide_path = "ppt/slides/slide11.xml"
+    slide = xml_with_prefixes(parts[slide_path])
+    sp_tree = slide.find(".//p:spTree", NS)
+    for frame in list(sp_tree.findall("p:graphicFrame", NS)):
+        if frame.find(".//c:chart", NS) is not None:
+            sp_tree.remove(frame)
+    add_commercial_inputs_callout(sp_tree)
+    parts[slide_path] = xml_bytes(slide)
+
+    rel_path = "ppt/slides/_rels/slide11.xml.rels"
+    rel_root = xml_with_prefixes(parts[rel_path])
+    chart_parts = []
+    for relationship in list(rel_root):
+        if relationship.get("Type", "").endswith("/chart"):
+            target = posixpath.normpath(posixpath.join("ppt/slides", relationship.get("Target", "")))
+            if target.endswith("chart2.xml"):
+                chart_parts.append(target)
+                rel_root.remove(relationship)
+    parts[rel_path] = xml_bytes(rel_root)
+
+    removed = set(chart_parts)
+    for chart_path in chart_parts:
+        chart_rel = chart_path.replace("ppt/charts/", "ppt/charts/_rels/") + ".rels"
+        if chart_rel in parts:
+            chart_rel_root = xml_with_prefixes(parts[chart_rel])
+            for relationship in chart_rel_root:
+                if relationship.get("Type", "").endswith("/package"):
+                    embedded = posixpath.normpath(posixpath.join("ppt/charts", relationship.get("Target", "")))
+                    removed.add(embedded)
+            removed.add(chart_rel)
+    for path in removed:
+        parts.pop(path, None)
+
+    content_types = xml_with_prefixes(parts["[Content_Types].xml"])
+    for override in list(content_types.findall("ct:Override", NS)):
+        if (override.get("PartName", "").endswith("/chart2.xml")
+                or any(override.get("PartName", "").lstrip("/") == path for path in removed)):
+            content_types.remove(override)
+    parts["[Content_Types].xml"] = xml_bytes(content_types)
 
 
 def update_chart(root: ET.Element, spec: dict) -> None:
@@ -502,6 +595,9 @@ def inject_notes(template_parts: dict[str, bytes], helper_path: Path) -> dict[st
 
         rel_path = f"ppt/slides/_rels/slide{index}.xml.rels"
         rel_root = xml_with_prefixes(parts[rel_path])
+        for relationship in list(rel_root):
+            if relationship.get("Type", "").endswith("/notesSlide"):
+                rel_root.remove(relationship)
         ids = [int(x.get("Id")[3:]) for x in rel_root if x.get("Id", "").startswith("rId") and x.get("Id")[3:].isdigit()]
         rid = f"rId{max(ids, default=0) + 1}"
         ET.SubElement(
@@ -517,6 +613,9 @@ def inject_notes(template_parts: dict[str, bytes], helper_path: Path) -> dict[st
 
     presentation_rels = "ppt/_rels/presentation.xml.rels"
     rel_root = xml_with_prefixes(parts[presentation_rels])
+    for relationship in list(rel_root):
+        if relationship.get("Type", "").endswith("/notesMaster"):
+            rel_root.remove(relationship)
     ids = [int(x.get("Id")[3:]) for x in rel_root if x.get("Id", "").startswith("rId") and x.get("Id")[3:].isdigit()]
     ET.SubElement(
         rel_root,
@@ -569,6 +668,8 @@ def main() -> None:
             for frame_id, rows in TABLES[slide_number].items():
                 replace_table(root, frame_id, rows)
         parts[path] = xml_bytes(root)
+
+    remove_commercial_chart(parts)
 
     for path, spec in CHARTS.items():
         chart_root = xml_with_prefixes(parts[path])
