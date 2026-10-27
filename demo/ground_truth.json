@@ -1,0 +1,18 @@
+{
+  "label": "FICTIONAL SYNTHETIC GROUND TRUTH — not observed real-world performance",
+  "exercise_id": "HOSP-PO-2026-01",
+  "expected_observation_ids": ["EL-01", "EL-02", "EL-03", "EL-04", "EL-05", "EL-06", "EL-07", "EL-08"],
+  "expected_findings": [
+    {"code": "POWER_RESTORATION_DELAY", "category": "improvement", "evidence_ids": ["EL-01", "EL-02"]},
+    {"code": "COMMUNICATION_ACK_DELAY", "category": "improvement", "evidence_ids": ["EL-03", "EL-04"]},
+    {"code": "RESPONSE_TIME_DISCREPANCY", "category": "improvement", "evidence_ids": ["EL-01", "EL-05", "EL-06"]},
+    {"code": "COLD_CHAIN_PROCEDURE_COMPLETED", "category": "strength", "evidence_ids": ["EL-07"]},
+    {"code": "ACTION_OWNER_MISSING", "category": "improvement", "evidence_ids": ["EL-08"]}
+  ],
+  "edge_cases": [
+    {"case": "missing timestamp", "source": "evaluator_notes.txt line 10", "expected": "unknown time; do not order as a confirmed event"},
+    {"case": "contradictory evaluator times", "source": "evaluator_notes.txt line 9", "expected": "surface 09:10 versus 09:11 conflict as unresolved"},
+    {"case": "ambiguous statement", "source": "evaluator_notes.txt line 10", "expected": "do not convert a vague impression into a finding"},
+    {"case": "inaccurate ASR", "source": "transcript.json segment 2", "expected": "retain synthetic 'too minutes' substitution at 0.58 confidence, flag for review, and rely on the independent event log for the two-minute claim"}
+  ]
+}

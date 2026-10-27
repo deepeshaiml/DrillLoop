@@ -1,0 +1,32 @@
+services:
+  db:
+    image: postgres:18.6-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: drillloop
+      POSTGRES_USER: drillloop
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-drillloop-local-demo}
+    volumes:
+      - drillloop-postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U drillloop -d drillloop"]
+      interval: 5s
+      timeout: 4s
+      retries: 15
+
+  app:
+    build: .
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql+psycopg://drillloop:${POSTGRES_PASSWORD:-drillloop-local-demo}@db:5432/drillloop
+      DEMO_SEED: ${DEMO_SEED:-1}
+      REVIEWER_KEY: ${REVIEWER_KEY:-demo-reviewer}
+      WHISPER_MODEL_PATH: ${WHISPER_MODEL_PATH:-}
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  drillloop-postgres:

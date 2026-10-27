@@ -1,0 +1,10 @@
+[09:02] Evaluator A: The primary utility power supply failed.
+[09:06] Evaluator A: Backup generator output and essential circuits were stable four minutes after the failure.
+[09:03] Evaluator B: Incident Command sent a radio request for each inpatient unit to acknowledge the outage.
+[09:10] Evaluator B: ICU acknowledgement came by runner; the radio acknowledgement was delayed seven minutes.
+[09:08] Evaluator A: Facilities technician arrived at the switch room six minutes after power failed.
+[09:09] Evaluator A: The incident log says the response time was two minutes, although the failure was logged at 09:02 and arrival at 09:08.
+[09:18] Evaluator C: ICU staff completed the emergency medication cold-chain relocation procedure and documented chain of custody.
+[09:22] Evaluator C: A follow-up action for radio acknowledgement delay was recorded, but no responsible owner was entered.
+[09:22] Evaluator B: My watch shows acknowledgement at 09:11, while the control room log says 09:10. The acknowledgement time is unresolved.
+Generator lagged a bit before transfer, I guess. (No time or direct measurement recorded.)

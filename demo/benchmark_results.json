@@ -1,0 +1,76 @@
+{
+  "title": "DrillLoop synthetic fixture technical benchmark",
+  "date": "2026-10-26",
+  "fixture_label": "FICTIONAL SYNTHETIC GROUND TRUTH \u2014 not observed real-world performance",
+  "scope": "One closed, fictional fixture with eight event rows, three files, and five expected findings; scores do not estimate generalization or human performance.",
+  "observations": {
+    "true_positive": 8,
+    "predicted": 8,
+    "expected": 8,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+  },
+  "findings": {
+    "true_positive": 5,
+    "predicted": 5,
+    "expected": 5,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+  },
+  "unsupported_finding_rate": 0.0,
+  "unsupported_finding_count": 0,
+  "uncited_finding_count": 0,
+  "evidence_citation_accuracy": 1.0,
+  "citations_correct": 9,
+  "citations_expected": 9,
+  "timeline": {
+    "timestamp_matches": 8,
+    "timestamp_rows": 8,
+    "correctness": 1.0,
+    "unresolved_conflict_count": 1,
+    "missing_time_observation_count": 1
+  },
+  "corrective_action_completeness": {
+    "complete_required_fields": 31,
+    "possible_required_fields": 32,
+    "field_completeness": 0.9688,
+    "owner_assigned": 3,
+    "action_count": 4
+  },
+  "edge_cases": {
+    "missing_timestamp_kept_unplaced": true,
+    "contradictory_evaluator_times_flagged": true,
+    "ambiguous_untimed_statement_not_promoted": true,
+    "low_confidence_asr_retained_for_review": true
+  },
+  "latency_ms": {
+    "runs": 12,
+    "p50": 4.61,
+    "p95": 9.13,
+    "note": "Measured local deterministic rule pipeline request latency; no LLM inference."
+  },
+  "peak_process_rss_mb": 78.2,
+  "comparison": {
+    "manual_evaluation": {
+      "status": "not measured",
+      "reason": "No participating evaluators or timed manual baseline."
+    },
+    "rule_based_offline": {
+      "status": "measured",
+      "finding_precision": 1.0,
+      "finding_recall": 1.0
+    },
+    "local_llm_assisted": {
+      "status": "not run",
+      "reason": "No Ollama model configured; no model-quality claim is made."
+    }
+  },
+  "limitations": [
+    "This compact benchmark is fixture-locked and built around the labeled synthetic scenario.",
+    "No actual evaluator time, correction workload, or labor cost was measured.",
+    "The deterministic pipeline is an auditable baseline; results do not validate other organizations, scenarios, languages, or recording quality.",
+    "ASR accuracy and latency were not measured; one pre-generated low-confidence transcript segment is only checked for uncertainty handling."
+  ]
+}

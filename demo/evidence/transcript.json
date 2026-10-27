@@ -1,0 +1,11 @@
+{
+  "model": "pre-generated-demo-transcript",
+  "language": "en",
+  "recording_started_at": "2026-10-16T09:07:00",
+  "uncertain_terms": ["generator / general (low confidence)", "two / too (synthetic low-confidence substitution)"],
+  "segments": [
+    {"start": 12.2, "end": 17.6, "text": "Facilities arrived at the switch room at nine oh eight.", "confidence": 0.91},
+    {"start": 38.4, "end": 43.8, "text": "The log says response time was too minutes.", "confidence": 0.58},
+    {"start": 69.3, "end": 76.8, "text": "ICU completed the cold-chain relocation procedure.", "confidence": 0.94}
+  ]
+}

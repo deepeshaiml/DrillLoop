@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="760" viewBox="0 0 1400 760" role="img" aria-labelledby="title desc">
+  <title id="title">DrillLoop architecture</title>
+  <desc id="desc">Local-first evidence processing leads from the original file to a source-linked observation, a proposed evaluator finding, a human decision, a corrective task, and a reviewer-checked after-action report. An observation is what a source says; a finding is an interpretation; a proposed finding is not approved.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="9" refY="6" orient="auto"><path d="M0 0 L12 6 L0 12 Z" fill="#188e88"/></marker>
+    <marker id="arrow-muted" markerWidth="12" markerHeight="12" refX="9" refY="6" orient="auto"><path d="M0 0 L12 6 L0 12 Z" fill="#849aa2"/></marker>
+    <style>
+      text{font-family:Arial,Helvetica,sans-serif}.title{font-size:29px;font-weight:700;fill:#163446}.sub{font-size:13px;fill:#718791}.card{fill:#fff;stroke:#d7e3e5;stroke-width:2}.card-dark{fill:#143445;stroke:#143445;stroke-width:2}.eyebrow{font-size:10px;font-weight:700;letter-spacing:1.2px;fill:#16857e}.heading{font-size:17px;font-weight:700;fill:#203e4c}.body{font-size:12px;fill:#627a83}.white-heading{font-size:17px;font-weight:700;fill:#fff}.white-body{font-size:12px;fill:#bdd0d4}.small{font-size:10px;fill:#81949a}.pill{fill:#e7f5f1}.pill-text{font-size:10px;font-weight:700;fill:#188278}.arrow{fill:none;stroke:#188e88;stroke-width:3;marker-end:url(#arrow)}.arrow-muted{fill:none;stroke:#849aa2;stroke-width:2;stroke-dasharray:6 5;marker-end:url(#arrow-muted)}
+    </style>
+  </defs>
+  <rect width="1400" height="760" fill="#f4f8f8"/>
+  <text class="title" x="65" y="59">DrillLoop | Local-first evidence-to-improvement architecture</text>
+  <text class="sub" x="65" y="86">Keep each claim linked to its source · repeatable rules · a person makes the decision</text>
+
+  <rect class="card" x="60" y="150" rx="15" width="205" height="205"/>
+  <text class="eyebrow" x="82" y="185">01 · EVIDENCE</text>
+  <text class="heading" x="82" y="215">Permitted sources</text>
+  <text class="body" x="82" y="246">TXT / MD notes</text><text class="body" x="82" y="270">CSV event logs</text>
+  <text class="body" x="82" y="294">JSON transcripts</text><text class="body" x="82" y="318">Selectable-text PDF · Audio*</text>
+  <text class="small" x="82" y="339">Audio model is optional and local.</text>
+
+  <path class="arrow" d="M265 252 H310"/>
+  <rect class="card" x="325" y="150" rx="15" width="220" height="205"/>
+  <text class="eyebrow" x="348" y="185">02 · INGEST</text>
+  <text class="heading" x="348" y="215">Parse and preserve</text>
+  <text class="body" x="348" y="246">Original file + change checksum</text>
+  <text class="body" x="348" y="270">Exact text + source locator</text>
+  <text class="body" x="348" y="294">Page / row / line / segment</text>
+  <rect class="pill" x="348" y="311" rx="10" width="148" height="25"/>
+  <text class="pill-text" x="361" y="328">Traceable source record</text>
+
+  <path class="arrow" d="M545 252 H590"/>
+  <rect class="card" x="605" y="150" rx="15" width="220" height="205"/>
+  <text class="eyebrow" x="628" y="185">03 · RECONSTRUCT</text>
+  <text class="heading" x="628" y="215">Observations + timeline</text>
+  <text class="body" x="628" y="246">Normalize explicit timestamps</text>
+  <text class="body" x="628" y="270">Unknown times stay unplaced</text>
+  <text class="body" x="628" y="294">Conflicts remain visible</text>
+  <text class="small" x="628" y="325">No invented event ordering</text>
+
+  <path class="arrow" d="M825 252 H870"/>
+  <rect class="card" x="885" y="150" rx="15" width="220" height="205"/>
+  <text class="eyebrow" x="908" y="185">04 · ANALYZE</text>
+  <text class="heading" x="908" y="215">Evidence rules</text>
+  <text class="body" x="908" y="246">Candidate findings</text>
+  <text class="body" x="908" y="270">Objective mapping</text>
+  <text class="body" x="908" y="294">Citation and uncertainty checks</text>
+  <rect class="pill" x="908" y="311" rx="10" width="174" height="25"/>
+  <text class="pill-text" x="921" y="328">Optional local writing model</text>
+
+  <path class="arrow" d="M1105 252 H1150"/>
+  <rect class="card-dark" x="1165" y="150" rx="15" width="180" height="205"/>
+  <text class="eyebrow" x="1188" y="185" fill="#74c9bf">05 · REVIEW</text>
+  <text class="white-heading" x="1188" y="215">Human gate</text>
+  <text class="white-body" x="1188" y="246">Approve / reject</text>
+  <text class="white-body" x="1188" y="270">Assign owner + due date</text>
+  <text class="white-body" x="1188" y="294">Verify closure evidence</text>
+  <text class="small" x="1188" y="329" fill="#9bb2b8">Reviewer key required</text>
+
+  <path class="arrow-muted" d="M1255 355 V420 H1110"/>
+  <rect class="card" x="885" y="445" rx="15" width="460" height="180"/>
+  <text class="eyebrow" x="912" y="480">06 · IMPROVE AND REPORT</text>
+  <text class="heading" x="912" y="512">Corrective-action tracking</text>
+  <text class="body" x="912" y="542">Linked finding · evidence · owner · priority · due date · acceptance criteria</text>
+  <text class="body" x="912" y="567">Reviewer decision · closure evidence · audit history</text>
+  <rect class="pill" x="912" y="584" rx="10" width="212" height="25"/>
+  <text class="pill-text" x="926" y="601">After-action report + plan PDF</text>
+
+  <path class="arrow-muted" d="M885 530 H730 V355"/>
+  <rect class="card" x="325" y="445" rx="15" width="365" height="180"/>
+  <text class="eyebrow" x="352" y="480">PERSISTENCE · LOCAL OR PRIVATE</text>
+  <text class="heading" x="352" y="512">SQLite for demo · PostgreSQL in Compose</text>
+  <text class="body" x="352" y="542">Exercises · source bytes + extracted content</text>
+  <text class="body" x="352" y="567">Observations · findings · actions · audit events</text>
+  <text class="small" x="352" y="600">No vector store or cloud model required.</text>
+  <path class="arrow-muted" d="M545 355 V415 H505 V445"/>
+
+  <rect x="60" y="650" rx="10" width="1285" height="34" fill="#e6f1f1"/>
+  <text class="small" x="78" y="672">Observation = what the source says</text>
+  <text class="small" x="380" y="672">Finding = what it may mean versus the target</text>
+  <text class="small" x="760" y="672">Proposed = waiting for a person to review</text>
+  <text class="small" x="1118" y="672">Closed = reviewer checked the proof</text>
+  <text class="small" x="60" y="715">Offline demo runs without cloud credentials. A real deployment needs named users, data protection, retention, file scanning, and security review.</text>
+</svg>
