@@ -198,3 +198,26 @@ Phase 3 notes above remain a historical record. Phase 4 work was performed on th
 - Independent permitted-record evaluation, independent security/threat-model/penetration review, accessibility assessment, approved staging scanner integration, and previous-image rollback rehearsal remain outstanding.
 
 See [DRILLLOOP_PHASE6_RELEASE_REVIEW.md](docs/audits/DRILLLOOP_PHASE6_RELEASE_REVIEW.md) and [DRILLLOOP_GO_LIVE_GATE.md](docs/audits/DRILLLOOP_GO_LIVE_GATE.md) for current per-scope verdicts. Local Compose success is not a staging or production deployment.
+
+## Phase 11 — rights-safe Business Review replacement (4 November 2026)
+
+- Replaced the template-dependent Business Review generator with a new PptxGenJS source that creates 12 independently authored slides from text and native shapes. The source does not read the previous deck or reuse its theme, masters, template, fonts, screenshots, or other media. Regenerated the editable PPTX and PDF.
+- The PDF generator downloads Noto Sans and its SIL OFL 1.1 license from a pinned Google Fonts revision into a temporary directory, verifies both SHA-256 digests, and confirms Fontconfig resolves that exact font file. No standalone font file was added to the repository. The PPTX has no embedded font data; the PDF contains only Noto Sans subsets.
+- Added [DRILLLOOP_ASSET_RIGHTS_REGISTER.md](docs/audits/DRILLLOOP_ASSET_RIGHTS_REGISTER.md) with asset provenance, license evidence, artifact review, historical disclosure analysis, license-model options, and content/security-owner approval checklists. Updated README regeneration instructions.
+- Did not regenerate the Idea Document, Business Case, or Pitch Deck. Their screenshot ownership, existing PDF font provenance, and/or authorship still require content-owner confirmation. The corrected current Pitch Deck has no local-path image descriptions; the historical public-baseline copy still contains three such descriptions and remains in prior Git history. Security-owner disposition is pending.
+
+### Verification actually run
+
+- `node --check presentation/generate_business_review.js` and `.venv/bin/python -m py_compile scripts/generate_business_review.py`: passed.
+- `.venv/bin/python scripts/generate_business_review.py`: generated both outputs; pinned font and license digest checks and exact-font resolution passed; LibreOffice exported the PDF.
+- PPTX ZIP/OOXML check: valid package, 12 slides and 12 substantive speaker-note parts; no embedded font binaries, image payloads, comments, external relationships, or personal author values. New deck text has no OpenAI Sans, organization branding, or developer paths.
+- PDF check: valid 12-page file; Noto Sans regular/bold subsets embedded; no annotations or detected absolute paths. All pages rendered to PNG and visually reviewed; no apparent clipping or layout overflow.
+- Gitleaks 8.30.1 scanned the affected source/docs and PPTX/PDF artifacts with zero findings. `git diff --check` passed.
+- No application integration/performance tests were rerun. No application database was accessed or modified. No files were staged; no commit, push, PR, deployment, or history change occurred.
+
+### Remaining publication decisions
+
+- Content owner: confirm ownership and publication authority for the new deck, project-name use, Idea Document attribution, Business Case authorship, product screenshots/UI artwork, Pitch Deck content, exact font provenance in existing PDFs, and the cited-source summaries. If provenance cannot be established, authorize replacement or re-export in a separate follow-up change.
+- Security owner: decide whether to accept the historical local-directory path exposure or request a separately scoped history-remediation proposal. No severity is assigned here, and no history was rewritten.
+- Project owner: choose public rights-reserved, open-source, or private/organization-controlled distribution; if open source, select code and documentation licenses separately. No project license was added.
+- Existing release commit `3bc0c71d7038dc31806b03bcc7fbbf8e62900aad` remains unchanged. The rights register, generator, README/PROGRESS updates, and replacement PPTX/PDF are local follow-up changes and are not staged. Public publication remains on hold.

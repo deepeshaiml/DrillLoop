@@ -93,14 +93,14 @@ soffice --headless --convert-to pdf --outdir . DrillLoop_Pitch_Deck.pptx
 
 The idea PDF is exported from the editable Word document when LibreOffice is available (otherwise the script writes a ReportLab fallback). The PowerPoint is editable and contains presenter notes on every slide. LibreOffice is used here to export the slide PDF.
 
-The Product and Commercial Review deck was generated from a retained 14-slide template that is not included in this public repository because its redistribution terms are not established. The generator requires an explicitly supplied, authorized local template path; it has no developer-machine default. To revise the existing editable deck, use the current PPTX as the input template. Regeneration writes the reviewed deck path, so keep a copy before using the command:
+The Product and Commercial Review is generated independently from new text and native PowerPoint shapes. It does not read or reuse the former 14-slide template, its masters, fonts, or assets. Regenerate the editable PPTX and PDF with:
 
 ```bash
 npm --prefix presentation ci
-export DRILLLOOP_BUSINESS_REVIEW_TEMPLATE="$PWD/DrillLoop_Business_Review.pptx"
 .venv/bin/python scripts/generate_business_review.py
-soffice --headless --convert-to pdf --outdir . DrillLoop_Business_Review.pptx
 ```
+
+The script uses the pinned Noto Sans variable font from Google Fonts under the SIL Open Font License 1.1. It downloads and SHA-256 verifies the font and license in a temporary directory for PDF rendering; it does not install the font or copy a standalone font binary into the repository. The generator source is [presentation/generate_business_review.js](presentation/generate_business_review.js). See the [asset rights register](docs/audits/DRILLLOOP_ASSET_RIGHTS_REGISTER.md) for source, digest, embedding, and remaining owner decisions.
 
 ## Demo workflow
 
@@ -128,7 +128,7 @@ Uploaded source bytes and extracted text are stored in the configured database. 
 
 - [Idea document (DOCX)](DrillLoop_Idea_Document.docx) and [PDF](DrillLoop_Idea_Document.pdf)
 - [Product pitch deck (PPTX)](DrillLoop_Pitch_Deck.pptx) and [PDF](DrillLoop_Pitch_Deck.pdf) — 13 slides with speaker notes, hospital-first pilot hypothesis, and synthetic demo evidence.
-- [Product and commercial review deck (PPTX)](DrillLoop_Business_Review.pptx) and [PDF](DrillLoop_Business_Review.pdf) — separate 14-slide review; external distribution remains subject to content-owner approval.
+- [Product and commercial review deck (PPTX)](DrillLoop_Business_Review.pptx) and [PDF](DrillLoop_Business_Review.pdf) — independently authored 12-slide review with speaker notes; external distribution remains subject to content-owner approval.
 - [Business case](DrillLoop_Business_Case.pdf), [evaluation report](DrillLoop_Evaluation_Report.pdf), and [architecture SVG](DrillLoop_Architecture.svg)
 - [Technical design](DrillLoop_Technical_Design.md), [demo guide](DEMO_GUIDE.md), and [plain-language Reader Guide with an AI-agent example](DRILLLOOP_READER_GUIDE.md)
 - [Synthetic ground truth](demo/ground_truth.json), [evidence files](demo/evidence/), and [benchmark results](demo/benchmark_results.json)
