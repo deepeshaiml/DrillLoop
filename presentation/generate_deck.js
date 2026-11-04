@@ -4,8 +4,8 @@ const path = require('path');
 const pptx = new pptxgen();
 pptx.layout = 'LAYOUT_WIDE';
 pptx.author = 'DrillLoop';
-pptx.subject = 'Evidence-backed emergency exercise evaluation';
-pptx.title = 'DrillLoop | Eureka Pitch';
+pptx.subject = 'Product concept for evidence-backed exercise review';
+pptx.title = 'DrillLoop | Product Pitch Deck';
 pptx.company = 'DrillLoop';
 pptx.lang = 'en-US';
 pptx.theme = {
@@ -16,7 +16,7 @@ pptx.defineSlideMaster({
   background: { color: 'F7FAFA' },
   objects: [
     { line: { x: 0.55, y: 7.12, w: 12.22, h: 0, line: { color: 'DCE7E8', width: 0.8 } } },
-    { text: { text: 'DRILLLOOP  /  EUREKA', options: { x: 0.58, y: 7.19, w: 4, h: 0.16, fontFace: 'Aptos', fontSize: 7, bold: true, color: '0D8F89', margin: 0 } } },
+    { text: { text: 'DRILLLOOP  /  PRODUCT CONCEPT', options: { x: 0.58, y: 7.19, w: 4, h: 0.16, fontFace: 'Aptos', fontSize: 7, bold: true, color: '0D8F89', margin: 0 } } },
     { text: { text: 'SYNTHETIC DEMONSTRATION  ·  OCT 2026', options: { x: 8.15, y: 7.19, w: 4.6, h: 0.16, fontFace: 'Aptos', fontSize: 7, color: '6C808B', align: 'right', margin: 0 } } },
   ],
   slideNumber: { x: 12.87, y: 7.17, w: 0.2, h: 0.18, color: '6C808B', fontFace: 'Aptos', fontSize: 7 }
@@ -25,6 +25,7 @@ pptx.defineSlideMaster({
 const C = { navy: '173747', ink: '253E4D', teal: '0D8F89', mint: 'E5F4F2', pale: 'EFF5F5', sand: 'FFF4E2', amber: 'C78324', red: 'B85A53', muted: '6C808B', line: 'DCE7E8', white: 'FFFFFF', green: '368576', dark: '102B39' };
 const W = 13.333, H = 7.5;
 const ROOT = path.resolve(__dirname, '..');
+const OUTPUT = process.env.DRILLLOOP_PITCH_DECK_OUTPUT || path.join(ROOT, 'DrillLoop_Pitch_Deck.pptx');
 const IMG = (name) => path.join(ROOT, 'assets', name);
 
 function txt(slide, text, x, y, w, h, opts = {}) {
@@ -49,11 +50,11 @@ function header(slide, kicker, title, subtitle) {
   if (subtitle) txt(slide, subtitle, 0.67, 1.24, 11.9, 0.34, { fontSize: 11.3, color: C.muted });
 }
 function addNotes(slide, text) { slide.addNotes(text); }
-function addImageFit(slide, file, x, y, w, h) {
+function addImageFit(slide, file, altText, x, y, w, h) {
   const ratio = 1600 / 1100;
   let iw = w, ih = w / ratio;
   if (ih > h) { ih = h; iw = h * ratio; }
-  slide.addImage({ path: file, x: x + (w - iw) / 2, y: y + (h - ih) / 2, w: iw, h: ih });
+  slide.addImage({ path: file, altText, x: x + (w - iw) / 2, y: y + (h - ih) / 2, w: iw, h: ih });
 }
 function cardTitle(slide, title, x, y, w) {
   txt(slide, title, x, y, w, 0.32, { fontSize: 14, bold: true, color: C.navy });
@@ -67,7 +68,7 @@ function cardTitle(slide, title, x, y, w) {
   s.addShape(pptx.ShapeType.ellipse, { x: 8.85, y: 1.05, w: 3.65, h: 3.65, fill: { color: '0D8F89', transparency: 26 }, line: { color: '0D8F89', transparency: 100 } });
   s.addShape(pptx.ShapeType.ellipse, { x: 9.65, y: 1.82, w: 2.1, h: 2.1, fill: { color: C.dark }, line: { color: '8ED5CC', width: 1.2 } });
   txt(s, 'D', 10.32, 2.31, 0.75, 0.78, { fontFace: 'Aptos Display', fontSize: 45, bold: true, color: C.white, align: 'center' });
-  txt(s, 'EUREKA  /  PUBLIC SAFETY INTELLIGENCE', 0.85, 0.82, 6.9, 0.28, { fontSize: 9.5, bold: true, color: '71C6BD', charSpacing: 1.2 });
+  txt(s, 'DRILLLOOP  /  PUBLIC-SAFETY SECTOR', 0.85, 0.82, 6.9, 0.28, { fontSize: 9.5, bold: true, color: '71C6BD', charSpacing: 1.2 });
   txt(s, 'DrillLoop', 0.82, 1.42, 7, 0.95, { fontFace: 'Aptos Display', fontSize: 46, bold: true, color: C.white });
   txt(s, 'Evidence-Linked Exercise Review and Action Closure', 0.86, 2.65, 7.0, 1.3, { fontFace: 'Aptos Display', fontSize: 25, bold: true, color: 'D7E7E8', breakLine: false, valign: 'top' });
   txt(s, 'For hospital preparedness evaluators · synthetic demo', 0.87, 4.2, 6.5, 0.48, { fontSize: 14, color: 'B5C9CD' });
@@ -112,7 +113,7 @@ function cardTitle(slide, title, x, y, w) {
   const s = pptx.addSlide('BASE');
   header(s, 'The product', 'One review workspace for the whole exercise', 'Follow evidence through to an after-action report and improvement plan (AAR/IP).');
   box(s, 0.72, 1.83, 8.65, 4.92, C.white, C.line);
-  addImageFit(s, IMG('DrillLoop_Demo_Overview.png'), 0.82, 1.92, 8.45, 4.72);
+  addImageFit(s, IMG('DrillLoop_Demo_Overview.png'), 'Fictional DrillLoop exercise overview screen.', 0.82, 1.92, 8.45, 4.72);
   txt(s, 'SYNTHETIC HOSPITAL EXERCISE', 9.77, 2.0, 2.5, 0.25, { fontSize: 8.5, bold: true, color: C.teal, charSpacing: 0.8 });
   txt(s, 'The screen keeps together:', 9.77, 2.4, 2.85, 0.44, { fontSize: 16, bold: true, color: C.navy, valign: 'top' });
   const items = [['Exercise plan', 'Objectives and milestones'], ['Evidence', 'File and source locator'], ['Timeline', 'Known, missing, and conflicting times'], ['Review', 'Proposed vs approved status']];
@@ -159,7 +160,7 @@ function cardTitle(slide, title, x, y, w) {
   const s = pptx.addSlide('BASE');
   header(s, 'From evidence to a finding', 'Open the source behind every draft', 'See what the record says, what it may mean, and where a reviewer can check it.');
   box(s, 0.72, 1.83, 7.95, 4.92, C.white, C.line);
-  addImageFit(s, IMG('DrillLoop_Demo_Findings.png'), 0.82, 1.92, 7.75, 4.72);
+  addImageFit(s, IMG('DrillLoop_Demo_Findings.png'), 'Fictional DrillLoop finding review screen.', 0.82, 1.92, 7.75, 4.72);
   txt(s, 'DRAFT FINDING', 9.02, 2.06, 2.65, 0.23, { fontSize: 8.5, bold: true, color: C.teal, charSpacing: 0.8 });
   txt(s, 'Delayed ICU acknowledgement', 9.02, 2.42, 3.15, 0.5, { fontSize: 17, bold: true, color: C.navy, valign: 'top' });
   box(s, 9.02, 3.18, 3.13, 1.23, C.pale, C.line);
@@ -209,7 +210,7 @@ function cardTitle(slide, title, x, y, w) {
   const s = pptx.addSlide('BASE');
   header(s, 'Corrective action management', 'A finding stays open until its improvement is checked', 'Every action needs an owner, a due date, a clear test for completion, and reviewer confirmation.');
   box(s,0.72,1.84,8.0,4.92,C.white,C.line);
-  addImageFit(s,IMG('DrillLoop_Demo_Actions.png'),0.82,1.93,7.8,4.72);
+  addImageFit(s,IMG('DrillLoop_Demo_Actions.png'),'Fictional DrillLoop corrective-action screen.',0.82,1.93,7.8,4.72);
   const stages=[['Proposed','Finding awaiting review'],['Assigned','Owner + due date'],['In progress','Acceptance criteria'],['Closure review','Attach completion proof'],['Closed','Reviewer confirms']];
   stages.forEach((st,i)=>{
     const y=2.0+i*0.82;
@@ -379,6 +380,6 @@ function cardTitle(slide, title, x, y, w) {
   addNotes(s, 'This is a proposed discovery and pilot sequence, not a confirmed project commitment. First interview two or three prospective hospital-preparedness users and observe one current review with permission. If a partner agrees, compare existing practice and DrillLoop on the same permitted records. Ask the partner to set thresholds before the trial for report time, reviewer corrections, citation accuracy, and action-field completeness. Then use evaluator-labeled evidence from an unfamiliar exercise and report missed and incorrect findings. Select one relevant alternative with the partner for a comparable source-location, reviewer-decision, and closure-evidence workflow. No pilot partner, access, schedule, or thresholds are currently confirmed.');
 }
 
-pptx.writeFile({ fileName: path.join(ROOT, 'DrillLoop_Pitch_Deck.pptx') })
+pptx.writeFile({ fileName: OUTPUT })
   .then(() => console.log('Generated 13-slide DrillLoop_Pitch_Deck.pptx with speaker notes.'))
   .catch((error) => { console.error(error); process.exitCode = 1; });

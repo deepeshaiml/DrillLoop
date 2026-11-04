@@ -11,6 +11,14 @@ __pycache__/
 **/.ruff_cache/
 *.py[cod]
 *.db
+*.sqlite
+*.sqlite3
+*.dump
+*.backup
+*.bak
+*.pem
+*.key
+backups/
 .DS_Store
 uploads/
 *.log
@@ -18,3 +26,6 @@ uploads/
 frontend/vite.config.js
 frontend/vite.config.d.ts
 .env
+.env.*
+!.env.example
+secrets/

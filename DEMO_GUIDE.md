@@ -1,87 +1,132 @@
 # DrillLoop Demo Guide
 
-## What you will see
+## What is verified
 
-The demo uses a fictional two-hour hospital exercise called **Night Shift: Extended Power Loss** (`HOSP-PO-2026-01`). Every person, event, note, and transcript in it is invented. The exercise tests whether a hospital team can respond to a long power outage.
+The packaged **Night Shift: Extended Power Loss** exercise is fictional. It is available only when demo seeding is enabled and a signed-in editor selects **Load fictional demo**. It demonstrates source-linked observations, five proposed findings, human review, corrective actions, and PDF export. Do not present its facts or labels as real exercise outcomes.
 
-The main example is simple: the log says power failed at 09:02 and essential circuits were restored at 09:06. The exercise target is 60 seconds. DrillLoop proposes a finding about the delay and links it to those two log records. It does not know the cause of the delay. A human evaluator must review the proposal.
+The frontend, API, SQLite/PostgreSQL persistence, named-user session, and deterministic analysis were also exercised in a browser with new fictional CSV evidence. One exercise had a five-minute threshold and a 14:00–14:04 interval (confirmed success); another had a two-minute threshold with the same evidence (confirmed failure). The browser run reviewed and approved the finding, assigned action fields, approved and closed the action with entered closure evidence, exported a report, refreshed, switched exercises, and confirmed state persisted. This was a controlled regression scenario, not independent evaluation on real exercise material.
 
-The sample also includes a seven-minute communication delay, a response time that conflicts with the event timestamps, a cold-chain procedure that went well, an action with no owner, and a vague untimed note that should not become a finding.
+## Start with a fresh local database
 
-## Start the app
-
-Use the local commands in [README.md](README.md), or run:
+Use Python 3.12, Node.js 22.12+ or 24+, npm, and a local browser. From the repository root:
 
 ```bash
-cp .env.example .env
-docker compose up --build
+python3 -m venv .venv
+source .venv/bin/activate
+pip install --require-hashes -r requirements-dev.lock
+npm --prefix frontend ci
+
+export DRILLLOOP_DEMO_DIR="$(mktemp -d /tmp/drillloop-demo.XXXXXX)"
+chmod 700 "$DRILLLOOP_DEMO_DIR"
+export DATABASE_URL="sqlite:///$DRILLLOOP_DEMO_DIR/demo.sqlite3"
+export DRILLLOOP_SESSION_SECRET="$(python3 -c 'import secrets; print(secrets.token_hex(32))')"
+export DRILLLOOP_COOKIE_SECURE=0
+export DRILLLOOP_ENABLE_DEMO_SEED=1
+export DEMO_SEED=0
 ```
 
-Open <http://localhost:8000>. The local setup does not need a cloud account. The demonstration reviewer name and key are `Exercise Reviewer` / `demo-reviewer`.
-
-## Five-minute walkthrough
-
-1. **Open Overview.** Confirm that the hospital scenario and four exercise targets are shown. Tell viewers that all records are fictional.
-2. **Open Timeline.** Show the 09:02 power failure and 09:06 restoration. Explain that four minutes is longer than the 60-second exercise target.
-3. **Show the disagreement.** The control-room log says the ICU acknowledgement arrived at 09:10; an evaluator’s watch note says 09:11. DrillLoop shows both times and leaves the disagreement unresolved.
-4. **Open Findings.** Select the power-restoration proposal. Open its source links to see the exact event-log rows. The proposal stays marked **Proposed** until a reviewer decides.
-5. **Open the communications proposal.** It links to the radio request, the late acknowledgement, and the evaluator’s different time.
-6. **Show the transcript warning.** One pre-written transcript segment says “too minutes” with 58% confidence. This is an invented speech-recognition error. The finding about the recorded “two minutes” response claim instead cites the independent event log.
-7. **Review one finding.** Use the reviewer key to approve or reject it. Explain that approval is a person’s decision, not the system’s.
-8. **Open Corrective Actions.** An action has a missing owner by design. Leave it blank to show the gap, or assign a fictional person to demonstrate editing. A reviewer can approve the action only after its finding is approved and the required fields are present.
-9. **Show closure.** Enter fictional completion evidence and use **Record closure**. The action should not be closed without reviewer confirmation and evidence.
-10. **Export the report.** Download the After-Action Report and Improvement Plan (AAR/IP). It shows evidence, interpretation, review status, and actions separately.
-
-## Words used in the app
-
-- **Observation:** what a source actually says, such as a row in the event log.
-- **Finding:** an evaluator’s conclusion about an observation and an exercise target. It remains a proposal until approved.
-- **Corrective action:** a task intended to improve performance in a future exercise.
-- **Acceptance criteria:** how the team will show that the task is done. For example, “Three timed radio drills meet the three-minute target.”
-- **Closure evidence:** a record a reviewer checks before marking an action complete.
-- **Source link:** a direct path to the file and row, note line, PDF page, or transcript segment behind a claim.
-
-The [Reader Guide](DRILLLOOP_READER_GUIDE.md) has a longer glossary and a safe example for AI agents.
-
-## Show upload and error handling
-
-- **Upload a supported file:** On Evidence, upload `demo/evidence/control_room_log.csv`, `evaluator_notes.txt`, or `transcript.json`, then select **Analyze**.
-- **Unsupported file:** Try an image or DOCX file. The app explains that this file type is not supported.
-- **Broken file:** Try a CSV without the required columns or invalid JSON. The app returns a clear error instead of treating it as valid evidence.
-- **No exercise targets:** Create an exercise without targets and try to analyze it. The app reports that targets are required.
-- **Reviewer access:** Clear the reviewer key and try to approve a finding or close an action. The app rejects the decision. Browsing and evidence upload remain available.
-- **Speech recognition unavailable:** The default demo says the model is unavailable. It does not silently download a model.
-
-## Optional local AI features (developer setup)
-
-These features are not needed for the walkthrough or benchmark.
-
-### Local wording suggestion
-
-If Ollama and a compatible local language model are already installed, set:
+Apply the initial schema to this newly created temporary database before starting the API:
 
 ```bash
-export OLLAMA_BASE_URL=http://127.0.0.1:11434
-export OLLAMA_MODEL=qwen3:4b
+PYTHONPATH=backend .venv/bin/alembic upgrade head
+PYTHONPATH=backend .venv/bin/alembic current
 ```
 
-Restart the API and analyze the exercise. The model may reword a corrective action that the rules already proposed. It cannot create a finding, change the evidence links, or make a reviewer decision. The project has not tested this model’s accuracy or speed.
-
-### Local speech-to-text
-
-Speech-to-text is sometimes called automatic speech recognition (ASR). To enable the optional faster-whisper path, install its extra dependency and provide a model already downloaded to your computer:
+Create a password hash. The helper prompts for a password and does not echo it:
 
 ```bash
-.venv/bin/pip install -r requirements-asr.txt
-export WHISPER_MODEL_PATH=/path/to/local/faster-whisper-model
+export DRILLLOOP_PASSWORD_HASH="$(PYTHONPATH=backend .venv/bin/python -m app.auth hash-password)"
+export DRILLLOOP_USERS_JSON="$(DRILLLOOP_PASSWORD_HASH="$DRILLLOOP_PASSWORD_HASH" python3 - <<'PY'
+import json, os
+
+print(json.dumps([{
+    "id": "local-demo-admin",
+    "username": "local-demo-admin",
+    "name": "Local Demo Reviewer",
+    "role": "admin",
+    "organization_id": "local-demo",
+    "password_hash": os.environ["DRILLLOOP_PASSWORD_HASH"],
+}]))
+PY
+)"
+unset DRILLLOOP_PASSWORD_HASH
 ```
 
-The application saves transcript segments and their relative times. It does not identify speakers, provide word-level confidence, or claim multilingual accuracy. A person must check the transcript against the audio. No real audio file is included in the demo.
+The local admin role can create exercises, upload evidence, analyze, and review. This is a local demonstration account, not enterprise identity or production account provisioning. Keep both services bound to loopback and use fictional or otherwise permitted evidence.
 
-## Reset the review state
+Start the backend in one terminal:
 
-For local SQLite, stop the API before moving or deleting `drillloop.db`; restarting creates a fresh demo record. For Docker, data is in the named `drillloop-postgres` volume. Keep the volume if you want to preserve decisions. Delete or replace it only when you intentionally want a fresh demo.
+```bash
+PYTHONPATH=backend .venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8000
+```
 
-## Benchmark limits
+Confirm readiness. The health endpoint checks the configured database:
 
-The benchmark checks one synthetic scenario against labels written for that same scenario. It matched 8 of 8 expected event rows, 5 of 5 expected findings, and 9 of 9 expected event-record links. It does not show accuracy on other exercises, whether evaluators agree with the proposals, staff time saved, or the quality of optional AI models. Details are in [DrillLoop_Evaluation_Report.pdf](DrillLoop_Evaluation_Report.pdf).
+```bash
+curl -fsS http://127.0.0.1:8000/api/health
+```
+
+Start Vite in a second terminal:
+
+```bash
+npm --prefix frontend run dev -- --host 127.0.0.1
+```
+
+Open <http://127.0.0.1:5173>, sign in with the configured username and password, and create or seed an exercise. The API does not create an account or seed data automatically. `DEMO_SEED` stays `0`; the explicit synthetic seeding endpoint is enabled by `DRILLLOOP_ENABLE_DEMO_SEED=1`.
+
+## Five-minute fictional walkthrough
+
+1. Select **Load fictional demo**. Confirm the exercise is labeled fictional and that candidate findings remain proposed.
+2. Open Timeline and Findings. Follow the source ID and exact row, note, or segment locators; explain that the rule engine does not certify the conclusion.
+3. Review a finding as the signed-in admin or reviewer. The audit actor comes from the authenticated account; the browser cannot choose a reviewer name.
+4. In Corrective actions, assign an owner and due date only as an explicit human-entered demo value. Approve the linked finding first, then approve the action.
+5. Enter clearly fictional closure evidence and close the action. DrillLoop records that text; it does not verify the real-world completion.
+6. Export the PDF and confirm that findings, source links, interpretations, decisions, and actions are exercise-specific.
+
+The supplied seed is not a real-integrated demo. Its records, people, events, and labels are synthetic.
+
+## Repeatable browser regression with unfamiliar evidence
+
+The regression script uses Playwright and Chromium. It expects the fresh local server/database above and will create uniquely named exercises in that database. From `frontend/`:
+
+```bash
+DRILLLOOP_E2E_USERNAME=local-demo-admin \
+DRILLLOOP_E2E_PASSWORD='the-password-entered-for-the-test-account' \
+node e2e/live-workflow.mjs
+```
+
+On a fresh database it also loads the fictional seed and asserts five rendered source-linked proposals. It then creates two exercises with different objective thresholds, uploads the same unfamiliar CSV, checks a pass and a failure, reviews a cited finding, completes an action lifecycle, downloads a PDF, refreshes, and switches exercises. The script must point only at the disposable local database selected in `DATABASE_URL`; choose a new temporary directory for a clean rerun.
+
+## Safe reset and tests
+
+To repeat the demonstration from a clean state, stop the API and create a new unique temporary directory and database URL. Leave the prior database intact if its records might be needed. Never reset or reuse `drillloop.db`, `.pytest-drillloop.db`, or another existing database.
+
+Tests create unique databases inside a temporary directory owned by the pytest process. The fixture fails before tests start if `DATABASE_URL` is already set. Run tests only with that variable unset:
+
+```bash
+unset DATABASE_URL
+.venv/bin/pytest -q
+```
+
+Do not run tests against a demo or deployment database.
+
+## Supported evidence and known limitations
+
+- Supported inputs: UTF-8 TXT/MD/LOG, CSV, JSON event/transcript records, and selectable-text PDFs. OCR is not implemented.
+- File limit is 15 MB each, ten files and 30 MB aggregate per upload batch; structured evidence is limited to 10,000 rows/segments; PDFs are limited to 250 pages and 2 million extracted characters.
+- Parser timeouts/process isolation and an ingress-level request-body limit are not implemented. Do not expose the upload endpoint to untrusted networks.
+- Deterministic analysis supports explicitly configured elapsed-time, reported-duration, event-presence, and required-field rules. Phrase matching is exact substring logic and needs evaluator-authored rule terms. Ambiguous, missing, or conflicting evidence remains in a needs-review/unknown state.
+- Objectives lock after analysis begins so findings and prior decisions cannot silently become stale. Start a new exercise to change post-analysis objectives.
+- Owners and due dates are not inferred by analysis; reviewers/editors enter them explicitly.
+- Local named-user passwords are configured in environment JSON. No enterprise identity provider is selected, no invitation directory exists, and session revocation requires secret rotation; production needs an approved identity and session strategy.
+- No external incident-management, hospital, document, or messaging connector is defined or implemented. No vendor endpoint or credential is assumed.
+- The current analysis does not invoke an LLM. Optional local ASR can be configured only with the package and a local model directory; it has no diarization and has not been measured on real audio.
+- No real or confidential exercise evidence has been authorized or evaluated here.
+
+## Docker Compose
+
+Compose uses PostgreSQL 18.6 at `/var/lib/postgresql`, waits for database health, and includes an application readiness probe that checks `SELECT 1`. Create `.env` from `.env.example`, replace all placeholders with unique local secrets and a properly configured `DRILLLOOP_USERS_JSON`, then run `docker compose up --build --wait`. The isolated Compose run used disposable resources and verified authentication, upload, deterministic analysis, and persistence across an app-container restart. Do not run Compose against an existing volume without backing it up and reviewing a migration plan.
+
+## Real integrations and production
+
+**Real external-integration demo: NOT READY. Production: NOT READY.** No real external system has been named, configured, or exercised. The local demo has no enterprise identity provider, migration framework, backup/restore or retention procedure, managed secret service, TLS/ingress policy, CI/CD, monitoring/alerts, load tests, operational owner, or deployment rollback rehearsal. Use the updated audit backlog and production checklist before claiming production readiness.

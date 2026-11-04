@@ -25,11 +25,58 @@ def test_missing_time_remains_unknown():
     assert confidence == "unknown"
 
 
+def test_invalid_timestamp_is_reported_as_evidence_validation_error():
+    with pytest.raises(EvidenceError) as error:
+        parse_evidence(
+            "events.csv",
+            "text/csv",
+            b"event_id,timestamp,event\nE1,99:99,Power failed\n",
+            date(2026, 10, 16),
+        )
+
+    assert error.value.code == "INVALID_TIMESTAMP"
+    assert error.value.status_code == 400
+
+
+def test_json_transcript_offsets_and_confidence_are_validated():
+    payload = b'{"segments":[{"start":5,"end":4,"text":"bad interval"}]}'
+
+    with pytest.raises(EvidenceError, match="invalid offsets"):
+        parse_evidence("transcript.json", "application/json", payload, date(2026, 10, 16))
+
+
 def test_transcript_low_confidence_is_uncertain():
     payload = b'{"model":"demo","language":"en","segments":[{"start":2,"end":3,"text":"two minutes","confidence":0.5}]}'
     parsed = parse_evidence("transcript.json", "application/json", payload, date(2026, 10, 16))
     assert parsed.observations[0].time_confidence == "uncertain"
     assert parsed.observations[0].recognition_confidence == 0.5
+
+
+def test_transcript_recording_offsets_do_not_become_event_timestamps():
+    payload = (
+        b'{"recording_started_at":"2026-10-16T09:07:00",'
+        b'"segments":[{"start":12.2,"end":17.6,"text":"Facilities arrived at nine oh eight."}]}'
+    )
+    parsed = parse_evidence("transcript.json", "application/json", payload, date(2026, 10, 16))
+    observation = parsed.observations[0]
+
+    assert observation.event_time_raw is None
+    assert observation.event_time_normalized is None
+    assert observation.time_confidence == "unknown"
+    assert observation.source_locator == "segment 1 \u00b7 12.20\u201317.60s"
+
+
+def test_transcript_accepts_explicit_event_timestamp_separately_from_audio_offset():
+    payload = (
+        b'{"recording_started_at":"2026-10-16T09:07:00",'
+        b'"segments":[{"start":12.2,"end":17.6,"event_time":"09:08",'
+        b'"text":"Facilities arrived at nine oh eight."}]}'
+    )
+    parsed = parse_evidence("transcript.json", "application/json", payload, date(2026, 10, 16))
+
+    assert parsed.observations[0].event_time_raw == "09:08"
+    assert parsed.observations[0].event_time_normalized == "2026-10-16T09:08:00"
+    assert parsed.observations[0].source_locator == "segment 1 \u00b7 12.20\u201317.60s"
 
 
 def test_unsupported_and_malformed_inputs_return_clear_errors():

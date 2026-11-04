@@ -6,7 +6,6 @@ import json
 import os
 import posixpath
 import re
-import shutil
 import subprocess
 import tempfile
 import zipfile
@@ -14,12 +13,11 @@ from pathlib import Path
 from xml.etree import ElementTree as ET
 
 ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_TEMPLATE = (
-    Path.home()
-    / ".codex/plugins/cache/openai-curated-remote/openai-templates/0.1.1/skills"
-    / "artifact-template-business-review/assets/reference.pptx"
+TEMPLATE = (
+    Path(os.environ["DRILLLOOP_BUSINESS_REVIEW_TEMPLATE"]).expanduser()
+    if os.environ.get("DRILLLOOP_BUSINESS_REVIEW_TEMPLATE")
+    else None
 )
-TEMPLATE = Path(os.environ["DRILLLOOP_BUSINESS_REVIEW_TEMPLATE"]).expanduser() if os.environ.get("DRILLLOOP_BUSINESS_REVIEW_TEMPLATE") else DEFAULT_TEMPLATE
 OUTPUT = ROOT / "DrillLoop_Business_Review.pptx"
 PPTXGEN = ROOT / "presentation/node_modules/pptxgenjs"
 
@@ -34,7 +32,7 @@ NS = {"p": P, "a": A, "c": C, "r": R, "rel": REL, "ct": CT, "s": S}
 
 TEXT: dict[int, dict[str, list[str]]] = {
     1: {
-        "4": ["DrillLoop Q4 Business Review"],
+        "4": ["DrillLoop Product and Commercial Review"],
         "5": [
             "Review of MVP delivery, synthetic demo results, commercial hypotheses, and next proof points. Pricing, delivery costs, customer demand, evaluator time savings, and real-world accuracy remain unvalidated."
         ],
@@ -54,7 +52,7 @@ TEXT: dict[int, dict[str, list[str]]] = {
         "6": [
             "In one closed synthetic fixture, 8/8 log rows, 5/5 expected finding codes, and 9/9 expected evidence IDs matched. The citation check confirms that IDs were linked; it does not prove that evidence supports a claim or generalizes to new exercises."
         ],
-        "17": ["Sponsor decision requested"],
+        "17": ["Decision requested"],
         "16": [
             "Authorize discovery for a hospital-tabletop review. Interview 2–3 prospective evaluators; compare current workflow with DrillLoop on the same permitted records, then test an unfamiliar exercise if access is approved."
         ],
@@ -88,19 +86,23 @@ TEXT: dict[int, dict[str, list[str]]] = {
     },
     5: {
         "533": ["Priorities for the next proof point"],
-        "5": [
-            "Discovery and a paired review should answer three practical questions:"
-        ],
+        "5": ["Discovery and a paired review should answer three practical questions:"],
         "3": [
             "Can hospital evaluators verify source evidence efficiently?",
             "Compare current practice and DrillLoop on the same permitted records. Check whether citations support each finding and actions have owners and closure proof; measure time and corrections without assuming savings.",
         ],
         "28": ["Interview users"],
-        "27": ["Interview 2–3 hospital-preparedness evaluators; observe the current review with permission."],
+        "27": [
+            "Interview 2–3 hospital-preparedness evaluators; observe the current review with permission."
+        ],
         "6": ["Measure review workload"],
-        "4": ["Time evidence lookup and report drafting; count reviewer edits and citation corrections."],
+        "4": [
+            "Time evidence lookup and report drafting; count reviewer edits and citation corrections."
+        ],
         "9": ["Verify action closure"],
-        "8": ["Check owners, due dates, completion tests, and reviewer-confirmed closure evidence."],
+        "8": [
+            "Check owners, due dates, completion tests, and reviewer-confirmed closure evidence."
+        ],
     },
     6: {
         "4": ["Value hypotheses to test"],
@@ -214,7 +216,7 @@ TABLES: dict[int, dict[str, list[list[str]]]] = {
             ["03", "Customer segments", "Demand"],
             ["04", "Commercial model", "Hypothesis"],
             ["05", "Pilot priorities", "Discovery"],
-            ["06", "Decision request", "Sponsor"],
+            ["06", "Decision request", "Decision owner"],
         ]
     },
     9: {
@@ -231,11 +233,7 @@ TABLES: dict[int, dict[str, list[list[str]]]] = {
             ["Memory", "78.2 MB", "App and test tools", "No model"],
         ]
     },
-    13: {
-        "4": [
-            ["Scope", "Interview", "Compare", "Measure", "Decide"]
-        ]
-    },
+    13: {"4": [["Scope", "Interview", "Compare", "Measure", "Decide"]]},
 }
 
 CHARTS = {
@@ -248,7 +246,7 @@ CHARTS = {
 }
 
 NOTES = [
-    "Introduce this as an internal business review of a working hackathon MVP, not an operating company with proven revenue. The fictional hospital outage is demonstration data. The product promise is to keep draft findings connected to exact source records and human review.",
+    "Present this as a product and commercial review of a working prototype. No operating company, proven revenue, customer demand, or organizational relationship is established. The fictional hospital outage is demonstration data. The product promise is to keep draft findings connected to exact source records and human review.",
     "Use the agenda to move from what is built, to what the synthetic test measured, to what remains a market hypothesis. The reported values are closed-fixture technical results only; there are no validated prices, costs, or sales estimates. The final section proposes discovery and a paired review; no pilot or schedule is confirmed.",
     "Summarize the MVP and the benchmark carefully: 8 of 8 log rows, 5 of 5 expected finding labels, and 9 of 9 expected evidence IDs matched in one synthetic fixture. An ID link is not a human judgment that the source supports the claim. The requested decision is to conduct discovery and design a paired review, subject to interest and privacy approval.",
     "The local demo includes exercise setup, evidence uploads, timeline, proposed findings, reviewer decisions, action tracking, and PDF export. The clean fixture results show that this workflow runs on its designed sample. They do not establish performance on new exercises. Hospital-preparedness evaluators are the proposed first users; buyer roles and demand are unknown.",
@@ -363,16 +361,29 @@ def add_commercial_inputs_callout(sp_tree: ET.Element) -> None:
     ET.SubElement(line_fill, f"{{{A}}}schemeClr", {"val": "accent2"})
 
     tx = ET.SubElement(shape, f"{{{P}}}txBody")
-    ET.SubElement(tx, f"{{{A}}}bodyPr", {
-        "wrap": "square", "lIns": "285750", "tIns": "228600",
-        "rIns": "285750", "bIns": "228600", "anchor": "ctr",
-    })
+    ET.SubElement(
+        tx,
+        f"{{{A}}}bodyPr",
+        {
+            "wrap": "square",
+            "lIns": "285750",
+            "tIns": "228600",
+            "rIns": "285750",
+            "bIns": "228600",
+            "anchor": "ctr",
+        },
+    )
     ET.SubElement(tx, f"{{{A}}}lstStyle")
     lines = [
         ("Evidence to collect", True, 2200, "accent1"),
         ("Who prepares, approves, and pays?", False, 1700, "tx1"),
         ("What setup, security, hosting, and support are required?", False, 1700, "tx1"),
-        ("What does the current workflow take, and where are corrections made?", False, 1700, "tx1"),
+        (
+            "What does the current workflow take, and where are corrections made?",
+            False,
+            1700,
+            "tx1",
+        ),
     ]
     for text, bold, size, color in lines:
         para = ET.SubElement(tx, f"{{{A}}}p")
@@ -408,7 +419,9 @@ def remove_commercial_chart(parts: dict[str, bytes]) -> None:
     chart_parts = []
     for relationship in list(rel_root):
         if relationship.get("Type", "").endswith("/chart"):
-            target = posixpath.normpath(posixpath.join("ppt/slides", relationship.get("Target", "")))
+            target = posixpath.normpath(
+                posixpath.join("ppt/slides", relationship.get("Target", ""))
+            )
             if target.endswith("chart2.xml"):
                 chart_parts.append(target)
                 rel_root.remove(relationship)
@@ -421,7 +434,9 @@ def remove_commercial_chart(parts: dict[str, bytes]) -> None:
             chart_rel_root = xml_with_prefixes(parts[chart_rel])
             for relationship in chart_rel_root:
                 if relationship.get("Type", "").endswith("/package"):
-                    embedded = posixpath.normpath(posixpath.join("ppt/charts", relationship.get("Target", "")))
+                    embedded = posixpath.normpath(
+                        posixpath.join("ppt/charts", relationship.get("Target", ""))
+                    )
                     removed.add(embedded)
             removed.add(chart_rel)
     for path in removed:
@@ -429,8 +444,9 @@ def remove_commercial_chart(parts: dict[str, bytes]) -> None:
 
     content_types = xml_with_prefixes(parts["[Content_Types].xml"])
     for override in list(content_types.findall("ct:Override", NS)):
-        if (override.get("PartName", "").endswith("/chart2.xml")
-                or any(override.get("PartName", "").lstrip("/") == path for path in removed)):
+        if override.get("PartName", "").endswith("/chart2.xml") or any(
+            override.get("PartName", "").lstrip("/") == path for path in removed
+        ):
             content_types.remove(override)
     parts["[Content_Types].xml"] = xml_bytes(content_types)
 
@@ -460,9 +476,13 @@ def update_chart(root: ET.Element, spec: dict) -> None:
             if "$A$2:$A$5" in formula:
                 f.text = formula.replace("$A$2:$A$5", f"$A$2:$A${count + 1}")
             elif "$B$2:$B$5" in formula:
-                f.text = formula.replace("$B$2:$B$5", f"${cols[index]}$2:${cols[index]}${count + 1}")
+                f.text = formula.replace(
+                    "$B$2:$B$5", f"${cols[index]}$2:${cols[index]}${count + 1}"
+                )
             elif "$C$2:$C$5" in formula:
-                f.text = formula.replace("$C$2:$C$5", f"${cols[index]}$2:${cols[index]}${count + 1}")
+                f.text = formula.replace(
+                    "$C$2:$C$5", f"${cols[index]}$2:${cols[index]}${count + 1}"
+                )
             elif "$B$1" in formula or "$C$1" in formula:
                 f.text = re.sub(r"\$[BC]\$1", f"${cols[index]}$1", formula)
 
@@ -503,7 +523,9 @@ def update_chart(root: ET.Element, spec: dict) -> None:
                 cache.append(pt)
 
 
-def update_embedded_workbook(data: bytes, categories: list[str], series: list[tuple[str, list[int]]]) -> bytes:
+def update_embedded_workbook(
+    data: bytes, categories: list[str], series: list[tuple[str, list[int]]]
+) -> bytes:
     import io
 
     src = zipfile.ZipFile(io.BytesIO(data))
@@ -553,7 +575,9 @@ def update_embedded_workbook(data: bytes, categories: list[str], series: list[tu
         # Keep cell order valid after updating the row.
         row[:] = sorted(row, key=lambda c: (c.tag.endswith("}c"), c.get("r", "")))
 
-    shared = ET.Element(f"{{{S}}}sst", {"count": str(len(strings)), "uniqueCount": str(len(strings))})
+    shared = ET.Element(
+        f"{{{S}}}sst", {"count": str(len(strings)), "uniqueCount": str(len(strings))}
+    )
     for value in strings:
         si = ET.SubElement(shared, f"{{{S}}}si")
         t = ET.SubElement(si, f"{{{S}}}t")
@@ -581,7 +605,10 @@ def inject_notes(template_parts: dict[str, bytes], helper_path: Path) -> dict[st
     helper = zipfile.ZipFile(helper_path)
     names = helper.namelist()
     parts = dict(template_parts)
-    for path in ["ppt/notesMasters/notesMaster1.xml", "ppt/notesMasters/_rels/notesMaster1.xml.rels"]:
+    for path in [
+        "ppt/notesMasters/notesMaster1.xml",
+        "ppt/notesMasters/_rels/notesMaster1.xml.rels",
+    ]:
         if path in names:
             parts[path] = helper.read(path)
     for index in range(1, len(NOTES) + 1):
@@ -598,7 +625,11 @@ def inject_notes(template_parts: dict[str, bytes], helper_path: Path) -> dict[st
         for relationship in list(rel_root):
             if relationship.get("Type", "").endswith("/notesSlide"):
                 rel_root.remove(relationship)
-        ids = [int(x.get("Id")[3:]) for x in rel_root if x.get("Id", "").startswith("rId") and x.get("Id")[3:].isdigit()]
+        ids = [
+            int(x.get("Id")[3:])
+            for x in rel_root
+            if x.get("Id", "").startswith("rId") and x.get("Id")[3:].isdigit()
+        ]
         rid = f"rId{max(ids, default=0) + 1}"
         ET.SubElement(
             rel_root,
@@ -616,7 +647,11 @@ def inject_notes(template_parts: dict[str, bytes], helper_path: Path) -> dict[st
     for relationship in list(rel_root):
         if relationship.get("Type", "").endswith("/notesMaster"):
             rel_root.remove(relationship)
-    ids = [int(x.get("Id")[3:]) for x in rel_root if x.get("Id", "").startswith("rId") and x.get("Id")[3:].isdigit()]
+    ids = [
+        int(x.get("Id")[3:])
+        for x in rel_root
+        if x.get("Id", "").startswith("rId") and x.get("Id")[3:].isdigit()
+    ]
     ET.SubElement(
         rel_root,
         f"{{{REL}}}Relationship",
@@ -631,7 +666,10 @@ def inject_notes(template_parts: dict[str, bytes], helper_path: Path) -> dict[st
     ct_root = xml_with_prefixes(parts["[Content_Types].xml"])
     existing = {x.get("PartName") for x in ct_root.findall("ct:Override", NS)}
     overrides = [
-        ("/ppt/notesMasters/notesMaster1.xml", "application/vnd.openxmlformats-officedocument.presentationml.notesMaster+xml")
+        (
+            "/ppt/notesMasters/notesMaster1.xml",
+            "application/vnd.openxmlformats-officedocument.presentationml.notesMaster+xml",
+        )
     ]
     overrides.extend(
         (
@@ -642,17 +680,22 @@ def inject_notes(template_parts: dict[str, bytes], helper_path: Path) -> dict[st
     )
     for part, content_type in overrides:
         if part not in existing:
-            ET.SubElement(ct_root, f"{{{CT}}}Override", {"PartName": part, "ContentType": content_type})
+            ET.SubElement(
+                ct_root, f"{{{CT}}}Override", {"PartName": part, "ContentType": content_type}
+            )
     parts["[Content_Types].xml"] = xml_bytes(ct_root)
     helper.close()
     return parts
 
 
 def main() -> None:
-    if not TEMPLATE.exists():
+    if TEMPLATE is None:
         raise FileNotFoundError(
-            f"Business Review template not found at {TEMPLATE}. Set "
-            "DRILLLOOP_BUSINESS_REVIEW_TEMPLATE to a local template path."
+            "Set DRILLLOOP_BUSINESS_REVIEW_TEMPLATE to an authorized local template path."
+        )
+    if not TEMPLATE.is_file():
+        raise FileNotFoundError(
+            "The configured Business Review template file does not exist."
         )
     parts: dict[str, bytes] = {}
     with zipfile.ZipFile(TEMPLATE) as source:
@@ -680,12 +723,8 @@ def main() -> None:
     for path, spec in CHARTS.items():
         rel_path = path.replace("ppt/charts/", "ppt/charts/_rels/") + ".rels"
         rel_root = xml_with_prefixes(parts[rel_path])
-        relationship = next(
-            x for x in rel_root if x.get("Type", "").endswith("/package")
-        )
-        workbook_path = posixpath.normpath(
-            posixpath.join("ppt/charts", relationship.get("Target"))
-        )
+        relationship = next(x for x in rel_root if x.get("Type", "").endswith("/package"))
+        workbook_path = posixpath.normpath(posixpath.join("ppt/charts", relationship.get("Target")))
         parts[workbook_path] = update_embedded_workbook(
             parts[workbook_path], spec["categories"], spec["series"]
         )
@@ -696,10 +735,12 @@ def main() -> None:
         dc = "http://purl.org/dc/elements/1.1/"
         title = core.find(f"{{{dc}}}title")
         if title is not None:
-            title.text = "DrillLoop Business Review · Q4 2026"
+            title.text = "DrillLoop Product and Commercial Review · Q4 2026"
         subject = core.find(f"{{{dc}}}subject")
         if subject is not None:
-            subject.text = "MVP status, synthetic benchmark, commercial assumptions, and pilot decisions"
+            subject.text = (
+                "MVP status, synthetic benchmark, commercial assumptions, and pilot decisions"
+            )
         parts["docProps/core.xml"] = xml_bytes(core)
 
     with tempfile.TemporaryDirectory(prefix="drillloop_business_review_") as td:
@@ -713,15 +754,16 @@ def main() -> None:
             ["node", str(helper_js), str(PPTXGEN), str(notes_json), str(helper_pptx)],
             check=True,
             cwd=ROOT,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
+            capture_output=True,
         )
         parts = inject_notes(parts, helper_pptx)
 
     with zipfile.ZipFile(OUTPUT, "w", zipfile.ZIP_DEFLATED) as target:
         for path, data in parts.items():
             target.writestr(path, data)
-    print(f"Generated {OUTPUT.name} from the retained 14-slide Business Review template with notes.")
+    print(
+        f"Generated {OUTPUT.name} from the retained 14-slide Business Review template with notes."
+    )
 
 
 if __name__ == "__main__":

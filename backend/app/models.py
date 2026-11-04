@@ -2,7 +2,16 @@ from __future__ import annotations
 
 from datetime import UTC, datetime
 
-from sqlalchemy import DateTime, ForeignKey, Integer, LargeBinary, String, Text
+from sqlalchemy import (
+    DateTime,
+    ForeignKey,
+    Integer,
+    LargeBinary,
+    String,
+    Text,
+    UniqueConstraint,
+    text,
+)
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 
@@ -30,6 +39,18 @@ class Exercise(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
 
 
+class ExerciseGrant(Base):
+    __tablename__ = "exercise_grants"
+    __table_args__ = (UniqueConstraint("exercise_id", "user_id", name="uq_exercise_grant_user"),)
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True)
+    exercise_id: Mapped[str] = mapped_column(ForeignKey("exercises.id"), index=True)
+    user_id: Mapped[str] = mapped_column(String(120), index=True)
+    organization_id: Mapped[str] = mapped_column(String(120), index=True)
+    access_role: Mapped[str] = mapped_column(String(24))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+
 class Source(Base):
     __tablename__ = "sources"
 
@@ -42,6 +63,9 @@ class Source(Base):
     content_text: Mapped[str] = mapped_column(Text, default="")
     source_bytes: Mapped[bytes | None] = mapped_column(LargeBinary, nullable=True)
     provenance_json: Mapped[str] = mapped_column(Text, default="{}")
+    scan_status: Mapped[str] = mapped_column(
+        String(24), nullable=False, default="not_scanned", server_default=text("'not_scanned'")
+    )
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
 
 

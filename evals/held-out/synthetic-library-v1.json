@@ -1,0 +1,74 @@
+{
+  "schema_version": "drillloop-evaluation/v1",
+  "dataset_id": "held-out-synthetic-library-evacuation",
+  "revision": 1,
+  "fictional": true,
+  "labeling": {
+    "labelers": ["DrillLoop engineering team"],
+    "independent_reviewed": false,
+    "method": "Fictional hold-out labels were written from the source before the one-time evaluation run; the result was not used to tune implementation.",
+    "adjudication_record": null,
+    "finding_labels_complete": true,
+    "observation_labels_complete": true,
+    "citation_labels_complete": true,
+    "citation_scope": "All source references supporting expected findings in this single-source closed fixture are listed."
+  },
+  "exercise": {
+    "id": "LIB-EVAC-2026-01",
+    "title": "Library Evacuation and Accountability (fictional hold-out)",
+    "scenario": "A wholly synthetic public library evacuation exercise tests floor warden muster timing and roster accountability.",
+    "date": "2026-11-02",
+    "duration_minutes": 60,
+    "objectives": [
+      {
+        "id": "LIB-OBJ-01",
+        "text": "Complete floor warden muster within five minutes of evacuation alarm activation.",
+        "evaluation_rule": {
+          "type": "elapsed_time",
+          "threshold_seconds": 300,
+          "start_terms": ["evacuation alarm was activated"],
+          "completion_terms": ["muster complete"],
+          "finding_code": "EVACUATION_MUSTER_WITHIN_TARGET",
+          "finding_title": "Floor warden muster completed within the target"
+        },
+        "expected_finding_codes": ["EVACUATION_MUSTER_WITHIN_TARGET"]
+      },
+      {
+        "id": "LIB-OBJ-02",
+        "text": "Reconcile the east wing accountability roster before declaring all-clear.",
+        "evaluation_rule": {
+          "type": "required_field",
+          "field_terms": ["accountability roster"],
+          "missing_terms": ["roster was not reconciled"],
+          "finding_code": "EAST_WING_ROSTER_UNRECONCILED",
+          "finding_title": "East wing roster was not reconciled"
+        },
+        "expected_finding_codes": ["EAST_WING_ROSTER_UNRECONCILED"]
+      }
+    ]
+  },
+  "sources": [
+    {
+      "path": "evals/held-out/sources/library_evacuation.csv",
+      "sha256": "4388ed2c8476128cc246182ce42447a8342318534ca60d556f2bf22d8a3e7f8f"
+    }
+  ],
+  "expected": {
+    "observations": [
+      {"source": "library_evacuation.csv", "locator": "row 2", "wording": "Evacuation alarm was activated for the east and west wings.", "timestamp": "2026-11-02T14:00:00", "time_confidence": "medium"},
+      {"source": "library_evacuation.csv", "locator": "row 3", "wording": "All floor wardens reported muster complete at the assembly area.", "timestamp": "2026-11-02T14:04:00", "time_confidence": "medium"},
+      {"source": "library_evacuation.csv", "locator": "row 4", "wording": "The east wing accountability roster was not reconciled before the all-clear.", "timestamp": "2026-11-02T14:01:00", "time_confidence": "medium"},
+      {"source": "library_evacuation.csv", "locator": "row 5", "wording": "The incident log remained open for evaluator review.", "timestamp": "2026-11-02T14:05:00", "time_confidence": "medium"}
+    ],
+    "findings": [
+      {"code": "EVACUATION_MUSTER_WITHIN_TARGET", "objective_id": "LIB-OBJ-01", "category": "strength", "evidence": [{"source": "library_evacuation.csv", "locator": "row 2"}, {"source": "library_evacuation.csv", "locator": "row 3"}]},
+      {"code": "EAST_WING_ROSTER_UNRECONCILED", "objective_id": "LIB-OBJ-02", "category": "improvement", "evidence": [{"source": "library_evacuation.csv", "locator": "row 4"}]}
+    ],
+    "unknowns": [],
+    "conflicts": [],
+    "objective_assessments": [
+      {"objective_id": "LIB-OBJ-01", "state": "confirmed_success", "elapsed_seconds": [240], "threshold_seconds": 300},
+      {"objective_id": "LIB-OBJ-02", "state": "confirmed_failure"}
+    ]
+  }
+}

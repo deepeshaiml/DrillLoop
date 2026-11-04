@@ -1,16 +1,16 @@
-# Eureka Submission Draft — DrillLoop
+# Product Concept Submission Draft — DrillLoop
 
-This is a working copy of the Eureka form text. Contact information is omitted here because the public repository is not the place to publish a work email. The portal form contains the lead’s contact details.
+This publication copy retains the product concept while generalizing organization-specific program labels and omitting personal contact details. It does not imply organizational endorsement or a business relationship.
 
 ## Idea details
 
 ### Submission route
 
-Individual employee idea.
+Individual idea submission.
 
 ### Theme
 
-Public Safety Intelligence.
+Public-safety sector.
 
 ### Title
 
@@ -34,11 +34,11 @@ The current MVP uses a fixed, deterministic workflow to extract observations, id
 
 The rules were built around one fictional hospital power-outage exercise. Performance on an unfamiliar exercise and the incremental value of optional AI have not been measured. Optional faster-whisper transcription requires a locally staged model; optional Ollama can reword an action already proposed by the rules. Neither path was included in the benchmark. The sample transcript is pre-generated and contains a labeled synthetic recognition error.
 
-Veoci markets after-action reporting and corrective-action follow-up. DrillLoop’s proposed distinction—source-level traceability, explicit reviewer decisions, and evidence-backed closure—has not been validated in a comparable workflow. A possible fit with Presight public-safety work is also unverified; no integration or customer demand is established.
+Veoci markets after-action reporting and corrective-action follow-up. DrillLoop’s proposed distinction—source-level traceability, explicit reviewer decisions, and evidence-backed closure—has not been validated in a comparable workflow. Potential public-safety use remains a hypothesis; no integration, customer interest, partnership, or endorsement has been established.
 
 ### Technology readiness
 
-TRL 4, provisional self-assessment on the conventional 1–9 scale. The evidence is a working local prototype and technical checks on one closed synthetic fixture. There has been no operational pilot, independent TRL assessment, evaluator study, or validation on unfamiliar exercise records. The Eureka program’s TRL definitions may differ from the conventional scale.
+TRL 4, provisional self-assessment on the conventional 1–9 scale. The evidence is a working local prototype and technical checks on one closed synthetic fixture. There has been no operational pilot, independent TRL assessment, evaluator study, or validation on unfamiliar exercise records. Assessment definitions may differ between programs.
 
 ### Tags
 
@@ -65,7 +65,7 @@ These are proposed activities, not completed interviews or a confirmed pilot. No
 
 ## Lead and team
 
-The Eureka form identifies the lead as an individual submitter in Product–Synergy / AI Engineering. The project demonstrates delivery of a working web prototype and evidence-review workflow; prior emergency-preparedness experience is not stated. Available time is not specified. Proposed support needs are a preparedness-domain adviser, evaluator participation, permitted pilot data, and security/privacy review. No adviser or pilot partner is confirmed.
+Project materials identify a product and engineering lead. Delivery allocation, domain expertise, advisers, partners, schedule, and staffing remain unconfirmed.
 
 ## Data governance and security status
 
@@ -75,7 +75,7 @@ The demo stores uploaded source bytes and extracted text in its configured datab
 
 ### Pitch deck
 
-- [Dedicated Eureka pitch deck, editable PPTX with speaker notes](DrillLoop_Pitch_Deck.pptx)
+- [Product pitch deck, editable PPTX with speaker notes](DrillLoop_Pitch_Deck.pptx)
 - [Pitch deck PDF](DrillLoop_Pitch_Deck.pdf)
 
 ### Idea document
@@ -104,4 +104,4 @@ Select **Night Shift: Extended Power Loss** (`HOSP-PO-2026-01`). Review the time
 
 ## Portal upload checklist
 
-The previous AI Coach review reported that linked materials were unavailable for inspection, although screenshots and a repository were listed. The portal should show the actual screenshot and document files as uploaded and previewable. The Business Review deck is a separate artifact; the dedicated 13-slide Eureka Pitch Deck is the primary pitch presentation. Lead email belongs in the Eureka form, not this public repository copy.
+The previous submission review reported that linked materials were unavailable for inspection, although screenshots and a repository were listed. The submission portal should show the actual screenshot and document files as uploaded and previewable. The Product and Commercial Review deck is a separate artifact; the 13-slide Product Pitch Deck is the primary pitch presentation. Lead email belongs in the submission form, not this public repository copy.
