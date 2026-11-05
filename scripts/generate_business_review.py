@@ -20,10 +20,7 @@ FONT_URL = (
     "https://raw.githubusercontent.com/google/fonts/"
     f"{FONT_REVISION}/ofl/notosans/NotoSans%5Bwdth%2Cwght%5D.ttf"
 )
-LICENSE_URL = (
-    "https://raw.githubusercontent.com/google/fonts/"
-    f"{FONT_REVISION}/ofl/notosans/OFL.txt"
-)
+LICENSE_URL = f"https://raw.githubusercontent.com/google/fonts/{FONT_REVISION}/ofl/notosans/OFL.txt"
 FONT_SHA256 = "bfb7bb691513f12e734dc346c03a03f784912432d7e3fa8e56efcf906fe86b3d"
 LICENSE_SHA256 = "cee9892f9f0cc8fe882c9e9537ee6a89621d86ee7ceaf70b02e2b2b1c25c061a"
 
@@ -48,8 +45,8 @@ def fontconfig_file(font_dir: Path, cache_dir: Path, temp: Path) -> Path:
         raise RuntimeError("A system Fontconfig configuration is required for PDF export")
     config = temp / "fontconfig.xml"
     config.write_text(
-        "<?xml version=\"1.0\"?>\n"
-        "<!DOCTYPE fontconfig SYSTEM \"fonts.dtd\">\n"
+        '<?xml version="1.0"?>\n'
+        '<!DOCTYPE fontconfig SYSTEM "fonts.dtd">\n'
         "<fontconfig>\n"
         f"  <dir>{escape(str(font_dir))}</dir>\n"
         f"  <cachedir>{escape(str(cache_dir))}</cachedir>\n"
