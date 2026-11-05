@@ -34,6 +34,10 @@ jobs:
           --health-retries 15
       clamav:
         image: clamav/clamav-debian:1.5.4@sha256:c21aa18cc0a358678255a3dfb343a4555b58f71b97d7b869df8fdf7ea0a5b4b1
+        env:
+          CLAMAV_NO_MILTERD: "true"
+          CLAMAV_NO_FRESHCLAMD: "false"
+          FRESHCLAM_CHECKS: "1"
         ports:
           - 3310:3310
         options: >-
@@ -70,6 +74,20 @@ jobs:
 
       - name: Python formatting
         run: ruff format --check backend scripts
+
+      - name: Wait for fresh ClamAV signatures loaded by clamd
+        env:
+          CLAMAV_CONTAINER_ID: ${{ job.services.clamav.id }}
+        run: >-
+          python scripts/wait_for_clamav.py
+          --container-id "$CLAMAV_CONTAINER_ID"
+          --host 127.0.0.1
+          --port 3310
+          --max-age-hours 72
+          --timeout-seconds 600
+          --interval-seconds 5
+          --socket-timeout-seconds 3
+          --expected-engine-version 1.5.4
 
       - name: Backend tests
         env:

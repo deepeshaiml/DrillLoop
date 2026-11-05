@@ -47,6 +47,21 @@ def test_required_scanner_fails_closed_when_adapter_is_missing(monkeypatch):
     assert upload_processing._clamav_scan(b"synthetic", "optional").status == "not_scanned"
 
 
+def test_stale_clamav_signatures_remain_rejected(monkeypatch):
+    monkeypatch.setenv("DRILLLOOP_SCANNER_MAX_SIGNATURE_AGE_HOURS", "72")
+    monkeypatch.setattr(
+        upload_processing,
+        "_clamd_command",
+        lambda *_args: "ClamAV 1.5.4/1/Mon Jan  1 00:00:00 2024",
+    )
+
+    with pytest.raises(UploadProcessingFailure) as error:
+        upload_processing._checked_signature_version("clamav", 3310, 1)
+
+    assert error.value.code == "SCANNER_SIGNATURES_STALE"
+    assert error.value.details["signature_max_age_hours"] == 72
+
+
 def test_parser_backpressure_and_portable_filename_sanitization(monkeypatch):
     controller = ParserAdmissionController(active_limit=1, waiting_limit=0)
     monkeypatch.setattr(upload_processing, "_PARSER_ADMISSION", controller)
