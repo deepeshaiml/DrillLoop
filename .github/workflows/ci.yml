@@ -137,19 +137,117 @@ jobs:
         run: npx --prefix frontend playwright install --with-deps chromium
 
       - name: Browser workflow on fresh owned SQLite
+        id: browser_workflow
         shell: bash
         run: |
           set -euo pipefail
+          diagnostic_dir="$(mktemp -d "${RUNNER_TEMP}/drillloop-browser-diagnostics.XXXXXX")"
+          chmod 700 "$diagnostic_dir"
+          printf 'diagnostics_dir=%s\n' "$diagnostic_dir" >> "$GITHUB_OUTPUT"
           owned_dir="$(mktemp -d "${RUNNER_TEMP}/drillloop-browser.XXXXXX")"
           chmod 700 "$owned_dir"
           token="$(python -c 'import secrets; print(secrets.token_hex(32))')"
           printf '%s' "$token" > "$owned_dir/.drillloop-test-owner"
           chmod 600 "$owned_dir/.drillloop-test-owner"
+          api_pid=""
+          ui_pid=""
+          record_process() {
+            local label="$1" pid="$2" process_state exit_status
+            if [[ -z "$pid" ]]; then
+              printf '%s=not-started\n' "$label" >> "$diagnostic_dir/process-status.txt"
+            elif kill -0 "$pid" 2>/dev/null; then
+              process_state="$(ps -p "$pid" -o stat=,etime=,comm= 2>/dev/null | sed 's/^[[:space:]]*//' | tr -s ' ' || true)"
+              if [[ "$process_state" == Z* ]]; then
+                if wait "$pid"; then exit_status=0; else exit_status=$?; fi
+                printf '%s=exited pid=%s status=%s state=zombie\n' "$label" "$pid" "$exit_status" >> "$diagnostic_dir/process-status.txt"
+              else
+                printf '%s=alive pid=%s state=%s\n' "$label" "$pid" "${process_state:-unavailable}" >> "$diagnostic_dir/process-status.txt"
+              fi
+            elif wait "$pid"; then
+              printf '%s=exited pid=%s status=0\n' "$label" "$pid" >> "$diagnostic_dir/process-status.txt"
+            else
+              exit_status=$?
+              printf '%s=exited pid=%s status=%s\n' "$label" "$pid" "$exit_status" >> "$diagnostic_dir/process-status.txt"
+            fi
+          }
+          probe() {
+            local label="$1" url="$2" result exit_status
+            if result="$(curl --silent --show-error --output /dev/null --write-out 'HTTP %{http_code}' --connect-timeout 1 --max-time 2 "$url" 2>&1)"; then
+              printf '%s=%s\n' "$label" "$result" >> "$diagnostic_dir/connectivity.txt"
+            else
+              exit_status=$?
+              printf '%s=failed exit=%s detail=%s\n' "$label" "$exit_status" "$result" >> "$diagnostic_dir/connectivity.txt"
+            fi
+          }
+          sanitize_startup_logs() {
+            DIAGNOSTIC_DIR="$diagnostic_dir" OWNED_DIR="$owned_dir" python - <<'PY'
+          import os
+          import re
+          from pathlib import Path
+
+          diagnostic_dir = Path(os.environ["DIAGNOSTIC_DIR"])
+          owned_dir = Path(os.environ["OWNED_DIR"])
+          sensitive_value = re.compile(
+              r'''(?i)(password|secret|token|authorization|cookie|credential|api[_-]?key)(["']?\s*[:=]\s*)("[^"]*"|'[^']*'|[^\s,;}]+)'''
+          )
+          url_credentials = re.compile(r"(://)[^/@\s]+:[^/@\s]+@")
+          controls = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]")
+
+          for source_name, target_name in (("api.log", "api.log"), ("ui.log", "ui.log")):
+              source = owned_dir / source_name
+              if not source.is_file():
+                  (diagnostic_dir / target_name).write_text("Log file was not created.\n")
+                  continue
+              with source.open("rb") as stream:
+                  raw = stream.read(49152).decode("utf-8", errors="replace")
+              lines = raw.splitlines()[:160]
+              safe_lines = []
+              for line in lines:
+                  line = controls.sub("", line)[:1000]
+                  line = sensitive_value.sub(r"\1\2<redacted>", line)
+                  line = url_credentials.sub(r"\1<redacted>@", line)
+                  safe_lines.append(line)
+              sanitized = ("\n".join(safe_lines) + "\n").encode("utf-8")[-49152:]
+              (diagnostic_dir / target_name).write_bytes(sanitized)
+          PY
+          }
+          collect_diagnostics() {
+            : > "$diagnostic_dir/process-status.txt"
+            : > "$diagnostic_dir/connectivity.txt"
+            record_process api "$api_pid"
+            record_process frontend "$ui_pid"
+            probe api_ready http://127.0.0.1:8000/api/ready
+            probe frontend http://127.0.0.1:5173/
+            if [[ ! -f "$diagnostic_dir/api.log" || ! -f "$diagnostic_dir/ui.log" ]]; then
+              sanitize_startup_logs
+            fi
+          }
           cleanup() {
+            local status=$?
+            trap - EXIT
+            set +e
+            if (( status != 0 )); then
+              printf 'browser workflow failed with exit status %s\n' "$status" > "$diagnostic_dir/step-status.txt"
+              collect_diagnostics
+              printf 'Sanitized browser diagnostics retained at %s\n' "$diagnostic_dir"
+              printf 'Browser process status:\n'
+              cat "$diagnostic_dir/process-status.txt"
+              printf 'Browser connectivity:\n'
+              cat "$diagnostic_dir/connectivity.txt"
+              printf 'Sanitized API startup log:\n'
+              cat "$diagnostic_dir/api.log"
+              printf 'Sanitized frontend startup log:\n'
+              cat "$diagnostic_dir/ui.log"
+            else
+              rm -rf -- "$diagnostic_dir"
+            fi
             kill "${ui_pid:-}" "${api_pid:-}" 2>/dev/null || true
+            [[ -z "${ui_pid:-}" ]] || wait "$ui_pid" 2>/dev/null || true
+            [[ -z "${api_pid:-}" ]] || wait "$api_pid" 2>/dev/null || true
             if [[ -f "$owned_dir/.drillloop-test-owner" ]] && [[ "$(cat "$owned_dir/.drillloop-test-owner")" == "$token" ]]; then
               rm -rf -- "$owned_dir"
             fi
+            return "$status"
           }
           trap cleanup EXIT
           export DRILLLOOP_TEST_MODE=1
@@ -166,16 +264,54 @@ jobs:
           DRILLLOOP_USERS_JSON="$(PYTHONPATH=backend python -c 'import json; from app.auth import hash_password; print(json.dumps([{"id":"ci-admin","username":"ci-admin","name":"Demo Administrator","role":"admin","organization_id":"ci","password_hash":hash_password("ci-only-browser-password")},{"id":"ci-outsider","username":"ci-outsider","name":"CI Viewer","role":"viewer","organization_id":"ci","password_hash":hash_password("ci-only-outsider-password")}]))')"
           export DRILLLOOP_USERS_JSON
           alembic upgrade head
-          PYTHONPATH=backend uvicorn app.main:app --host 127.0.0.1 --port 8000 --no-access-log > "$owned_dir/api.log" 2>&1 &
+          DRILLLOOP_TEST_DB_ALLOW_EXISTING=1 PYTHONPATH=backend uvicorn app.main:app --host 127.0.0.1 --port 8000 --no-access-log > "$owned_dir/api.log" 2>&1 &
           api_pid=$!
           npm --prefix frontend run dev -- --host 127.0.0.1 > "$owned_dir/ui.log" 2>&1 &
           ui_pid=$!
-          for ((attempt=1; attempt<=60; attempt++)); do
-            if curl --silent --fail http://127.0.0.1:8000/api/ready >/dev/null && curl --silent --fail http://127.0.0.1:5173 >/dev/null; then break; fi
-            sleep 1
+          ready=0
+          attempt=0
+          readiness_deadline=$((SECONDS + 60))
+          while (( attempt < 60 && SECONDS < readiness_deadline )); do
+            attempt=$((attempt + 1))
+            api_state="$(ps -p "$api_pid" -o stat= 2>/dev/null | tr -d '[:space:]' || true)"
+            if ! kill -0 "$api_pid" 2>/dev/null || [[ "$api_state" == Z* ]]; then
+              if wait "$api_pid"; then api_status=0; else api_status=$?; fi
+              printf 'Uvicorn exited before readiness (status %s).\n' "$api_status" >&2
+              exit 1
+            fi
+            ui_state="$(ps -p "$ui_pid" -o stat= 2>/dev/null | tr -d '[:space:]' || true)"
+            if ! kill -0 "$ui_pid" 2>/dev/null || [[ "$ui_state" == Z* ]]; then
+              if wait "$ui_pid"; then ui_status=0; else ui_status=$?; fi
+              printf 'Vite exited before readiness (status %s).\n' "$ui_status" >&2
+              exit 1
+            fi
+            api_code="$(curl --silent --output "$owned_dir/.api-ready-body" --write-out '%{http_code}' --connect-timeout 1 --max-time 1 http://127.0.0.1:8000/api/ready || true)"
+            if (( SECONDS >= readiness_deadline )); then break; fi
+            ui_code="$(curl --silent --output /dev/null --write-out '%{http_code}' --connect-timeout 1 --max-time 1 http://127.0.0.1:5173/ || true)"
+            if [[ "$api_code" == 200 ]] && python -c 'import json,sys; assert json.load(open(sys.argv[1], encoding="utf-8")).get("status") == "ready"' "$owned_dir/.api-ready-body" 2>/dev/null && [[ "$ui_code" == 200 ]]; then
+              ready=1
+              break
+            fi
+            if (( SECONDS < readiness_deadline )); then sleep 1; fi
           done
-          curl --fail http://127.0.0.1:8000/api/ready
+          if (( ready == 0 )); then
+            printf 'API/frontend readiness timed out after 60 seconds (%s attempts).\n' "$attempt" >&2
+            exit 1
+          fi
+          printf 'API and frontend ready after %s readiness attempts.\n' "$attempt"
+          curl --fail --silent --show-error --connect-timeout 1 --max-time 2 http://127.0.0.1:8000/api/ready
+          sanitize_startup_logs
           DRILLLOOP_E2E_USERNAME=ci-admin DRILLLOOP_E2E_PASSWORD=ci-only-browser-password DRILLLOOP_E2E_OUTSIDER_USERNAME=ci-outsider DRILLLOOP_E2E_OUTSIDER_PASSWORD=ci-only-outsider-password node frontend/e2e/live-workflow.mjs
+
+      - name: Upload sanitized browser startup diagnostics
+        if: ${{ failure() && steps.browser_workflow.outcome == 'failure' && steps.browser_workflow.outputs.diagnostics_dir != '' }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: browser-startup-diagnostics-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ steps.browser_workflow.outputs.diagnostics_dir }}/*
+          if-no-files-found: error
+          retention-days: 3
+          compression-level: 6
 
       - name: Detect committed secrets
         uses: gitleaks/gitleaks-action@e0c47f4f8be36e29cdc102c57e68cb5cbf0e8d1e

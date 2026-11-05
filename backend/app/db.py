@@ -93,9 +93,18 @@ def validate_test_database_url(
     return raw_path
 
 
-def create_database_engine(database_url: str, *, require_new_test_db: bool = True) -> Engine:
+def create_database_engine(database_url: str, *, require_new_test_db: bool | None = None) -> Engine:
     if os.getenv("DRILLLOOP_TEST_MODE") == "1":
+        if require_new_test_db is None:
+            allow_existing = os.getenv("DRILLLOOP_TEST_DB_ALLOW_EXISTING", "0")
+            if allow_existing not in {"0", "1"}:
+                raise UnsafeTestDatabaseError("DRILLLOOP_TEST_DB_ALLOW_EXISTING must be 0 or 1")
+            require_new_test_db = allow_existing != "1"
         validate_test_database_url(database_url, require_new=require_new_test_db)
+    elif os.getenv("DRILLLOOP_TEST_DB_ALLOW_EXISTING") is not None:
+        raise UnsafeTestDatabaseError(
+            "DRILLLOOP_TEST_DB_ALLOW_EXISTING is allowed only in test mode"
+        )
     return create_engine(
         database_url,
         connect_args=database_connect_args(database_url),
