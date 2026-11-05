@@ -1,6 +1,6 @@
 # DrillLoop Progress
 
-Updated: 4 November 2026
+Updated: 5 November 2026
 
 ## Delivery status
 
@@ -274,3 +274,17 @@ See [DRILLLOOP_PHASE6_RELEASE_REVIEW.md](docs/audits/DRILLLOOP_PHASE6_RELEASE_RE
 - `env -u DATABASE_URL .venv/bin/pytest -q`: **89 passed, 1 skipped**, one existing Starlette/httpx deprecation warning. The skipped actual-scanner test requires `DRILLLOOP_TEST_CLAMAV_HOST`; the preceding hosted run 41992812930 passed all 88 backend tests, including ClamAV integration.
 - `.venv/bin/ruff check backend scripts`, `.venv/bin/ruff format --check backend scripts`, `npm --prefix frontend run build`, `actionlint .github/workflows/ci.yml`, Ruby YAML parsing, and `git diff --check`: passed.
 - Existing application databases were not accessed. New hosted verification of the browser startup and remaining CI jobs is pending.
+
+## CI follow-up — hardened container startup (5 November 2026)
+
+- Reproduced the hosted container startup failure with Linux-style secret-file ownership: the workflow creates mode-`0600` files owned by the Actions runner, while the image runs as UID 10001. `database_connect_args` reads the mounted database password during app import, so Uvicorn exits with `PermissionError` before binding port 8000. The readiness loop then obscured the exit as repeated connection failures.
+- The CI container step now gives only the three mounted secret files to UID/GID 10001, refuses to probe if port 8000 already has a listener, detects container exit immediately, and checks that readiness reports the current build revision plus a ready scanner with signatures at most 72 hours old. Its existing 40-second window is retained and each HTTP probe is bounded.
+- On failure, an EXIT trap records bounded `docker ps -a`, selected container state/exit/health fields, capped logs, port listeners, and a bounded readiness response before deleting the failed container. Redaction is tested, only sanitized text files are eligible for a three-day artifact, and secret files remain outside the diagnostics directory. Container cleanup and owner-token-guarded temporary-secret cleanup remain scoped to this test.
+
+### Verification actually run
+
+- `actionlint .github/workflows/ci.yml`, Ruby YAML parsing, extracted workflow shell `bash -n`, `git diff --check`, and a synthetic diagnostic-redaction check: passed.
+- `.venv/bin/ruff check backend scripts` and `.venv/bin/ruff format --check backend scripts`: passed. Targeted stale-signature, missing-scanner, and scanner-outage tests: **3 passed**.
+- A disposable PostgreSQL 18 container migrated successfully. The hardened DrillLoop container started and remained running as UID 10001 with a read-only root and secret mounts; its logs did not contain the original permission failure. `/api/ready` correctly returned `503 SCANNER_SIGNATURES_STALE` because the packaged local ClamAV database was `28172` from 2 November 2026 (77.80 hours old on 5 November).
+- One official FreshClam update invocation against the pinned local image failed with TLS certificate verification error 60. It was not retried. Therefore a successful local ready response with fresh signatures and the complete real-scanner container check remain unverified in this network environment; the hosted update gate remains fail closed. No existing application database was accessed, and all disposable containers/network/secret files were removed while pre-existing containers were preserved.
+- No commit or push was made. Hosted verification of this workflow change is pending.
