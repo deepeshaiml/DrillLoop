@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://drillloop.invalid/schemas/evaluation-v1.schema.json",
+  "title": "DrillLoop independent evaluation dataset v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "dataset_id", "revision", "fictional", "labeling", "exercise", "sources", "expected"],
+  "properties": {
+    "schema_version": {"const": "drillloop-evaluation/v1"},
+    "dataset_id": {"type": "string", "minLength": 1},
+    "revision": {"type": "integer", "minimum": 1},
+    "fictional": {"type": "boolean"},
+    "labeling": {
+      "type": "object",
+      "required": ["labelers", "independent_reviewed", "method"],
+      "properties": {
+        "labelers": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+        "independent_reviewed": {"type": "boolean"},
+        "method": {"type": "string"},
+        "adjudication_record": {"type": ["string", "null"]},
+        "finding_labels_complete": {"type": "boolean"},
+        "observation_labels_complete": {"type": "boolean"},
+        "citation_labels_complete": {"type": "boolean"},
+        "citation_scope": {"type": "string"}
+      }
+    },
+    "exercise": {
+      "type": "object",
+      "required": ["id", "title", "scenario", "date", "duration_minutes", "objectives"],
+      "properties": {
+        "id": {"type": "string"},
+        "title": {"type": "string"},
+        "scenario": {"type": "string"},
+        "date": {"type": "string", "format": "date"},
+        "duration_minutes": {"type": "integer", "minimum": 1, "maximum": 1440},
+        "objectives": {"type": "array", "items": {"type": "object", "required": ["id", "text", "expected_finding_codes"], "properties": {"id": {"type": "string"}, "text": {"type": "string"}, "expected_finding_codes": {"type": "array", "items": {"type": "string"}}}}}
+      }
+    },
+    "sources": {"type": "array", "items": {"type": "object", "required": ["path", "sha256"], "properties": {"path": {"type": "string"}, "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}}}},
+    "expected": {
+      "type": "object",
+      "required": ["observations", "findings", "unknowns", "conflicts"],
+      "properties": {
+        "observations": {"type": "array", "items": {"type": "object", "required": ["source", "locator", "wording", "timestamp", "time_confidence"], "properties": {"source": {"type": "string"}, "locator": {"type": "string"}, "wording": {"type": "string"}, "timestamp": {"type": ["string", "null"]}, "time_confidence": {"enum": ["high", "medium", "low", "unknown", "uncertain"]}}}},
+        "findings": {"type": "array", "items": {"type": "object", "required": ["code", "objective_id", "category", "evidence"], "properties": {"code": {"type": "string"}, "objective_id": {"type": "string"}, "category": {"type": "string"}, "evidence": {"type": "array", "items": {"type": "object", "required": ["source", "locator"], "properties": {"source": {"type": "string"}, "locator": {"type": "string"}}}}}},
+        "unknowns": {"type": "array", "items": {"type": "object", "required": ["source", "locator", "expected"], "properties": {"source": {"type": "string"}, "locator": {"type": "string"}, "expected": {"type": "string"}}}},
+        "conflicts": {"type": "array", "items": {"type": "object", "required": ["source", "locators", "expected"], "properties": {"source": {"type": "string"}, "locators": {"type": "array", "items": {"type": "string"}}, "expected": {"type": "string"}}}},
+        "objective_assessments": {"type": "array", "items": {"type": "object", "required": ["objective_id", "state"], "properties": {"objective_id": {"type": "string"}, "state": {"type": "string"}, "elapsed_seconds": {"type": "array", "items": {"type": "integer"}}, "reported_seconds": {"type": "integer"}, "threshold_seconds": {"type": "integer"}}}}
+      }
+    }
+  }
+}

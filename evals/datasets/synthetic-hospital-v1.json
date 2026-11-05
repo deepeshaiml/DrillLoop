@@ -1,0 +1,83 @@
+{
+  "schema_version": "drillloop-evaluation/v1",
+  "dataset_id": "synthetic-hospital-power-outage",
+  "revision": 2,
+  "fictional": true,
+  "labeling": {
+    "labelers": ["DrillLoop engineering team"],
+    "independent_reviewed": false,
+    "method": "Developer-authored expected outcomes for a fictional regression fixture; revision 2 corrects audio segment offsets that revision 1 had mislabeled as event timestamps. No field accuracy claim.",
+    "adjudication_record": null,
+    "finding_labels_complete": true,
+    "observation_labels_complete": true,
+    "citation_labels_complete": false,
+    "citation_scope": "The evidence arrays name canonical required references; duplicate and alternate-source references were not exhaustively adjudicated."
+  },
+  "exercise": {
+    "id": "HOSP-PO-2026-01",
+    "title": "Night Shift: Extended Power Loss (fictional evaluation fixture)",
+    "scenario": "Fictional regional hospital exercise: prolonged utility outage tests emergency power transfer, unit communications, timestamp accuracy, and patient-care continuity.",
+    "date": "2026-10-16",
+    "duration_minutes": 120,
+    "objectives": [
+      {"id": "OBJ-01", "text": "Restore and confirm essential power circuits within 60 seconds of a primary supply interruption.", "evaluation_rule": {"type": "elapsed_time", "threshold_seconds": 60, "start_terms": ["primary utility power supply failed"], "completion_terms": ["essential circuits were restored"], "finding_code": "POWER_RESTORATION_DELAY", "finding_title": "Essential power restoration exceeded the exercise target"}, "expected_finding_codes": ["POWER_RESTORATION_DELAY"]},
+      {"id": "OBJ-02", "text": "Communicate outage status and obtain unit acknowledgement within three minutes.", "evaluation_rule": {"type": "elapsed_time", "threshold_seconds": 180, "start_terms": ["request for each inpatient unit to acknowledge", "outage acknowledgement was requested"], "completion_terms": ["acknowledged the outage by runner"], "completion_claim_terms": ["watch shows acknowledgement at"], "finding_code": "COMMUNICATION_ACK_DELAY", "finding_title": "Unit acknowledgement exceeded the three-minute objective"}, "expected_finding_codes": ["COMMUNICATION_ACK_DELAY"]},
+      {"id": "OBJ-03", "text": "Activate patient-care continuity procedures and preserve medication cold-chain records.", "evaluation_rule": {"type": "event_presence", "terms": ["cold-chain relocation procedure"], "finding_code": "COLD_CHAIN_PROCEDURE_COMPLETED", "finding_title": "Emergency cold-chain procedure completed"}, "expected_finding_codes": ["COLD_CHAIN_PROCEDURE_COMPLETED"]},
+      {"id": "OBJ-04", "text": "Capture and reconcile response start and arrival timestamps in the incident log.", "evaluation_rule": {"type": "reported_duration", "start_terms": ["primary utility power supply failed"], "completion_terms": ["facilities technician arrived at the switch room"], "claim_terms": ["incident log recorded a facilities response time"], "finding_code": "RESPONSE_TIME_DISCREPANCY", "finding_title": "Reported response time conflicts with source timestamps"}, "expected_finding_codes": ["RESPONSE_TIME_DISCREPANCY"]},
+      {"id": "OBJ-05", "text": "Record an accountable owner for each improvement action.", "evaluation_rule": {"type": "required_field", "field_terms": ["owner"], "missing_terms": ["owner field was left blank"], "finding_code": "ACTION_OWNER_MISSING", "finding_title": "Improvement action owner is not recorded"}, "expected_finding_codes": ["ACTION_OWNER_MISSING"]}
+    ]
+  },
+  "sources": [
+    {"path": "demo/evidence/control_room_log.csv", "sha256": "3e5cb9557b0815b279ff8bee6f5d57302d313996c2bf9c75ffc990b5f6fa3f75"},
+    {"path": "demo/evidence/evaluator_notes.txt", "sha256": "3f81dd4a14d3af995891e1d6963f9d90ab275a2a8c9794b191df9e7ff2be67a7"},
+    {"path": "demo/evidence/transcript.json", "sha256": "55c2a02cffa46f55c455cce596a2969699f91c94e8faa00457486334a3ab8cb6"}
+  ],
+  "expected": {
+    "observations": [
+      {"source": "control_room_log.csv", "locator": "row 2", "wording": "Primary utility power supply failed at the hospital.", "timestamp": "2026-10-16T09:02:00", "time_confidence": "medium"},
+      {"source": "control_room_log.csv", "locator": "row 3", "wording": "Backup generator was stable and essential circuits were restored four minutes after the primary supply failed.", "timestamp": "2026-10-16T09:06:00", "time_confidence": "medium"},
+      {"source": "control_room_log.csv", "locator": "row 4", "wording": "Outage acknowledgement was requested from the inpatient units by radio.", "timestamp": "2026-10-16T09:03:00", "time_confidence": "medium"},
+      {"source": "control_room_log.csv", "locator": "row 5", "wording": "The ICU acknowledged the outage by runner; radio acknowledgement was not confirmed until seven minutes after the request.", "timestamp": "2026-10-16T09:10:00", "time_confidence": "medium"},
+      {"source": "control_room_log.csv", "locator": "row 6", "wording": "Facilities technician arrived at the switch room six minutes after the primary supply failure.", "timestamp": "2026-10-16T09:08:00", "time_confidence": "medium"},
+      {"source": "control_room_log.csv", "locator": "row 7", "wording": "Incident log recorded a facilities response time of two minutes.", "timestamp": "2026-10-16T09:09:00", "time_confidence": "medium"},
+      {"source": "control_room_log.csv", "locator": "row 8", "wording": "Staff completed the emergency medication cold-chain relocation procedure and logged chain of custody.", "timestamp": "2026-10-16T09:18:00", "time_confidence": "medium"},
+      {"source": "control_room_log.csv", "locator": "row 9", "wording": "Improvement action to reduce radio acknowledgement delays was recorded but the owner field was left blank.", "timestamp": "2026-10-16T09:22:00", "time_confidence": "medium"},
+      {"source": "evaluator_notes.txt", "locator": "line 1", "wording": "Evaluator A: The primary utility power supply failed.", "timestamp": "2026-10-16T09:02:00", "time_confidence": "medium"},
+      {"source": "evaluator_notes.txt", "locator": "line 2", "wording": "Evaluator A: Backup generator output and essential circuits were stable four minutes after the failure.", "timestamp": "2026-10-16T09:06:00", "time_confidence": "medium"},
+      {"source": "evaluator_notes.txt", "locator": "line 3", "wording": "Evaluator B: Incident Command sent a radio request for each inpatient unit to acknowledge the outage.", "timestamp": "2026-10-16T09:03:00", "time_confidence": "medium"},
+      {"source": "evaluator_notes.txt", "locator": "line 4", "wording": "Evaluator B: ICU acknowledgement came by runner; the radio acknowledgement was delayed seven minutes.", "timestamp": "2026-10-16T09:10:00", "time_confidence": "medium"},
+      {"source": "evaluator_notes.txt", "locator": "line 5", "wording": "Evaluator A: Facilities technician arrived at the switch room six minutes after power failed.", "timestamp": "2026-10-16T09:08:00", "time_confidence": "medium"},
+      {"source": "evaluator_notes.txt", "locator": "line 6", "wording": "Evaluator A: The incident log says the response time was two minutes, although the failure was logged at 09:02 and arrival at 09:08.", "timestamp": "2026-10-16T09:09:00", "time_confidence": "medium"},
+      {"source": "evaluator_notes.txt", "locator": "line 7", "wording": "Evaluator C: ICU staff completed the emergency medication cold-chain relocation procedure and documented chain of custody.", "timestamp": "2026-10-16T09:18:00", "time_confidence": "medium"},
+      {"source": "evaluator_notes.txt", "locator": "line 8", "wording": "Evaluator C: A follow-up action for radio acknowledgement delay was recorded, but no responsible owner was entered.", "timestamp": "2026-10-16T09:22:00", "time_confidence": "medium"},
+      {"source": "evaluator_notes.txt", "locator": "line 9", "wording": "Evaluator B: My watch shows acknowledgement at 09:11, while the control room log says 09:10. The acknowledgement time is unresolved.", "timestamp": "2026-10-16T09:22:00", "time_confidence": "medium"},
+      {"source": "evaluator_notes.txt", "locator": "line 10", "wording": "Generator lagged a bit before transfer, I guess. (No time or direct measurement recorded.)", "timestamp": null, "time_confidence": "unknown"},
+    {"source": "transcript.json", "locator": "segment 1", "wording": "Facilities arrived at the switch room at nine oh eight.", "timestamp": null, "time_confidence": "unknown"},
+    {"source": "transcript.json", "locator": "segment 2", "wording": "The log says response time was too minutes.", "timestamp": null, "time_confidence": "uncertain"},
+    {"source": "transcript.json", "locator": "segment 3", "wording": "ICU completed the cold-chain relocation procedure.", "timestamp": null, "time_confidence": "unknown"}
+    ],
+    "findings": [
+      {"code": "POWER_RESTORATION_DELAY", "objective_id": "OBJ-01", "category": "improvement", "evidence": [{"source": "control_room_log.csv", "locator": "row 2"}, {"source": "control_room_log.csv", "locator": "row 3"}]},
+      {"code": "COMMUNICATION_ACK_DELAY", "objective_id": "OBJ-02", "category": "improvement", "evidence": [{"source": "control_room_log.csv", "locator": "row 4"}, {"source": "control_room_log.csv", "locator": "row 5"}]},
+      {"code": "COLD_CHAIN_PROCEDURE_COMPLETED", "objective_id": "OBJ-03", "category": "strength", "evidence": [{"source": "control_room_log.csv", "locator": "row 8"}]},
+      {"code": "RESPONSE_TIME_DISCREPANCY", "objective_id": "OBJ-04", "category": "improvement", "evidence": [{"source": "control_room_log.csv", "locator": "row 2"}, {"source": "control_room_log.csv", "locator": "row 6"}, {"source": "control_room_log.csv", "locator": "row 7"}]},
+      {"code": "ACTION_OWNER_MISSING", "objective_id": "OBJ-05", "category": "improvement", "evidence": [{"source": "control_room_log.csv", "locator": "row 9"}]}
+    ],
+    "unknowns": [
+      {"source": "evaluator_notes.txt", "locator": "line 10", "expected": "Ambiguous untimed phrase remains unknown and is not promoted to an event or finding."},
+      {"source": "transcript.json", "locator": "segment 1", "expected": "The recording offset locates the spoken segment but does not establish the time of the described arrival."},
+      {"source": "transcript.json", "locator": "segment 2", "expected": "Low-confidence synthetic transcript wording remains marked uncertain for human review; the segment offset is not an event time."},
+      {"source": "transcript.json", "locator": "segment 3", "expected": "The recording offset locates the spoken segment but does not establish the time of the described completion."}
+    ],
+    "conflicts": [
+      {"source": "evaluator_notes.txt", "locators": ["line 9"], "expected": "Conflicting 09:10 and 09:11 times remain visible as unresolved."}
+    ],
+    "objective_assessments": [
+      {"objective_id": "OBJ-01", "state": "confirmed_failure", "elapsed_seconds": [240], "threshold_seconds": 60},
+      {"objective_id": "OBJ-02", "state": "confirmed_failure_with_conflict", "elapsed_seconds": [420, 480], "threshold_seconds": 180},
+      {"objective_id": "OBJ-03", "state": "confirmed_success"},
+      {"objective_id": "OBJ-04", "state": "confirmed_failure", "elapsed_seconds": [360], "reported_seconds": 120},
+      {"objective_id": "OBJ-05", "state": "confirmed_failure"}
+    ]
+  }
+}
