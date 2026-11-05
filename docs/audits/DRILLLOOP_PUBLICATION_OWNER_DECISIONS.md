@@ -1,64 +1,31 @@
 # DrillLoop publication owner decisions
 
-**Status:** Project-owner ownership attestation recorded; distribution and publication decisions remain pending.
-**Reviewed baseline:** `6739c8133b4a67878224a0f228a18c9bbb24da2c`
-**Scope:** Proposed public distribution of the current DrillLoop release branch.
+**Decision date:** 5 November 2026 · **Release branch:** `release/drillloop-phase6-rc1` · **Decision baseline:** `c6e01d0e901548f3111d371a890c6ec78cb6f344`
+**Status:** Owner-authorized public distribution and pull request, subject to third-party license terms and the verification recorded below.
 
-This record separates repository evidence from owner statements and decisions. Do not treat an empty field or silence as approval.
+This record captures the project owner's explicit decisions. It does not establish rights held by third parties or override applicable contracts.
 
-## Project-owner ownership attestation
+## Owner decisions
 
-On 4 November 2026, the project owner stated: “I independently developed DrillLoop and maintain its original source code, documentation, screenshots, branding, and project materials.” This is recorded as the owner's attestation, not as an independent legal finding. It applies to the original materials the owner identifies as theirs. It does not assert rights to third-party assets or source material, resolve any applicable employment, contractor, customer, contributor, or other contractual obligation, select a project license, approve public distribution, or decide the historical disclosure. No separate organizational approval is requested for the independently owned original materials covered by this attestation; any specific contrary contractual or third-party evidence remains a separate issue.
+- The owner states that they independently developed and maintain DrillLoop's original source code, UI, screenshots, branding, documentation, and project materials, and authorizes public distribution of those original materials.
+- The distribution model is **publicly visible with rights reserved**. No open-source license is selected or added. The owner's rights-reserved choice does not change third-party licenses.
+- The release must not imply organizational sponsorship or endorsement. The reviewed public-facing PDFs contain no organization name, sponsorship, or endorsement claim; retain neutral wording and branding.
+- The independently generated Business Review and the verified Noto Sans PDF exports are approved for publication as original project materials.
+- The owner accepts the historical local-directory path disclosure as limited and non-confidential. No Git history rewrite, force-push, or deletion of history is authorized or requested.
+- Third-party material must follow its actual license. The owner attestation does not grant additional third-party rights.
+- The owner authorizes the local decision/notice commit, publication of `release/drillloop-phase6-rc1` to the existing public `origin`, one pull request against `main`, and inspection of hosted CI. This does not authorize merging, deployment, or repository-setting changes.
 
-## Repository evidence
+## Technical evidence and limits
 
-| Material | Evidence found | Decision still needed |
-|---|---|---|
-| Application source code | The source is in this repository. The owner attests to independently developing and maintaining the original project source. No project-level source-code license is present. Dependencies keep their own licenses. | The attestation records owner-stated control of original code. Distribution model and any specific contractual or contributor exception remain undecided; this is not a public-push authorization. |
-| Project documentation | The owner attests to maintaining original project documentation and materials. The Idea Document PDF/DOCX author is “DrillLoop project team”; the Business Case PDF metadata is anonymous; the Pitch Deck metadata says “DrillLoop.” The Idea Document and Business Case cite external sources; source files and third-party artwork were not found embedded. | Ownership of owner-identified original material is attested. Preserve existing credits. Specific attribution accuracy, factual review, treatment of third-party source summaries/quotations, and public-release authorization remain for the owner to decide. |
-| UI screenshots and branding | `frontend/scripts/capture_demo.mjs` uses Playwright to capture the local DrillLoop overview, findings, and corrective-actions screens. The demo content is synthetic. The owner attests to maintaining original screenshots and branding. The UI shows the text wordmark “drillloop,” not a separate logo image. Icons come from `lucide-react` 0.468.0 (ISC). CSS requests “Avenir Next” first, but the capture does not record the browser's resolved font; the PNGs contain rasterized glyphs, not a font file. | Owner-stated rights to original project UI, screenshots, and branding are recorded, subject to the stated contractual caveat. The actual rendered font remains unidentified; verify it or authorize re-capture with pinned Noto Sans. Preserve the Lucide notice where its license condition applies. |
-| Idea Document | The PDF includes the Overview screenshot and retains its existing group attribution. Its current local PDF export uses verified Noto Sans fonts; the editable DOCX is unchanged. | Original project-document ownership is covered by the owner attestation. The accuracy of the “DrillLoop project team” credit and treatment of cited third-party summaries remain undecided; preserve the existing credit unless the owner authorizes a specific correction. |
-| Business Case | Generated by `scripts/generate_docs.py`; PDF metadata is anonymous. It contains text and vector layout, no embedded images, and only standard PDF Helvetica references. | Original project-document ownership is covered by the owner attestation. Decide whether anonymous metadata and the current factual/source summaries are appropriate for publication; anonymity is not an authorship statement. |
-| Pitch Deck | Generated from `presentation/generate_deck.js`; metadata names “DrillLoop.” Its three UI screenshots are app captures. Current PPTX image descriptions are corrected. Its current local PDF uses verified Noto Sans fonts; the PPTX is unchanged. | Original project-document and branding ownership are covered by the owner attestation, subject to its caveat. Resolve the screenshot font provenance and cited-source/content review; earlier path-bearing versions remain reachable in history. |
-| Independent Business Review | The 12-slide replacement uses new text and native shapes from `presentation/generate_business_review.js`; it does not use the former template or OpenAI Sans. Its PDF font provenance is verified in the asset register. | The owner attestation covers original project materials, subject to its caveat. Public distribution remains undecided; the previous template-based deck remains in earlier Git history. |
-| Other generated PDFs | The Architecture PDF was re-exported from the tracked SVG with verified Noto Sans. The Business Case and Evaluation PDFs use standard PDF Base-14 font references and embed no font files. | Original project-authored material is covered by the owner attestation. No font binary is being redistributed in the Base-14 PDFs; content accuracy and public-distribution choices remain for the owner. |
+- Original project screenshots are generated by `frontend/scripts/capture_demo.mjs` from the local DrillLoop UI and use fictional demo content. The owner has authorized publication of the original screenshots and UI. CSS requests Avenir Next first, but the capture does not identify the browser-resolved system font. No evidence of a font restriction was found; under the owner's instruction, this missing environment detail is not a publication gate by itself. This does not grant rights to any third-party font if a restriction is later identified.
+- Lucide React 0.468.0 is an ISC-licensed dependency used by the UI; Feather attribution is included in the package's license text. The exact package notice is reproduced in [THIRD_PARTY_NOTICES.md](../../THIRD_PARTY_NOTICES.md).
+- Noto Sans and Noto Sans Symbols, from the pinned Google Fonts revision recorded in the asset-rights register, are licensed under SIL OFL 1.1. Only subsets embedded in PDFs are present; no standalone font binaries are distributed. Copyright and license references are in [THIRD_PARTY_NOTICES.md](../../THIRD_PARTY_NOTICES.md) and the [asset-rights register](DRILLLOOP_ASSET_RIGHTS_REGISTER.md).
+- A targeted text review of the current Idea Document, Business Case, Pitch Deck, Business Review, Evaluation Report, and Architecture PDFs found no third-party source files or artwork embedded and identified no quotations from cited external sources. The quote-marked phrases found are fictional exercise/demo evidence. The Idea Document and Business Case retain citations to their public sources; citation does not transfer rights to those sources.
+- The old template-based 14-slide Business Review remains in earlier Git history. Package comparison found its masters, layouts, themes, and 24 embedded font parts in the Phase 9 commit byte-identical to those already present on public `main`; the current branch tip replaces the deck with the independent version. This comparison records repository history only and does not assert third-party ownership or license rights. The old version is not part of the current release tree, and no history rewrite is authorized.
+- The historical Pitch Deck paths appeared in image-description fields on slides 3, 5, and 7. Prior package inspection found local account/workspace/project directory structure, with no credential, private endpoint, or confidential exercise evidence. The current release removes the descriptions. The owner accepts the historical disclosure; earlier commits remain reachable.
 
-## Owner decisions to record
+## Distribution and release boundaries
 
-### Content and attribution decisions
+The repository remains public with rights reserved; no project `LICENSE` file is added. Existing dependencies and embedded third-party material retain their own notices and terms. This owner decision authorizes publication of owner-controlled original materials and the current release branch, not a grant of rights to third-party material.
 
-- [x] Project-owner attestation recorded above for independently developed/maintained original source code, documentation, screenshots, branding, and project materials, subject to third-party rights and applicable contractual obligations.
-- [ ] Confirm whether the “DrillLoop project team” Idea Document attribution is factually accurate; preserve it unless an authorized correction is made.
-- [ ] Decide whether the Business Case's anonymous author metadata and current factual/source summaries are suitable for publication.
-- [ ] Review cited-source summaries and quotations; list exact revisions or exclusions here: ____________________.
-- [ ] Resolve the screenshot's actual rendered font (verify its applicable rights or authorize a pinned Noto Sans re-capture).
-- [ ] Authorize publication of specified content and the chosen repository audience; ownership attestation alone is not a public-distribution authorization.
-
-If any specific statement cannot be confirmed, identify the exact file and authorize a separately scoped revision or replacement. Do not remove attribution merely to make a file appear ownerless. Do not request separate organizational approval for the owner-attested original materials absent specific evidence of an applicable assignment or contractual exception.
-
-### Distribution model — select one
-
-- [ ] **A. Publicly viewable; rights reserved.** No broad reuse license is granted by this choice. Third-party licenses still apply.
-- [ ] **B. Open source.** Code license: ____________________. Documentation/content license (if different): ____________________. Neither license may grant rights to third-party materials.
-- [ ] **C. Private or organization-controlled.** Controlling organization and intended repository audience: ____________________.
-
-No `LICENSE` file is currently recorded in the reviewed release baseline. Do not add a project license until the owner selects the model and scope.
-
-### Historical Pitch Deck disclosure — security-owner decision
-
-Earlier public history contains developer-machine directory paths in image-description fields on Pitch Deck slides 3, 5, and 7. The inspected package exposed a local account/workspace/project hierarchy; no credential, private endpoint, or confidential exercise evidence was found. The current release candidate removes those descriptions, but the historical commits remain reachable.
-
-- [ ] **Accept** this as a limited historical directory-structure disclosure; no history rewrite is requested.
-- [ ] **Request a separate remediation proposal** evaluating history replacement, collaborator/fork impact, and disclosure obligations. This does not authorize a rewrite, force-push, or remote change.
-
-Recommendation: accept if the directory labels are confirmed non-confidential and internal policy does not require further response. Otherwise request a separate proposal. Normal commits correct the branch tip but do not remove the old paths from Git history.
-
-## Final owner authorization
-
-The local PDF corrections and this decision record are not committed. The project-owner ownership attestation is recorded above. Public GitHub publication remains on hold until the owner chooses a distribution model and authorizes the publication scope, the unresolved screenshot-font and third-party-source issues are addressed, and the historical-disclosure disposition is recorded. This record does not authorize a push.
-
-**Project owner:** ____________________  **Date:** ____________________
-
-**Security owner (if separate):** ____________________  **Date:** ____________________
-
-**Specific content approved for public publication:** ____________________
+The local technical evidence supports a fictional demo and the tested local workflow only. It does not establish approved staging, production readiness, real-evidence accuracy, or operational acceptance. The separate go-live gate remains authoritative for those requirements.
