@@ -14,7 +14,8 @@ from datetime import UTC, datetime
 
 VERSION_PATTERN = re.compile(r"^ClamAV (?P<engine>[^/]+)/(?P<database>\d+)/(?P<timestamp>.+)$")
 DIAGNOSTIC_PATTERN = re.compile(
-    r"freshclam|daily\.cvd|main\.cvd|bytecode\.cvd|download|update|error|warning|rate limit",
+    r"freshclam|daily\.cvd|main\.cvd|bytecode\.cvd|download|update|error|warning|"
+    r"rate limit|failed|failure|fatal|not notified|not found|connection refused",
     re.IGNORECASE,
 )
 URL_PATTERN = re.compile(r"https?://\S+", re.IGNORECASE)
@@ -73,13 +74,86 @@ def _diagnostics(container_id: str, last_check: dict[str, object] | None) -> Non
     lines = (result.stdout + "\n" + result.stderr).splitlines()
     selected = [line for line in lines if DIAGNOSTIC_PATTERN.search(line)]
     if not selected:
-        print("No FreshClam update errors or warnings were captured.", file=sys.stderr)
+        print("No FreshClam error or warning lines were found in container logs.", file=sys.stderr)
         return
     print("Filtered FreshClam diagnostics:", file=sys.stderr)
     for line in selected[-40:]:
         safe_line = URL_PATTERN.sub("<redacted-url>", line)
         safe_line = IP_PATTERN.sub("<redacted-ip>", safe_line)
         print(safe_line[:400], file=sys.stderr)
+
+
+def _safe_freshclam_lines(output: str) -> list[str]:
+    selected = [line for line in output.splitlines() if DIAGNOSTIC_PATTERN.search(line)]
+    safe_lines = []
+    for line in selected[-40:]:
+        safe_line = URL_PATTERN.sub("<redacted-url>", line)
+        safe_lines.append(IP_PATTERN.sub("<redacted-ip>", safe_line)[:400])
+    return safe_lines
+
+
+def _refresh_signatures(container_id: str, timeout: float) -> bool:
+    """Run one official FreshClam check after clamd is operational; never overlap daemons."""
+    command = [
+        "docker",
+        "exec",
+        "--user",
+        "clamav",
+        container_id,
+        "timeout",
+        "--signal=TERM",
+        "--kill-after=10s",
+        f"{timeout:g}s",
+        "freshclam",
+        "--stdout",
+        "--config-file=/etc/clamav/freshclam.conf",
+        "--daemon-notify=/etc/clamav/clamd.conf",
+    ]
+    try:
+        result = subprocess.run(
+            command,
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=timeout + 15,
+        )
+    except subprocess.TimeoutExpired as exc:
+        print(
+            f"Single FreshClam update did not complete: {type(exc).__name__}.",
+            file=sys.stderr,
+        )
+        output = "\n".join(
+            value.decode(errors="replace") if isinstance(value, bytes) else value or ""
+            for value in (exc.stdout, exc.stderr)
+        )
+        for line in _safe_freshclam_lines(output):
+            print(line, file=sys.stderr)
+        _diagnostics(container_id, {"freshclam_error": type(exc).__name__})
+        return False
+    except OSError as exc:
+        print(
+            f"Single FreshClam update did not start: {type(exc).__name__}.",
+            file=sys.stderr,
+        )
+        _diagnostics(container_id, {"freshclam_error": type(exc).__name__})
+        return False
+
+    output = result.stdout + "\n" + result.stderr
+    safe_lines = _safe_freshclam_lines(output)
+    if result.returncode:
+        print(
+            f"Single FreshClam update failed with exit code {result.returncode}.",
+            file=sys.stderr,
+        )
+        for line in safe_lines:
+            print(line, file=sys.stderr)
+        _diagnostics(container_id, {"freshclam_exit_code": result.returncode})
+        return False
+
+    print("FreshClam update result:")
+    for line in safe_lines:
+        print(line)
+    return True
 
 
 def main() -> int:
@@ -89,6 +163,7 @@ def main() -> int:
     parser.add_argument("--port", type=int, default=3310)
     parser.add_argument("--max-age-hours", type=float, default=72)
     parser.add_argument("--timeout-seconds", type=float, default=600)
+    parser.add_argument("--freshclam-timeout-seconds", type=float, default=300)
     parser.add_argument("--interval-seconds", type=float, default=5)
     parser.add_argument("--socket-timeout-seconds", type=float, default=3)
     parser.add_argument("--expected-engine-version", default="1.5.4")
@@ -98,10 +173,14 @@ def main() -> int:
         not 1 <= args.port <= 65535
         or not 1 <= args.max_age_hours <= 24 * 14
         or args.timeout_seconds <= 0
+        or args.freshclam_timeout_seconds <= 0
         or args.interval_seconds <= 0
         or not 0 < args.socket_timeout_seconds <= 30
     ):
         parser.error("port, freshness, and timeout settings are outside supported bounds")
+
+    if not _refresh_signatures(args.container_id, args.freshclam_timeout_seconds):
+        return 1
 
     deadline = time.monotonic() + args.timeout_seconds
     last_check: dict[str, object] | None = None

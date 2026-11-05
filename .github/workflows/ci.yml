@@ -36,8 +36,7 @@ jobs:
         image: clamav/clamav-debian:1.5.4@sha256:c21aa18cc0a358678255a3dfb343a4555b58f71b97d7b869df8fdf7ea0a5b4b1
         env:
           CLAMAV_NO_MILTERD: "true"
-          CLAMAV_NO_FRESHCLAMD: "false"
-          FRESHCLAM_CHECKS: "1"
+          CLAMAV_NO_FRESHCLAMD: "true"
         ports:
           - 3310:3310
         options: >-
@@ -85,6 +84,7 @@ jobs:
           --port 3310
           --max-age-hours 72
           --timeout-seconds 600
+          --freshclam-timeout-seconds 300
           --interval-seconds 5
           --socket-timeout-seconds 3
           --expected-engine-version 1.5.4
