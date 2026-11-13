@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import {
   Activity, AlertTriangle, ArrowDownToLine, AudioLines, Check, CheckCircle2,
   ChevronDown, ChevronRight, Clock3, FileCheck2, FileText, FolderOpen,
@@ -196,7 +196,7 @@ function validateObjectiveDrafts(drafts: ObjectiveDraft[]): string[] {
 }
 
 function ObjectiveEditor({ value, onChange, onClose, onSubmit, busy, errorMessage }: { value: ObjectiveDraft[]; onChange: (value: ObjectiveDraft[]) => void; onClose: () => void; onSubmit: () => void; busy: boolean; errorMessage: string }) {
-  const dialogRef = useAccessibleDialog<HTMLFormElement>(onClose)
+  const dialogRef = useAccessibleDialog<HTMLElement>(onClose)
   const [attempted, setAttempted] = useState(false)
   const errors = attempted ? validateObjectiveDrafts(value) : []
   const update = (index: number, field: keyof ObjectiveDraft, nextValue: string) => onChange(value.map((draft, draftIndex) => draftIndex === index ? { ...draft, [field]: nextValue } : draft))
@@ -205,7 +205,7 @@ function ObjectiveEditor({ value, onChange, onClose, onSubmit, busy, errorMessag
     setAttempted(true)
     if (validateObjectiveDrafts(value).length === 0) onSubmit()
   }
-  return <div className="modal-shade"><form ref={dialogRef} className="create-modal objective-editor" role="dialog" aria-modal="true" aria-labelledby="objectives-heading" tabIndex={-1} noValidate onSubmit={submit}>
+  return <div className="modal-shade"><section ref={dialogRef} className="create-modal objective-editor" role="dialog" aria-modal="true" aria-labelledby="objectives-heading" tabIndex={-1}><form noValidate onSubmit={submit}>
     <div className="modal-head"><div className="modal-file-icon"><Check size={19} /></div><div><span>OBJECTIVE SETUP</span><h2 id="objectives-heading">Define what success looks like</h2></div><button type="button" className="icon-button" onClick={onClose} aria-label="Close objective editor"><X size={18} /></button></div>
     <div className="create-form objective-draft-list">
       <p className="objective-editor-intro">Describe the intended outcome, then choose what the source records must show. Each objective stays linked to this exercise.</p>
@@ -240,7 +240,7 @@ function ObjectiveEditor({ value, onChange, onClose, onSubmit, busy, errorMessag
       <div className="objective-rule-help"><HelpCircle size={15} /><span>Time criteria compare a source-matched start and completion timestamp with the target. Missing or conflicting evidence stays visible for evaluator review. Objectives become read-only after analysis starts so existing findings and decisions keep their original context.</span></div>
     </div>
     <div className="modal-footer"><span>Unconfigured criteria remain marked for evaluator review.</span><div><button type="button" className="button secondary" onClick={onClose}>Cancel</button><button type="submit" className="button primary" disabled={busy}><Check size={14} /> Save objectives</button></div></div>
-  </form></div>
+  </form></section></div>
 }
 
 const api = async <T,>(path: string, options: RequestInit = {}): Promise<T> => {
@@ -381,11 +381,25 @@ export default function App() {
     if (selectedId) localStorage.setItem('drillloop-selected-exercise', selectedId)
   }, [selectedId])
 
-  useEffect(() => {
-    if (tab === 'reports') {
-      document.querySelector<HTMLElement>('.subnav-link[aria-current="page"]')?.scrollIntoView({ block: 'nearest', inline: 'nearest' })
+  useLayoutEffect(() => {
+    const revealActiveSection = () => {
+      const nav = document.querySelector<HTMLElement>('.subnav')
+      const active = nav?.querySelector<HTMLElement>('.subnav-link[aria-current="page"]')
+      if (!nav || !active) return
+
+      const navBounds = nav.getBoundingClientRect()
+      const activeBounds = active.getBoundingClientRect()
+      if (activeBounds.left < navBounds.left) {
+        nav.scrollLeft -= navBounds.left - activeBounds.left
+      } else if (activeBounds.right > navBounds.right) {
+        nav.scrollLeft += activeBounds.right - navBounds.right
+      }
     }
-  }, [tab])
+
+    revealActiveSection()
+    window.addEventListener('resize', revealActiveSection)
+    return () => window.removeEventListener('resize', revealActiveSection)
+  }, [tab, data?.findings])
 
   useEffect(() => {
     if (!resetWorkspaceScrollOnSelection.current || tab === 'exercises' || data?.exercise.id !== selectedId) return
@@ -1444,7 +1458,7 @@ function ActionsView({ data, busy, canEdit, canReview, identityName, isSynthetic
 }
 
 function ReviewDecisionModal({ target, data, busy, errorMessage, onClose, onSubmit }: { target: ReviewTarget; data: Detail; busy: boolean; errorMessage: string; onClose: () => void; onSubmit: (note: string) => Promise<boolean> }) {
-  const dialogRef = useAccessibleDialog<HTMLFormElement>(onClose)
+  const dialogRef = useAccessibleDialog<HTMLElement>(onClose)
   const [note, setNote] = useState('')
   const isFinding = target.kind === 'finding'
   const title = target.record.title
@@ -1452,7 +1466,7 @@ function ReviewDecisionModal({ target, data, busy, errorMessage, onClose, onSubm
   const evidenceCount = isFinding ? target.record.supporting_evidence.length : target.record.evidence_ids.length
   const heading = `${target.decision === 'approved' ? 'Approve' : 'Reject'} this ${isFinding ? 'finding' : 'action'}?`
   const actionLabel = target.decision === 'approved' ? 'Approve' : 'Reject'
-  return <div className="modal-shade fa-modal-shade" onMouseDown={event => { if (event.target === event.currentTarget && !busy) onClose() }}><form ref={dialogRef} className="fa-decision-modal" role="dialog" aria-modal="true" aria-labelledby="review-decision-heading" aria-describedby="review-decision-explanation" tabIndex={-1} onSubmit={event => { event.preventDefault(); void onSubmit(note.trim()) }}>
+  return <div className="modal-shade fa-modal-shade" onMouseDown={event => { if (event.target === event.currentTarget && !busy) onClose() }}><section ref={dialogRef} className="fa-decision-modal" role="dialog" aria-modal="true" aria-labelledby="review-decision-heading" aria-describedby="review-decision-explanation" tabIndex={-1}><form onSubmit={event => { event.preventDefault(); void onSubmit(note.trim()) }}>
     <div className="fa-modal-heading"><span className={`fa-modal-icon ${target.decision}`} aria-hidden="true">{target.decision === 'approved' ? <CheckCircle2 size={21} /> : <XCircle size={21} />}</span><div><p className="fa-eyebrow">HUMAN REVIEW · {target.kind.toUpperCase()}</p><h2 id="review-decision-heading">{heading}</h2></div><button type="button" className="icon-button" onClick={onClose} aria-label="Close review decision" disabled={busy}><X size={18} /></button></div>
     <div className="fa-modal-content"><div className="fa-review-subject"><span>{isFinding ? 'FINDING' : 'CORRECTIVE ACTION'}</span><strong>{title}</strong>{!isFinding && <small>Linked finding: {linkedFinding?.title || 'Finding information unavailable'}</small>}<small>{evidenceCount} linked source reference{evidenceCount === 1 ? '' : 's'}</small></div>
       <p id="review-decision-explanation" className="fa-decision-explanation">{isFinding ? target.decision === 'approved' ? 'Approval records your decision that this source-linked finding is accepted for this exercise. It also allows its related corrective action to proceed to review. DrillLoop does not independently verify the event.' : 'Rejection records that this proposed finding is not accepted for this exercise. Finding decisions cannot be changed after they are recorded.' : target.decision === 'approved' ? 'Approval records your decision to accept this corrective action. The linked finding must be approved, and an owner and due date must be assigned.' : 'Rejection records that this proposed corrective action is not accepted. An open action can be reviewed again before it is closed.'}</p>
@@ -1460,16 +1474,16 @@ function ReviewDecisionModal({ target, data, busy, errorMessage, onClose, onSubm
       {errorMessage && <div className="fa-modal-error" role="alert"><AlertTriangle size={16} />{errorMessage}</div>}
     </div>
     <div className="fa-modal-footer"><span>Recorded as {target.decision} by the signed-in reviewer.</span><button type="button" className="button secondary" onClick={onClose} disabled={busy}>Cancel</button><button type="submit" className={`button ${target.decision === 'approved' ? 'primary' : 'danger'}`} disabled={busy}>{busy && <LoaderCircle size={15} className="spin" />}{busy ? 'Recording decision…' : <>{target.decision === 'approved' ? <CheckCircle2 size={16} /> : <XCircle size={16} />}{actionLabel} {isFinding ? 'finding' : 'action'}</>}</button></div>
-  </form></div>
+  </form></section></div>
 }
 
 function ClosureEvidenceModal({ action, busy, errorMessage, onClose, onSubmit }: { action: Action; busy: boolean; errorMessage: string; onClose: () => void; onSubmit: (evidence: string) => Promise<boolean> }) {
-  const dialogRef = useAccessibleDialog<HTMLFormElement>(onClose)
+  const dialogRef = useAccessibleDialog<HTMLElement>(onClose)
   const [evidence, setEvidence] = useState('')
   const [attempted, setAttempted] = useState(false)
   const trimmedLength = evidence.trim().length
   const invalid = attempted && trimmedLength < 12
-  return <div className="modal-shade fa-modal-shade" onMouseDown={event => { if (event.target === event.currentTarget && !busy) onClose() }}><form ref={dialogRef} className="fa-decision-modal" role="dialog" aria-modal="true" aria-labelledby="closure-heading" aria-describedby="closure-explanation" tabIndex={-1} noValidate onSubmit={event => { event.preventDefault(); setAttempted(true); if (trimmedLength >= 12) void onSubmit(evidence.trim()) }}>
+  return <div className="modal-shade fa-modal-shade" onMouseDown={event => { if (event.target === event.currentTarget && !busy) onClose() }}><section ref={dialogRef} className="fa-decision-modal" role="dialog" aria-modal="true" aria-labelledby="closure-heading" aria-describedby="closure-explanation" tabIndex={-1}><form noValidate onSubmit={event => { event.preventDefault(); setAttempted(true); if (trimmedLength >= 12) void onSubmit(evidence.trim()) }}>
     <div className="fa-modal-heading"><span className="fa-modal-icon approved" aria-hidden="true"><FileCheck2 size={21} /></span><div><p className="fa-eyebrow">ACTION CLOSURE</p><h2 id="closure-heading">Record closure evidence</h2></div><button type="button" className="icon-button" onClick={onClose} aria-label="Close closure evidence form" disabled={busy}><X size={18} /></button></div>
     <div className="fa-modal-content"><div className="fa-review-subject"><span>APPROVED ACTION</span><strong>{action.title}</strong><small>Owner: {action.owner || 'Not assigned'} · Due: {action.due_date || 'Not set'}</small><small>Acceptance criteria: {action.acceptance_criteria}</small></div>
       <p id="closure-explanation" className="fa-decision-explanation">Record the supporting reference a reviewer considered, such as a dated retest record or approved document. A human reviewer is responsible for deciding whether it is sufficient; DrillLoop does not verify work in the real world.</p>
@@ -1478,7 +1492,7 @@ function ClosureEvidenceModal({ action, busy, errorMessage, onClose, onSubmit }:
       {errorMessage && <div className="fa-modal-error" role="alert"><AlertTriangle size={16} />{errorMessage}</div>}
     </div>
     <div className="fa-modal-footer"><span>Closure is recorded with the signed-in reviewer’s identity.</span><button type="button" className="button secondary" onClick={onClose} disabled={busy}>Cancel</button><button type="submit" className="button primary" disabled={busy}>{busy && <LoaderCircle size={15} className="spin" />}{busy ? 'Recording closure…' : <><FileCheck2 size={16} /> Record closure evidence</>}</button></div>
-  </form></div>
+  </form></section></div>
 }
 
 function EvidenceModal({ evidence, onClose }: { evidence: Support; onClose: () => void }) {
@@ -1492,7 +1506,7 @@ function EvidenceModal({ evidence, onClose }: { evidence: Support; onClose: () =
 
 type CreateForm = { id: string; title: string; scenario: string; exercise_date: string; duration_minutes: string; evaluator_roles: string; participants: string; milestones: string }
 function CreateModal({ form, setForm, onClose, onSubmit, busy, errorMessage }: { form: CreateForm; setForm: React.Dispatch<React.SetStateAction<CreateForm>>; onClose: () => void; onSubmit: () => void; busy: boolean; errorMessage: string }) {
-  const dialogRef = useAccessibleDialog<HTMLFormElement>(onClose)
+  const dialogRef = useAccessibleDialog<HTMLElement>(onClose)
   const [attempted, setAttempted] = useState(false)
   const update = (field: keyof typeof form, value: string) => setForm(current => ({ ...current, [field]: value }))
   const idValid = form.id.trim().length >= 3 && form.id.trim().length <= 80 && /^[\p{L}\p{N}_-]+$/u.test(form.id.trim())
@@ -1506,7 +1520,7 @@ function CreateModal({ form, setForm, onClose, onSubmit, busy, errorMessage }: {
     setAttempted(true)
     if (idValid && titleValid && scenarioValid && form.exercise_date && durationValid) onSubmit()
   }
-  return <div className="modal-shade"><form ref={dialogRef} className="create-modal create-exercise-modal" role="dialog" aria-modal="true" aria-labelledby="create-heading" tabIndex={-1} noValidate onSubmit={handleSubmit}>
+  return <div className="modal-shade"><section ref={dialogRef} className="create-modal create-exercise-modal" role="dialog" aria-modal="true" aria-labelledby="create-heading" tabIndex={-1}><form noValidate onSubmit={handleSubmit}>
     <div className="modal-head"><div className="modal-file-icon"><Plus size={19} /></div><div><span>EXERCISE SETUP · STEP 1 OF 2</span><h2 id="create-heading">Create an exercise</h2></div><button type="button" className="icon-button" onClick={onClose} aria-label="Close exercise form"><X size={18} /></button></div>
     <div className="create-form">
       {errorMessage && <div className="form-error-summary" role="alert">{errorMessage}</div>}
@@ -1522,5 +1536,5 @@ function CreateModal({ form, setForm, onClose, onSubmit, busy, errorMessage }: {
       <details className="optional-exercise-details"><summary>Optional exercise details</summary><div className="optional-exercise-fields"><label><span>EVALUATOR ROLES</span><input value={form.evaluator_roles} onChange={event => update('evaluator_roles', event.target.value)} placeholder="Facilities, Clinical" /><small>Comma-separated roles or teams responsible for evaluation.</small></label><label><span>PARTICIPANTS / TEAMS</span><input value={form.participants} onChange={event => update('participants', event.target.value)} placeholder="Incident Command, ICU" /><small>Comma-separated participant groups.</small></label><label><span>EXPECTED MILESTONES</span><textarea rows={2} value={form.milestones} onChange={event => update('milestones', event.target.value)} placeholder="Generator stable and essential circuits checked" /><small>One expected milestone per line.</small></label></div></details>
     </div>
     <div className="modal-footer"><span>Next: define the objectives evaluators will use to review evidence.</span><div><button type="button" className="button secondary" onClick={onClose}>Cancel</button><button type="submit" className="button primary" disabled={busy}><Plus size={14} /> Create exercise</button></div></div>
-  </form></div>
+  </form></section></div>
 }

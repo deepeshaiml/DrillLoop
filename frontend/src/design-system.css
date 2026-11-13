@@ -8,8 +8,8 @@
   --dl-navy-900: #163544;
   --dl-navy-800: #214858;
   --dl-ink: #18313f;
-  --dl-muted: #5b6d78;
-  --dl-subtle: #71818a;
+  --dl-muted: #526873;
+  --dl-subtle: #5b6d78;
   --dl-teal-700: #08766f;
   --dl-teal-600: #0b8980;
   --dl-teal-100: #e7f4f1;
@@ -1078,6 +1078,10 @@ button.workflow-step:hover {
   line-height: 1.25;
 }
 
+.certainty-pill.medium {
+  color: var(--dl-navy-800);
+}
+
 .panel-bottom-link {
   min-height: 44px;
   gap: 7px;
@@ -1096,6 +1100,10 @@ button.workflow-step:hover {
   background: #f8fafb;
   color: #4d626d;
   font-size: 11px;
+}
+
+.finding-summary span {
+  color: var(--dl-muted);
 }
 
 .finding-summary span {
@@ -1641,6 +1649,9 @@ button.workflow-step:hover {
     flex-direction: row;
     gap: 4px;
     overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-behavior: auto;
+    touch-action: pan-x;
     margin: 0;
     padding: 0;
     border-left: 0;

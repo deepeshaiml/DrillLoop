@@ -198,7 +198,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 8px 18px;
-  color: #6c808a;
+  color: var(--dl-muted);
   font-size: 12px;
 }
 
@@ -323,7 +323,7 @@
   border: 1px solid #dce6e9;
   border-radius: 18px;
   background: #fff;
-  color: #657a84;
+  color: var(--dl-muted);
   font-size: 12px;
   white-space: nowrap;
 }
@@ -453,7 +453,7 @@
 .objective-success-criteria small {
   display: block;
   margin-top: 7px;
-  color: #71877f;
+  color: var(--dl-muted);
   font-size: 11px;
   line-height: 1.45;
 }
@@ -487,6 +487,18 @@
   width: min(720px, 96vw);
 }
 
+.create-modal .modal-head > div:nth-child(2) > span {
+  color: var(--dl-muted);
+}
+
+.create-modal > form {
+  display: flex;
+  min-height: 0;
+  flex: 1;
+  flex-direction: column;
+  overflow: hidden;
+}
+
 .create-intro,
 .objective-editor-intro {
   margin: 0;
@@ -515,7 +527,7 @@
 
 .create-exercise-modal .create-form label > span b {
   margin-left: 4px;
-  color: #72858d;
+  color: var(--dl-muted);
   font-size: 10px;
   font-weight: 500;
   letter-spacing: 0;
@@ -560,7 +572,7 @@
 
 .create-exercise-modal .create-form small,
 .objective-editor .create-form small {
-  color: #71838c;
+  color: var(--dl-muted);
   font-size: 11px;
   line-height: 1.4;
 }
@@ -597,7 +609,7 @@
 
 .duration-input span {
   padding: 0 11px;
-  color: #71838c;
+  color: var(--dl-muted);
   font-size: 12px;
   white-space: nowrap;
 }
@@ -605,7 +617,7 @@
 .create-exercise-modal .form-hint {
   align-self: center;
   padding: 0;
-  color: #647b82;
+  color: var(--dl-muted);
   font-size: 12px;
 }
 

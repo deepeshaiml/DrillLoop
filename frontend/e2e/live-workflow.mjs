@@ -26,7 +26,7 @@ const browserErrors = []
 const browserConsoleErrors = []
 const httpErrorResponses = []
 const browser = await chromium.launch({ headless: true })
-const context = await browser.newContext({ acceptDownloads: true, ignoreHTTPSErrors: ignoreHttpsErrors, viewport: { width: 1440, height: 1100 } })
+const context = await browser.newContext({ acceptDownloads: true, hasTouch: true, ignoreHTTPSErrors: ignoreHttpsErrors, viewport: { width: 1440, height: 1100 } })
 const page = await context.newPage()
 page.setDefaultTimeout(10_000)
 page.on('pageerror', error => browserErrors.push(error.message))
@@ -112,6 +112,18 @@ async function importEvidenceAndAnalyze(id, expectedState) {
   await page.getByRole('button', { name: 'Overview', exact: true }).last().click()
   await page.getByRole('button', { name: 'Run evidence analysis' }).click()
   await page.getByText(expectedState, { exact: true }).waitFor()
+}
+
+async function waitForActiveSectionToBeFullyVisible(sectionLabel) {
+  await page.waitForFunction(expectedLabel => {
+    const nav = document.querySelector('.subnav')
+    const active = nav?.querySelector('.subnav-link[aria-current="page"]')
+    if (!nav || !active || nav.clientWidth === 0) return false
+    const navBounds = nav.getBoundingClientRect()
+    const activeBounds = active.getBoundingClientRect()
+    const activeLabel = active.textContent?.replace(/\s+/g, ' ').trim() || ''
+    return activeLabel.includes(expectedLabel) && activeBounds.left >= navBounds.left && activeBounds.right <= navBounds.right
+  }, sectionLabel, { polling: 'raf' })
 }
 
 try {
@@ -338,22 +350,39 @@ try {
   await page.setViewportSize({ width: 390, height: 844 })
   await page.locator('#exercise-picker').selectOption(seedId)
   await page.getByRole('heading', { name: 'Night Shift: Extended Power Loss' }).waitFor()
+  const scrollBeforeNavigation = await page.evaluate(() => window.scrollY)
   await page.locator('.subnav-link').filter({ hasText: 'Findings' }).click()
-  const mobileNavVisibility = await page.locator('.subnav-link[aria-current="page"]').evaluate(element => {
-    const nav = element.closest('.subnav')
-    if (!nav) return false
-    const itemRect = element.getBoundingClientRect()
-    const navRect = nav.getBoundingClientRect()
-    return itemRect.left >= navRect.left && itemRect.right <= navRect.right
-  })
-  assert.equal(mobileNavVisibility, true, 'The active section label should remain fully visible in the horizontally scrolling mobile navigation.')
+  await waitForActiveSectionToBeFullyVisible('Findings')
+  assert.equal(await page.evaluate(() => window.scrollY), scrollBeforeNavigation, 'Selecting an exercise section should not scroll the main page.')
+  const activeFindings = page.locator('.subnav-link[aria-current="page"]')
+  assert.match(await activeFindings.innerText(), /Findings/, 'The active section indicator should track the selected section.')
+  assert.equal(await activeFindings.evaluate(element => element.classList.contains('selected')), true, 'The selected section should retain its active visual indicator.')
+  for (const width of [320, 390, 768, 1024, 1440]) {
+    await page.setViewportSize({ width, height: 844 })
+    await waitForActiveSectionToBeFullyVisible('Findings')
+    const responsiveWidth = await page.evaluate(() => ({ viewport: window.innerWidth, document: document.documentElement.scrollWidth, body: document.body.scrollWidth }))
+    assert.ok(responsiveWidth.document <= responsiveWidth.viewport && responsiveWidth.body <= responsiveWidth.viewport, `Findings overflow at ${width}px: ${JSON.stringify(responsiveWidth)}`)
+  }
+  await page.setViewportSize({ width: 390, height: 844 })
+  await waitForActiveSectionToBeFullyVisible('Findings')
   const mobileWidth = await page.evaluate(() => ({ viewport: window.innerWidth, document: document.documentElement.scrollWidth, body: document.body.scrollWidth }))
   assert.ok(mobileWidth.document <= mobileWidth.viewport && mobileWidth.body <= mobileWidth.viewport, `Findings overflow at 390px: ${JSON.stringify(mobileWidth)}`)
   await page.screenshot({ path: resolve(screenshotDir, 'mobile-findings.png'), fullPage: true })
-  await page.locator('.subnav-link').filter({ hasText: 'Corrective actions' }).click()
+  const mobileActionLink = page.locator('.subnav-link').filter({ hasText: 'Corrective actions' })
+  await mobileActionLink.focus()
+  await page.keyboard.press('Enter')
+  await waitForActiveSectionToBeFullyVisible('Corrective actions')
+  assert.equal(await mobileActionLink.getAttribute('aria-current'), 'page', 'Keyboard activation should select the focused exercise section.')
   const mobileActionWidth = await page.evaluate(() => ({ viewport: window.innerWidth, document: document.documentElement.scrollWidth, body: document.body.scrollWidth }))
   assert.ok(mobileActionWidth.document <= mobileActionWidth.viewport && mobileActionWidth.body <= mobileActionWidth.viewport, `Corrective actions overflow at 390px: ${JSON.stringify(mobileActionWidth)}`)
   await page.screenshot({ path: resolve(screenshotDir, 'mobile-corrective-actions.png'), fullPage: true })
+  const mobileReportsLink = page.locator('.subnav-link').filter({ hasText: 'Reports' })
+  await mobileReportsLink.scrollIntoViewIfNeeded()
+  const mobileReportsBounds = await mobileReportsLink.boundingBox()
+  assert.ok(mobileReportsBounds, 'The Reports section should have a touch target.')
+  await page.touchscreen.tap(mobileReportsBounds.x + mobileReportsBounds.width / 2, mobileReportsBounds.y + mobileReportsBounds.height / 2)
+  await waitForActiveSectionToBeFullyVisible('Reports')
+  assert.equal(await mobileReportsLink.getAttribute('aria-current'), 'page', 'Touch activation should select the tapped exercise section.')
   await page.setViewportSize({ width: 1440, height: 1100 })
   await page.locator('#exercise-picker').selectOption(passId)
   await page.getByRole('heading', { name: passTitle }).waitFor()
@@ -462,7 +491,7 @@ try {
   const unexpectedConsoleErrors = browserConsoleErrors.filter(message => !expectedConsoleError(message))
   assert.deepEqual(unexpectedConsoleErrors, [], `Browser console reported unexpected errors: ${unexpectedConsoleErrors.join('; ')}`)
   assert.equal(browserConsoleErrors.length, httpErrorResponses.length, 'Each browser console network error should match a captured expected API error response.')
-  const workflows = ['named login', 'fictional seeded full review and report flow', 'finding approval and rejection confirmations', 'source citation review and focus return', 'action validation, assignment, approval and evidence-based closure', 'create independent exercises', 'upload unfamiliar CSV', 'objective pass/fail analysis', 'PDF export', 'refresh persistence', 'exercise switching', '390px responsive layout, active mobile navigation, and overflow checks']
+  const workflows = ['named login', 'fictional seeded full review and report flow', 'finding approval and rejection confirmations', 'source citation review and focus return', 'action validation, assignment, approval and evidence-based closure', 'create independent exercises', 'upload unfamiliar CSV', 'objective pass/fail analysis', 'PDF export', 'refresh persistence', 'exercise switching', '320/390/768/1024/1440px responsive layout, active mobile navigation, keyboard/touch controls, and overflow checks']
   if (outsiderUsername && outsiderPassword) workflows.push('exercise access grant/revoke', 'viewer read-only controls', 'server-side viewer review and edit denial', 'same-organization cross-user detail and report denial')
   console.log(JSON.stringify({
     result: 'PASS',
