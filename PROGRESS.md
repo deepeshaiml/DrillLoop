@@ -1,6 +1,14 @@
 # DrillLoop Progress
 
-Updated: 19 November 2026
+Updated: 20 November 2026
+
+## V2 Phase 4A — Hybrid AI assistance (20 November 2026)
+
+- Added opt-in local Ollama narrative review in Findings. Administrators and evaluators with an exercise grant can request transient advisory interpretations. The server checks the exercise and objective, resolves citations to the request's original extracted records, and withholds invalid suggestions. OCR-derived times retain uncertainty and remain outside deterministic elapsed-time decisions. Existing finding and action review uses its original authorization and data path.
+- Verified the four fictional exercises on Ollama 0.40.16 with the installed `qwen3.6:35b-a3b-coding-nvfp4` model and cloud disabled. The [recorded run](evals/phase4a/ollama-verification-2026-11-20.json) matched 10/10 exact excerpts and 9/9 objective associations. Seven of nine target behaviors matched the developer labels. One result inferred a possible conflict from records describing different phases of the same response (1/9 unsupported advisory classifications). One missing-acknowledgement case received a relevant-record suggestion when the label expected abstention. The requested cross-source match was missed (0/1). One of two labeled abstentions, the actual timing conflict, and OCR time uncertainty were preserved. An earlier repeat produced nine exact excerpts and used a generic relevance suggestion for the cross-source case, exposing variation across runs.
+- Exercise detail was identical before and after AI on all four exercises. The standalone Phase 1 checks reproduced the two water findings, zero transit findings, and the competing 240- and 660-second transit intervals. The Phase 1 narrative timestamp extraction discrepancy remains recorded in that baseline. Device-local deterministic requests took 3–6 ms. AI requests took 1.685–6.052 seconds, with 525–810 input and 115–464 output tokens per request.
+- Local verification passed with 144 backend tests and one optional ClamAV integration skip in both the existing environment and a fresh environment installed from the hashed lock. The tests include 32 hybrid cases covering default-off operation, scoped access/CSRF, approval restrictions, prompt instructions treated as source data, forbidden output, exact excerpt validation, provider routing, malformed/oversized replies, timeout, concurrency, and OCR uncertainty. Ruff lint and formatting, the frontend build, `node --check`, the staged Git diff check, and Gitleaks scans of the staged patch and files passed.
+- Chromium passed the real narrative and OCR demo, showing two narrative suggestions and one OCR suggestion. It opened the original line/page records, checked mobile overflow and transient exercise switching, and exercised timeout/unavailable UI feedback with injected HTTP failures. The existing live browser review workflow and mixed-page OCR browser regression passed with zero unexpected runtime errors. The checks used disposable SQLite databases and fictional sources. See the [setup and demo](docs/operations/HYBRID_AI.md).
 
 ## Delivery status
 

@@ -2,7 +2,7 @@
 
 **Version:** working prototype · **Research date:** 26 October 2026 · **Runtime baseline:** Python 3.12.16 / Node 24
 
-**Implementation update (3 November 2026):** The initial design notes below include historical plans and audit findings. The running analysis is now deterministic and objective-configured; it does not call Ollama. Named local-user sessions, role checks, exercise access grants, safe upload validation, an isolated pytest database fixture, the PostgreSQL 18 volume correction, and database readiness checks have been implemented. See `docs/audits/DRILLLOOP_PHASE6_RELEASE_REVIEW.md` and `docs/audits/DRILLLOOP_GO_LIVE_GATE.md` for current verification and remaining production gates.
+**Implementation update (3 November 2026):** The initial design notes below include historical plans and audit findings. The core analysis uses deterministic, objective-configured rules. Named local-user sessions, role checks, exercise access grants, safe upload validation, an isolated pytest database fixture, the PostgreSQL 18 volume correction, and database readiness checks have been implemented. See `docs/audits/DRILLLOOP_PHASE6_RELEASE_REVIEW.md` and `docs/audits/DRILLLOOP_GO_LIVE_GATE.md` for current verification and remaining production gates.
 
 **Phase 5 update (4 November 2026):** The optional Compose `scanner` profile now runs the digest-pinned official ClamAV Debian 1.5.4 service, separate from the app image. The local PostgreSQL 18.6 + HTTPS/Nginx browser rehearsal passed with actual scan-before-analysis enabled. Readiness checks ClamD capability and a proposed 72-hour signature freshness limit; that threshold and the four daily FreshClam checks are not approved policy. Parser admission is one isolated worker plus a bounded FIFO queue of eight waiters. The local 1/2/5/10 workflow matrix completed 80/80 independent synthetic workflows. These results establish local integration, not organizational scanner approval, approved staging, or production capacity. See `docs/audits/DRILLLOOP_PHASE5_RELEASE_CANDIDATE.md`.
 
@@ -85,9 +85,9 @@ CSV row locators include row number and source event ID. Text notes retain line 
 7. **Review:** an authorized human can edit a proposed finding through the API and approve/reject it. Action approval requires an approved linked finding, an owner, and a due date. Closure requires approval and reviewer-entered closure evidence.
 8. **Report:** the generated AAR/IP includes timeline, findings, sources, objectives, actions, review state, and explicit synthetic/draft caveats.
 
-### LLM status
+### Phase 4A narrative assistance
 
-The current application does not invoke an LLM or other external analysis service. The deterministic rules are the only analysis path. Any future model adapter needs an agreed contract, validation tests, license/version record, timeout and cost controls, and a review boundary before it can be described as implemented.
+A separate, read-only API gives authorized administrators and evaluators optional Ollama-assisted interpretation of the selected exercise. The deterministic path remains responsible for objective thresholds, elapsed times, findings, and actions. The provider receives a bounded JSON envelope of untrusted extracted records and objectives, with response constrained by a Pydantic JSON schema. It has no tools or workflow authority. The server verifies the objective, request-local record, and exact excerpt, then attaches the original source ID, filename, locator, and time/extraction metadata. The model chooses a category and citations. The server renders the advisory wording and surfaces uncertainty. The evaluator judges whether the wording supports the interpretation. See the [Phase 4A operations guide](docs/operations/HYBRID_AI.md).
 
 ## 5. Offline ASR path
 
@@ -114,7 +114,9 @@ Versions below were checked on 26 October 2026; Python backend and frontend buil
 | ClamAV service | 1.5.4; official Debian image digest `sha256:c21aa18cc0a358678255a3dfb343a4555b58f71b97d7b869df8fdf7ea0a5b4b1` | GPLv2; see [ClamAV project documentation](https://docs.clamav.net/) and [Docker deployment documentation](https://docs.clamav.net/manual/Installing/Docker.html). | Optional Compose service, separate from the app image; locally tested with persistent signatures and actual ClamD scans. Security/legal approval, signature provenance/freshness policy, update egress and quarantine operations remain owner decisions before organizational use. |
 | faster-whisper | 1.2.1 optional | MIT | CTranslate2-based offline ASR; not installed in the default dependency set. |
 | Whisper weights | MIT | MIT | OpenAI states code and model weights are MIT-licensed; separately verify the selected checkpoint card. |
-| Ollama + Qwen3-4B | research option only; not called by the application | Qwen3 Apache 2.0 | No current feature or integration. Any later implementation requires adapter and evaluation work. |
+| Ollama | 0.40.16 verified | MIT | Optional loopback daemon. DrillLoop requires cloud-disabled status and an installed local model. |
+| Qwen 3.6 local quantization | `qwen3.6:35b-a3b-coding-nvfp4`, manifest `sha256:cd2692a833e66c4c98991b67e9fbaa0bb15a93285baac9240c022f2f40075b6d` | Apache 2.0 reported by the installed manifest | Used for synthetic checks. Model weights are operator supplied and are outside this repository. Review the license of any replacement manifest. |
+| HTTPX | 0.28.1 | BSD-3-Clause | Async loopback transport with bounded response reads and no proxy or redirect handling. |
 | python-docx | 1.2.0 | MIT | Editable idea document and pitch speaker notes generation support. |
 | ReportLab | 5.1.0 | BSD-style | PDF exports and accompanying PDF reports. |
 | PptxGenJS | 4.0.1 | MIT | Editable PowerPoint shapes/text and slide speaker notes; patched `image-size` 2.0.4 override keeps the presentation dependency audit clean. |
@@ -128,7 +130,7 @@ Sentence Transformers, a vector index, Transformers, and LangGraph are not requi
 - `GET /api/exercises`, `POST /api/exercises`, `GET /api/exercises/{id}`, `PUT /api/exercises/{id}/objectives`
 - `GET/POST /api/exercises/{id}/access`, `DELETE /api/exercises/{id}/access/{user_id}`
 - `POST /api/exercises/{id}/evidence`, `/transcripts`, and optional `/audio`
-- `POST /api/exercises/{id}/analyze`
+- `POST /api/exercises/{id}/analyze` and optional `POST /api/exercises/{id}/ai-suggestions`
 - `PATCH /api/findings/{id}` and `POST /api/findings/{id}/review`
 - `PUT /api/actions/{id}`, `POST /api/actions/{id}/review`, `POST /api/actions/{id}/close`
 - `GET /api/sources/{id}/download`, `GET /api/exercises/{id}/report.pdf`
@@ -141,7 +143,7 @@ Every data route requires a named session and applicable role/exercise grant; un
 - Local named users are configured by `DRILLLOOP_USERS_JSON` with scrypt password hashes, roles, organization IDs, and a signed eight-hour session. The organization must still select an enterprise identity provider and production session/revocation policy. The demo login rate limiter is in-process and is not a production edge control.
 - The application does not encrypt database values or uploaded bytes and does not redact personal information or enforce retention policy. The packaged demo uses fictional records and has not been validated for protected patient or operational data.
 - Required scan mode rejects unavailable, failed, timed-out, stale-signature, or malicious verdicts before source creation. The optional Compose scanner is private to the app/scanner network, has no host port, persists signatures, and runs controlled FreshClam updates. Readiness verifies PING/VERSION, signature age, clean scan capability, and EICAR detection; container health alone is not treated as scanner readiness. The local 72-hour freshness limit and four daily checks are proposed values. The scanner is locally integrated but not organization-approved; image/license, signature/update policy, quarantine operations, and release policy remain open.
-- Analysis uses no cloud or local LLM. Optional faster-whisper inference uses a locally staged model; diarization and multilingual accuracy are not claimed. Upload size/count/row bounds, parser timeout and worker isolation are implemented. Parser admission defaults to one active worker and eight bounded FIFO waiters, with a configurable wait timeout; quarantine is private, per-job, and cleaned on success, rejection, timeout, cancellation, and parser failure.
+- The rule engine runs offline. Optional AI assistance sends bounded records only to a configured loopback Ollama daemon with cloud disabled. Prompts and raw model responses are kept out of application logs. Optional faster-whisper inference uses a locally staged model; diarization and multilingual accuracy are not claimed. Upload size/count/row bounds, parser timeout and worker isolation are implemented. Parser admission defaults to one active worker and eight bounded FIFO waiters, with a configurable wait timeout; quarantine is private, per-job, and cleaned on success, rejection, timeout, cancellation, and parser failure.
 - Production still needs enterprise SSO/identity provisioning, organization-owned TLS/DNS and managed secrets, encrypted backups and restore, retention/deletion, operational logs/monitoring/alerts, a compatible prior-image rollback rehearsal, threat modeling, owner-approved load targets, independent evaluation, and an approved emergency-management evaluation.
 - Compose requires a PostgreSQL password and named-user configuration; there are no shipped default credentials. The configured local password flow remains a demo boundary.
 

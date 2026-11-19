@@ -78,7 +78,7 @@ The versioned synthetic analysis evaluation runs with:
 
 It uses a new owner-marked temporary SQLite database, prints JSON to stdout, and only writes a result file if `--output` names a new path. The dataset is fictional and developer-authored, not independently reviewed; its results do not predict performance on other exercises. For a bounded loopback readiness load test, start the app against disposable data and run `.venv/bin/python scripts/load_test.py --pid <api-pid>`; the script caps work at 1,000 requests and 20 concurrent workers.
 
-No evaluators were timed. The team has not measured staff time saved, how many drafts evaluators would correct, or the accuracy of automatic speech recognition (**ASR**, software that turns speech into text) on real audio. The current analysis path is deterministic and does not invoke an LLM. See the [Reader Guide](DRILLLOOP_READER_GUIDE.md) and [Evaluation Report](DrillLoop_Evaluation_Report.pdf) for definitions and limits.
+No evaluators were timed. The team has not measured staff time saved, how many drafts evaluators would correct, or the accuracy of automatic speech recognition (**ASR**, software that turns speech into text) on real audio. The benchmark uses the deterministic analysis path. Phase 4A also provides optional local AI assistance for narrative evidence. See the [Reader Guide](DRILLLOOP_READER_GUIDE.md) and [Evaluation Report](DrillLoop_Evaluation_Report.pdf) for definitions and limits.
 
 ## Generate the documents and deck
 
@@ -119,7 +119,7 @@ The detailed walkthrough, reset choices, and visible error cases are in [DEMO_GU
 - Keeps the original uploaded file and records where extracted text came from: a CSV row, note line, PDF page, or transcript segment. It also stores a SHA-256 fingerprint (a checksum that helps detect whether the file later changes).
 - Shows only times that appear in the evidence. A missing time stays unknown. If two people report different times, both remain visible until a reviewer resolves them.
 - Uses a small set of understandable local rules to suggest candidate findings and link them to stated exercise objectives. This sample is small enough to search directly; it does not need a separate vector database or a free-running AI agent.
-- Uses deterministic rules configured on each exercise; unconfigured rules or missing evidence remain unknown/needs review. The current application does not call a local or cloud LLM.
+- Uses deterministic rules configured on each exercise; unconfigured rules or missing evidence remain unknown/needs review. The separate Phase 4A advisory path uses a local Ollama model when enabled. [Hybrid AI setup and synthetic demo](docs/operations/HYBRID_AI.md).
 - Can optionally turn audio into a draft transcript using faster-whisper. The model must be installed locally; it is not downloaded automatically. The demo does not claim speaker identification or accuracy in languages other than English. The provided transcript is pre-generated, not an audio transcription result.
 
 Uploaded source bytes and extracted text are stored in the configured database. Use fictional or otherwise permitted evidence in the demo. Local named-user passwords and the single-process Compose setup are not a production identity or hosting solution.

@@ -49,7 +49,7 @@ DrillLoop must not fill the unknown cause with a guess. The finding remains prop
 | AAR/IP | After-Action Report and Improvement Plan: a summary of what happened, what was learned, and which improvements will be tracked. |
 | HSEEP | FEMA’s Homeland Security Exercise and Evaluation Program, a doctrine for planning and evaluating exercises. DrillLoop borrows concepts; it is not FEMA-certified. |
 | ASR | Automatic speech recognition: software that turns audio into text. A transcript can contain mistakes and needs human review. |
-| LLM | Large language model: software that can draft or rephrase text. In this MVP, an optional local model may reword an action; it cannot create or approve findings. |
+| LLM | Large language model. An optional local model suggests how narrative observations may relate to exercise objectives. A human reviewer retains decision authority. |
 | Precision / recall | Precision asks “Of the findings proposed, how many matched the labels?” Recall asks “Of the expected labeled findings, how many were found?” The current scores use one synthetic example only. |
 | F1 score | A single score that combines precision and recall. A high F1 on this sample does not imply the same score on new evidence. |
 | FTE | Full-time equivalent: one person’s full-year workload, used to describe staffing assumptions. |
