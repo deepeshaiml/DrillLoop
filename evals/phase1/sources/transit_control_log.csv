@@ -1,0 +1,4 @@
+event_id,timestamp,event
+TS-01,09:00,Smoke alarm activated on the concourse.
+TS-02,09:04,Gate A opened for the evacuation route.
+TS-03,09:12,Paper dispatcher sheet was checked after the alarm.

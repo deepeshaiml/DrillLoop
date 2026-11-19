@@ -1,0 +1,5 @@
+event_id,timestamp,event
+WU-01,08:00,Intake pressure alarm sounded at the west filtration header.
+WU-02,08:04,Backup intake pump reached stable flow at the west filtration header.
+WU-03,08:10,Generator load transfer was requested for the south pump room.
+WU-04,08:18,Generator transfer to the south pump room completed.

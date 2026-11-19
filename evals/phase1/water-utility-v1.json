@@ -1,0 +1,103 @@
+{
+  "schema_version": "drillloop-evaluation/v1",
+  "dataset_id": "phase1-fictional-water-utility-response",
+  "revision": 1,
+  "fictional": true,
+  "labeling": {
+    "labelers": ["DrillLoop developer, Phase 1 baseline author"],
+    "independent_reviewed": false,
+    "method": "Expected labels were authored by manually reviewing the fictional source records before running the application. The fixture is closed for the listed observations, expected findings, and finding citations; no domain expert adjudication was performed.",
+    "adjudication_record": null,
+    "finding_labels_complete": true,
+    "observation_labels_complete": true,
+    "citation_labels_complete": true,
+    "citation_scope": "Exhaustive for the two supported findings and every source reference in this fictional exercise."
+  },
+  "exercise": {
+    "id": "PH1-WATER-2026-01",
+    "title": "West Filtration Pump Response (fictional Phase 1 case)",
+    "scenario": "A wholly fictional water utility exercise reviews an intake pressure alarm, pump response timing, an ambiguous flow report, and an unverified causal guess.",
+    "date": "2026-11-10",
+    "duration_minutes": 90,
+    "objectives": [
+      {
+        "id": "WTR-OBJ-01",
+        "text": "Restore stable west filtration header flow within five minutes of the intake pressure alarm.",
+        "evaluation_rule": {
+          "type": "elapsed_time",
+          "threshold_seconds": 300,
+          "start_terms": ["intake pressure alarm sounded at the west filtration header"],
+          "completion_terms": ["backup intake pump reached stable flow at the west filtration header"],
+          "finding_code": "WEST_HEADER_FLOW_WITHIN_TARGET",
+          "finding_title": "West header flow restored within the target"
+        },
+        "expected_finding_codes": ["WEST_HEADER_FLOW_WITHIN_TARGET"]
+      },
+      {
+        "id": "WTR-OBJ-02",
+        "text": "Complete generator load transfer to the south pump room within five minutes of the transfer request.",
+        "evaluation_rule": {
+          "type": "elapsed_time",
+          "threshold_seconds": 300,
+          "start_terms": ["generator load transfer was requested for the south pump room"],
+          "completion_terms": ["generator transfer to the south pump room completed"],
+          "finding_code": "SOUTH_ROOM_TRANSFER_OVER_TARGET",
+          "finding_title": "South pump room transfer exceeded the target"
+        },
+        "expected_finding_codes": ["SOUTH_ROOM_TRANSFER_OVER_TARGET"]
+      },
+      {
+        "id": "WTR-OBJ-03",
+        "text": "Verify stable flow at the east intake.",
+        "evaluation_rule": {
+          "type": "event_presence",
+          "terms": ["east intake flow was verified stable"],
+          "finding_code": "EAST_INTAKE_FLOW_VERIFIED",
+          "finding_title": "East intake flow verification recorded"
+        },
+        "expected_finding_codes": []
+      },
+      {
+        "id": "WTR-OBJ-04",
+        "text": "Determine the cause of the south pump room transfer delay from confirmed evidence.",
+        "expected_finding_codes": []
+      }
+    ]
+  },
+  "sources": [
+    {
+      "path": "evals/phase1/sources/water_utility_log.csv",
+      "sha256": "e159b5ce5343744afe59d9c9e734e547c449cb83b85f82c56f8b7c96f9788177"
+    },
+    {
+      "path": "evals/phase1/sources/fictional_shift_notes.txt",
+      "sha256": "ffc2766661c3631bafef11eca9140455ecc5e4d656fce63463401cd8dc621ec4"
+    }
+  ],
+  "expected": {
+    "observations": [
+      {"source": "water_utility_log.csv", "locator": "row 2", "wording": "Intake pressure alarm sounded at the west filtration header.", "timestamp": "2026-11-10T08:00:00", "time_confidence": "medium"},
+      {"source": "water_utility_log.csv", "locator": "row 3", "wording": "Backup intake pump reached stable flow at the west filtration header.", "timestamp": "2026-11-10T08:04:00", "time_confidence": "medium"},
+      {"source": "water_utility_log.csv", "locator": "row 4", "wording": "Generator load transfer was requested for the south pump room.", "timestamp": "2026-11-10T08:10:00", "time_confidence": "medium"},
+      {"source": "water_utility_log.csv", "locator": "row 5", "wording": "Generator transfer to the south pump room completed.", "timestamp": "2026-11-10T08:18:00", "time_confidence": "medium"},
+      {"source": "fictional_shift_notes.txt", "locator": "line 1", "wording": "Shift supervisor independently reports: the intake pressure alarm sounded at the west filtration header at 08:00.", "timestamp": "2026-11-10T08:00:00", "time_confidence": "medium"},
+      {"source": "fictional_shift_notes.txt", "locator": "line 2", "wording": "The south transfer may have been delayed by a sticking float sensor; no inspection confirmed a cause.", "timestamp": null, "time_confidence": "unknown"},
+      {"source": "fictional_shift_notes.txt", "locator": "line 3", "wording": "At the east intake, crew members thought flow had stabilized before lunch, but no one verified it.", "timestamp": null, "time_confidence": "unknown"}
+    ],
+    "findings": [
+      {"code": "WEST_HEADER_FLOW_WITHIN_TARGET", "objective_id": "WTR-OBJ-01", "category": "strength", "evidence": [{"source": "water_utility_log.csv", "locator": "row 2"}, {"source": "fictional_shift_notes.txt", "locator": "line 1"}, {"source": "water_utility_log.csv", "locator": "row 3"}]},
+      {"code": "SOUTH_ROOM_TRANSFER_OVER_TARGET", "objective_id": "WTR-OBJ-02", "category": "improvement", "evidence": [{"source": "water_utility_log.csv", "locator": "row 4"}, {"source": "water_utility_log.csv", "locator": "row 5"}]}
+    ],
+    "unknowns": [
+      {"source": "fictional_shift_notes.txt", "locator": "line 2", "expected": "Speculative sensor cause has no event timestamp or confirming inspection."},
+      {"source": "fictional_shift_notes.txt", "locator": "line 3", "expected": "Approximate 'before lunch' narrative is untimed and explicitly unverified."}
+    ],
+    "conflicts": [],
+    "objective_assessments": [
+      {"objective_id": "WTR-OBJ-01", "state": "confirmed_success", "elapsed_seconds": [240], "threshold_seconds": 300},
+      {"objective_id": "WTR-OBJ-02", "state": "confirmed_failure", "elapsed_seconds": [480], "threshold_seconds": 300},
+      {"objective_id": "WTR-OBJ-03", "state": "insufficient_information"},
+      {"objective_id": "WTR-OBJ-04", "state": "needs_review"}
+    ]
+  }
+}
