@@ -6,6 +6,7 @@ import io
 import json
 import math
 import re
+import time
 from dataclasses import dataclass
 from datetime import date, datetime
 
@@ -44,6 +45,8 @@ MAX_EVIDENCE_BYTES = 15 * 1024 * 1024
 MAX_PDF_PAGES = 250
 MAX_EXTRACTED_CHARACTERS = 2_000_000
 MAX_STRUCTURED_ROWS = 10_000
+MAX_PDF_OBSERVATIONS = 10_000
+MAX_OCR_PAGES = 20
 
 
 def safe_filename(value: str | None) -> str:
@@ -87,12 +90,15 @@ def _observation(
     confidence: float | None = None,
 ) -> ParsedObservation:
     normalized, certainty = normalize_time(raw_time, exercise_date)
-    if raw_time and normalized is None:
+    if raw_time and normalized is None and method != "ocr":
         raise EvidenceError(
             "INVALID_TIMESTAMP",
             f"Timestamp {raw_time!r} is invalid. Use a valid ISO date/time or 24-hour time.",
         )
     if method == "asr" and confidence is not None and confidence < 0.75:
+        certainty = "uncertain"
+    if method == "ocr" and raw_time:
+        # OCR-derived timestamps are reviewable source claims, not verified event times.
         certainty = "uncertain"
     return ParsedObservation(
         text=text.strip(),
@@ -329,11 +335,10 @@ def parse_evidence(
             if isinstance(exc, EvidenceError):
                 raise
             raise EvidenceError("MALFORMED_PDF", "Could not open this PDF.") from exc
-        pages: list[str] = []
-        observations = []
+        page_texts: list[str] = []
         extracted_size = 0
         try:
-            for page_index, page in enumerate(document.pages, 1):
+            for page in document.pages:
                 page_text = (page.extract_text() or "").strip()
                 extracted_size += len(page_text)
                 if extracted_size > MAX_EXTRACTED_CHARACTERS:
@@ -342,36 +347,243 @@ def parse_evidence(
                         "Extracted PDF text exceeds the 2 MB limit.",
                         413,
                     )
-                pages.append(page_text)
-                for line_no, line in enumerate(page_text.splitlines(), 1):
-                    if not line.strip():
-                        continue
-                    match = PREFIX_TIME_RE.match(line)
-                    raw_time = (match.group(1) or match.group(2)) if match else None
-                    text = match.group(3) if match else line
-                    observations.append(
-                        _observation(
-                            text,
-                            raw_time,
-                            f"page {page_index}, line {line_no}",
-                            exercise_date,
-                            "document",
-                        )
-                    )
+                page_texts.append(page_text)
         except EvidenceError:
             raise
         except Exception as exc:
             raise EvidenceError(
                 "MALFORMED_PDF", "Could not safely extract text from this PDF."
             ) from exc
-        content = "\n".join(f"[page {i + 1}]\n{text}" for i, text in enumerate(pages))
-        if not content.strip():
+
+        ocr_page_indices = [index for index, text in enumerate(page_texts) if not text]
+        try:
+            mixed_image_page_indices = [
+                index
+                for index, text in enumerate(page_texts)
+                if text and len(document.pages[index].images) > 0
+            ]
+        except Exception as exc:
             raise EvidenceError(
-                "EMPTY_PDF", "No selectable text was found. OCR is not available in this demo."
+                "MALFORMED_PDF", "Could not safely inspect embedded PDF images."
+            ) from exc
+        if len(ocr_page_indices) > MAX_OCR_PAGES:
+            raise EvidenceError(
+                "TOO_MANY_OCR_PAGES",
+                f"PDF evidence is limited to {MAX_OCR_PAGES} pages requiring OCR.",
+                413,
             )
-        return ParsedEvidence(
-            "pdf", content, observations, {"sha256": digest, "pages": len(pages), "parser": "pypdf"}
-        )
+        mixed_page_capacity = MAX_OCR_PAGES - len(ocr_page_indices)
+        processed_mixed_page_indices = mixed_image_page_indices[:mixed_page_capacity]
+        skipped_mixed_page_indices = mixed_image_page_indices[mixed_page_capacity:]
+        ocr_target_indices = sorted(set(ocr_page_indices + processed_mixed_page_indices))
+        page_extraction = [
+            {
+                "page": page_index,
+                "method": (
+                    "native_text_plus_ocr"
+                    if page_index - 1 in mixed_image_page_indices
+                    else "native_text"
+                    if page_texts[page_index - 1]
+                    else "ocr"
+                ),
+                "status": "pending"
+                if page_index - 1 in ocr_target_indices
+                else "partial"
+                if page_index - 1 in skipped_mixed_page_indices
+                else "skipped",
+            }
+            for page_index in range(1, len(page_texts) + 1)
+        ]
+        ocr_issues: list[dict[str, object]] = []
+        ocr_image_regions: dict[int, int] = {}
+        ocr_partial_pages: list[int] = [index + 1 for index in skipped_mixed_page_indices]
+        if skipped_mixed_page_indices:
+            ocr_issues.append(
+                {
+                    "page": skipped_mixed_page_indices[0] + 1,
+                    "code": "OCR_PAGE_LIMIT",
+                    "message": (
+                        f"The {MAX_OCR_PAGES}-page OCR limit was reached. Selectable text was retained, "
+                        f"but embedded image areas on {len(skipped_mixed_page_indices)} later page(s) "
+                        "were not processed. Review those original pages."
+                    ),
+                }
+            )
+        provenance = {
+            "sha256": digest,
+            "pages": len(page_texts),
+            "parser": "pypdf",
+            "ocr_status": "partial"
+            if skipped_mixed_page_indices
+            else "not_required"
+            if not ocr_target_indices
+            else "completed",
+            "page_extraction": page_extraction,
+        }
+        ocr_page_durations: dict[int, float] = {}
+        ocr_page_segmentation_modes: dict[int, list[int]] = {}
+        ocr_page_texts: dict[int, str] = {}
+        if ocr_target_indices:
+            from app.pdf_ocr import (
+                PdfOcrError,
+                check_pdf_ocr_runtime,
+                ocr_pdf_image_regions,
+                ocr_pdf_page,
+            )
+
+            try:
+                runtime, pdfium = check_pdf_ocr_runtime()
+            except PdfOcrError as exc:
+                raise EvidenceError(exc.code, exc.message, exc.status_code) from exc
+            try:
+                rendered_document = pdfium.PdfDocument(data)
+            except Exception as exc:
+                raise EvidenceError("MALFORMED_PDF", "Could not render this PDF safely.") from exc
+            ocr_started = time.perf_counter()
+            try:
+                for page_index in ocr_target_indices:
+                    try:
+                        if page_index in ocr_page_indices:
+                            page_text, page_duration, segmentation_modes = ocr_pdf_page(
+                                rendered_document, page_index, runtime
+                            )
+                            page_texts[page_index] = page_text
+                            ocr_page_segmentation_modes[page_index + 1] = list(segmentation_modes)
+                        else:
+                            result = ocr_pdf_image_regions(rendered_document, page_index, runtime)
+                            page_text = result.text
+                            page_duration = result.duration_seconds
+                            ocr_page_texts[page_index] = page_text
+                            ocr_image_regions[page_index + 1] = result.attempted_regions
+                            ocr_page_segmentation_modes[page_index + 1] = [6]
+                            for code, message in result.issues:
+                                ocr_issues.append(
+                                    {"page": page_index + 1, "code": code, "message": message}
+                                )
+                            if result.issues or result.omitted_regions:
+                                ocr_partial_pages.append(page_index + 1)
+                                page_extraction[page_index]["status"] = "partial"
+                            else:
+                                page_extraction[page_index]["status"] = "completed"
+                    except PdfOcrError as exc:
+                        if page_index in mixed_image_page_indices:
+                            ocr_partial_pages.append(page_index + 1)
+                            page_extraction[page_index]["status"] = "partial"
+                            ocr_issues.append(
+                                {"page": page_index + 1, "code": exc.code, "message": exc.message}
+                            )
+                            page_duration = 0.0
+                            page_text = ""
+                        else:
+                            raise EvidenceError(exc.code, exc.message, exc.status_code) from exc
+                    extracted_size += len(page_text)
+                    if extracted_size > MAX_EXTRACTED_CHARACTERS:
+                        raise EvidenceError(
+                            "EXTRACTED_TEXT_TOO_LARGE",
+                            "Extracted PDF text exceeds the 2 MB limit.",
+                            413,
+                        )
+                    if page_index in ocr_page_indices:
+                        page_extraction[page_index]["status"] = (
+                            "completed" if page_text else "completed_empty"
+                        )
+                    ocr_page_durations[page_index + 1] = round(page_duration, 4)
+            finally:
+                rendered_document.close()
+            duplicate_ocr_lines_suppressed = 0
+            for page_index, ocr_text in ocr_page_texts.items():
+                native_lines = {
+                    re.sub(r"\s+", " ", line).strip().casefold()
+                    for line in page_texts[page_index].splitlines()
+                    if line.strip()
+                }
+                kept_lines = []
+                for line in ocr_text.splitlines():
+                    if not line.strip():
+                        continue
+                    key = re.sub(r"\s+", " ", line).strip().casefold()
+                    if key in native_lines:
+                        duplicate_ocr_lines_suppressed += 1
+                        continue
+                    kept_lines.append(line.strip())
+                ocr_page_texts[page_index] = "\n".join(kept_lines)
+                extracted_size += sum(len(line) for line in kept_lines)
+                if extracted_size > MAX_EXTRACTED_CHARACTERS:
+                    raise EvidenceError(
+                        "EXTRACTED_TEXT_TOO_LARGE",
+                        "Extracted PDF text exceeds the 2 MB limit.",
+                        413,
+                    )
+            if ocr_partial_pages:
+                provenance["ocr_status"] = "partial"
+            provenance["ocr_partial_pages"] = sorted(set(ocr_partial_pages))
+            provenance["ocr_issues"] = ocr_issues
+            provenance["ocr_image_regions"] = ocr_image_regions
+            provenance["ocr_duplicate_lines_suppressed"] = duplicate_ocr_lines_suppressed
+            provenance.update(
+                {
+                    "ocr_engine": "Tesseract",
+                    "ocr_engine_version": runtime.engine_version,
+                    "ocr_language": "eng",
+                    "ocr_renderer": "pypdfium2",
+                    "ocr_renderer_version": runtime.renderer_version,
+                    "ocr_dpi": 200,
+                    "ocr_page_limit": MAX_OCR_PAGES,
+                    "ocr_page_timeout_seconds": 4,
+                    "ocr_pages": [index + 1 for index in ocr_target_indices],
+                    "ocr_duration_seconds": round(time.perf_counter() - ocr_started, 4),
+                    "ocr_page_durations_seconds": ocr_page_durations,
+                    "ocr_page_segmentation_modes": ocr_page_segmentation_modes,
+                    "ocr_word_confidence_available": False,
+                    "ocr_line_positions_available": False,
+                    "ocr_timestamp_confidence": "uncertain",
+                }
+            )
+
+        pages: list[str] = []
+        observations = []
+        for page_index, page_text in enumerate(page_texts, 1):
+            ocr_text = ocr_page_texts.get(page_index - 1, "")
+            combined_page_text = "\n".join(part for part in (page_text, ocr_text) if part.strip())
+            pages.append(combined_page_text)
+            method = page_extraction[page_index - 1]["method"]
+            native_page = method in {"native_text", "native_text_plus_ocr"}
+            lines_with_provenance = [
+                (line, "parser" if native_page else "ocr", line_no)
+                for line_no, line in enumerate(page_text.splitlines(), 1)
+            ]
+            if native_page:
+                lines_with_provenance.extend((line, "ocr", None) for line in ocr_text.splitlines())
+            for line, extraction_method, line_no in lines_with_provenance:
+                if not line.strip():
+                    continue
+                match = PREFIX_TIME_RE.match(line)
+                raw_time = (match.group(1) or match.group(2)) if match else None
+                text = match.group(3) if match else line
+                observations.append(
+                    _observation(
+                        text,
+                        raw_time,
+                        f"page {page_index}"
+                        if extraction_method == "ocr"
+                        else f"page {page_index}, line {line_no}",
+                        exercise_date,
+                        "document",
+                        extraction_method,
+                    )
+                )
+                if len(observations) > MAX_PDF_OBSERVATIONS:
+                    raise EvidenceError(
+                        "TOO_MANY_OBSERVATIONS",
+                        f"PDF evidence is limited to {MAX_PDF_OBSERVATIONS:,} observations.",
+                        413,
+                    )
+        content = "\n".join(f"[page {i + 1}]\n{text}" for i, text in enumerate(pages))
+        if not any(page.strip() for page in pages):
+            raise EvidenceError(
+                "EMPTY_PDF", "No selectable or OCR-readable text was found in this PDF."
+            )
+        return ParsedEvidence("pdf", content, observations, provenance)
 
     raise EvidenceError(
         "UNSUPPORTED_EVIDENCE", "Supported files: TXT, MD, CSV, JSON transcript, and text PDF."

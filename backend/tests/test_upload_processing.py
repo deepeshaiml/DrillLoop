@@ -568,6 +568,46 @@ def test_malformed_pdf_upload_returns_controlled_error(client, content):
     assert "Traceback" not in response.text
 
 
+def test_missing_ocr_dependency_returns_controlled_api_error_without_import(
+    client, monkeypatch, tmp_path
+):
+    from pathlib import Path
+
+    empty_path = tmp_path / "empty-path"
+    empty_path.mkdir(mode=0o700)
+    monkeypatch.setenv("PATH", str(empty_path))
+    fixture = (
+        Path(__file__).resolve().parents[2]
+        / "evals"
+        / "phase2"
+        / "sources"
+        / "utility_emergency_log_scanned.pdf"
+    )
+    exercise = client.post(
+        "/api/exercises",
+        json={
+            "id": "OCR-UNAVAILABLE-01",
+            "title": "Fictional OCR dependency unavailable",
+            "scenario": "A local synthetic OCR dependency failure check.",
+            "exercise_date": "2026-11-13",
+            "duration_minutes": 30,
+            "objectives": [{"id": "O1", "text": "Review synthetic source evidence."}],
+        },
+    )
+    assert exercise.status_code == 201
+
+    response = client.post(
+        "/api/exercises/OCR-UNAVAILABLE-01/evidence",
+        files={"files": (fixture.name, fixture.read_bytes(), "application/pdf")},
+    )
+
+    assert response.status_code == 503
+    assert response.json()["detail"]["code"] == "OCR_UNAVAILABLE"
+    detail = client.get("/api/exercises/OCR-UNAVAILABLE-01").json()
+    assert detail["sources"] == []
+    assert detail["timeline"] == []
+
+
 def test_file_size_limit_rejects_large_synthetic_upload(client):
     created = client.post(
         "/api/exercises",

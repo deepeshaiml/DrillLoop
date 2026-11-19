@@ -596,6 +596,18 @@
   color: #3f657d;
 }
 
+.et-source-badge.ocr {
+  border-color: #cfe6e2;
+  background: #eff8f6;
+  color: #33746d;
+}
+
+.et-source-badge.ocr.partial {
+  border-color: #ecd7ae;
+  background: #fbf5e9;
+  color: #80612b;
+}
+
 .et-scan-badge.clean {
   border-color: #dcebe6;
   background: #f1f7f4;

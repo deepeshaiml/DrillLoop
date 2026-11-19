@@ -1,0 +1,1333 @@
+{
+  "aggregate_metrics": {
+    "character_error_rate_micro": {
+      "errors": 13,
+      "rate": 0.0089,
+      "reference_units": 1465
+    },
+    "duplicate_observations": 0,
+    "latency_seconds_per_document": {
+      "phase3_conflicting_dispatch_memo.pdf": 0.4815,
+      "phase3_same_page_mixed_water_log.pdf": 0.696,
+      "phase3_two_column_low_resolution_scan.pdf": 1.3054,
+      "phase3_two_page_valve_event_table_scan.pdf": 1.3076,
+      "phase3_unreadable_damaged_field_note.pdf": 0.6863
+    },
+    "metrics_documents": 5,
+    "observation_counts": {
+      "actual": 35,
+      "expected": 35,
+      "matched": 35
+    },
+    "observation_precision_micro": 1.0,
+    "observation_recall_micro": 1.0,
+    "page_method_attribution_micro": 1.0,
+    "page_method_counts": {
+      "expected": 6,
+      "matched": 6
+    },
+    "recognition_scored_documents": 4,
+    "recognition_unavailable_documents": 1,
+    "required_citation_counts": {
+      "expected": 1,
+      "matched": 1
+    },
+    "required_citation_recall_micro": 1.0,
+    "timestamp_accuracy_micro": 1.0,
+    "timestamp_counts": {
+      "expected": 17,
+      "matched": 17
+    },
+    "unsupported_observations": 0,
+    "word_error_rate_micro": {
+      "errors": 6,
+      "rate": 0.0268,
+      "reference_units": 224
+    }
+  },
+  "application_workflow": {
+    "reason": "--skip-application-workflow",
+    "status": "not_run"
+  },
+  "created_at_utc": "2026-11-19T18:52:05.126078+00:00",
+  "duplicate_upload_behavior": {
+    "behavior": "Each explicit upload creates a distinct source record; identical-file deduplication is not implemented.",
+    "observations_per_source": {
+      "2c7c3e98-61fe-44d0-ba0f-cc55b6ae256c": 8,
+      "6778cb2c-b43b-4e6c-9426-750781c01eeb": 8
+    },
+    "same_file_uploads_are_separate_sources": true,
+    "within_source_duplicate_observation_count": 0
+  },
+  "fictional": true,
+  "fixtures": [
+    {
+      "extraction": {
+        "ocr_dpi": 200,
+        "ocr_duplicate_lines_suppressed": 1,
+        "ocr_duration_seconds": 0.14,
+        "ocr_engine": "Tesseract",
+        "ocr_engine_version": "tesseract 5.5.3",
+        "ocr_image_regions": {
+          "1": 1
+        },
+        "ocr_issues": [],
+        "ocr_language": "eng",
+        "ocr_line_positions_available": false,
+        "ocr_page_durations_seconds": {
+          "1": 0.0829
+        },
+        "ocr_page_limit": 20,
+        "ocr_page_segmentation_modes": {
+          "1": [
+            6
+          ]
+        },
+        "ocr_page_timeout_seconds": 4,
+        "ocr_pages": [
+          1
+        ],
+        "ocr_partial_pages": [],
+        "ocr_renderer": "pypdfium2",
+        "ocr_renderer_version": "5.15.2",
+        "ocr_status": "completed",
+        "ocr_timestamp_confidence": "uncertain",
+        "ocr_word_confidence_available": false,
+        "page_extraction": [
+          {
+            "method": "native_text_plus_ocr",
+            "page": 1,
+            "status": "completed"
+          },
+          {
+            "method": "native_text",
+            "page": 2,
+            "status": "skipped"
+          }
+        ],
+        "pages": 2,
+        "parser": "pypdf",
+        "sha256": "4714b783bf3a2ba60a00dba3e2b1f46a49893c5a691035b4d8931b8efb66b70f"
+      },
+      "filename": "phase3_same_page_mixed_water_log.pdf",
+      "metrics": {
+        "character_error_rate": {
+          "definition": "casefolded, whitespace-normalized characters",
+          "errors": 0,
+          "rate": 0.0,
+          "reference_units": 350
+        },
+        "observation_source_attribution": {
+          "accuracy": 1.0,
+          "correct_page": 8,
+          "recognized_expected_lines": 8
+        },
+        "observations": {
+          "duplicate_observations": 0,
+          "expected": 8,
+          "incorrect_event_assignments": [],
+          "matched": 8,
+          "metrics_available": true,
+          "missed": [],
+          "precision": 1.0,
+          "recall": 1.0,
+          "repeated_events": [
+            {
+              "event_key": "station_b_pump_restored",
+              "expected_pages": [
+                1,
+                2
+              ],
+              "kept_separate_by_page": true,
+              "recognized_pages": [
+                1,
+                2
+              ]
+            }
+          ],
+          "unmatched_actual": [],
+          "unsupported_observations": 0
+        },
+        "page_method_attribution": {
+          "accuracy": 1.0,
+          "expected": 2,
+          "matched": 2
+        },
+        "processing": {
+          "isolated_parser_child_cpu_seconds": 0.5365,
+          "isolated_worker_wall_seconds": 0.696,
+          "ocr_page_seconds": {
+            "1": 0.0829
+          },
+          "ocr_wall_seconds": 0.14
+        },
+        "required_citations": {
+          "expected": 1,
+          "matched": 1,
+          "recall": 1.0
+        },
+        "timestamps": {
+          "accuracy": 1.0,
+          "expected": 5,
+          "expected_unknown_information_lines": 0,
+          "expected_unknown_lines_preserved_without_time": 0,
+          "matched_with_source_line": 5,
+          "time_uncertain_count": 1,
+          "unknown_lines_missing_or_assigned_a_time": 0
+        },
+        "word_error_rate": {
+          "definition": "casefolded, whitespace-normalized words",
+          "errors": 0,
+          "rate": 0.0,
+          "reference_units": 48
+        }
+      },
+      "scan_status": "not_scanned",
+      "sha256": "4714b783bf3a2ba60a00dba3e2b1f46a49893c5a691035b4d8931b8efb66b70f",
+      "variant": "same_page_native_plus_scanned_image"
+    },
+    {
+      "extraction": {
+        "ocr_dpi": 200,
+        "ocr_duplicate_lines_suppressed": 0,
+        "ocr_duration_seconds": 0.7652,
+        "ocr_engine": "Tesseract",
+        "ocr_engine_version": "tesseract 5.5.3",
+        "ocr_image_regions": {},
+        "ocr_issues": [],
+        "ocr_language": "eng",
+        "ocr_line_positions_available": false,
+        "ocr_page_durations_seconds": {
+          "1": 0.5537
+        },
+        "ocr_page_limit": 20,
+        "ocr_page_segmentation_modes": {
+          "1": [
+            6,
+            3
+          ]
+        },
+        "ocr_page_timeout_seconds": 4,
+        "ocr_pages": [
+          1
+        ],
+        "ocr_partial_pages": [],
+        "ocr_renderer": "pypdfium2",
+        "ocr_renderer_version": "5.15.2",
+        "ocr_status": "completed",
+        "ocr_timestamp_confidence": "uncertain",
+        "ocr_word_confidence_available": false,
+        "page_extraction": [
+          {
+            "method": "ocr",
+            "page": 1,
+            "status": "completed"
+          }
+        ],
+        "pages": 1,
+        "parser": "pypdf",
+        "sha256": "de9a7ebd5c80cb1244937c695700914afd1459cb5b1954e413eee4b7565e0124"
+      },
+      "filename": "phase3_two_column_low_resolution_scan.pdf",
+      "metrics": {
+        "character_error_rate": {
+          "definition": "casefolded, whitespace-normalized characters",
+          "errors": 11,
+          "rate": 0.0286,
+          "reference_units": 384
+        },
+        "observation_source_attribution": {
+          "accuracy": 1.0,
+          "correct_page": 10,
+          "recognized_expected_lines": 10
+        },
+        "observations": {
+          "duplicate_observations": 0,
+          "expected": 10,
+          "incorrect_event_assignments": [],
+          "matched": 10,
+          "metrics_available": true,
+          "missed": [],
+          "precision": 1.0,
+          "recall": 1.0,
+          "repeated_events": [],
+          "unmatched_actual": [],
+          "unsupported_observations": 0
+        },
+        "page_method_attribution": {
+          "accuracy": 1.0,
+          "expected": 1,
+          "matched": 1
+        },
+        "processing": {
+          "isolated_parser_child_cpu_seconds": 1.1856,
+          "isolated_worker_wall_seconds": 1.3054,
+          "ocr_page_seconds": {
+            "1": 0.5537
+          },
+          "ocr_wall_seconds": 0.7652
+        },
+        "required_citations": {
+          "expected": 0,
+          "matched": 0,
+          "recall": null
+        },
+        "timestamps": {
+          "accuracy": 1.0,
+          "expected": 6,
+          "expected_unknown_information_lines": 0,
+          "expected_unknown_lines_preserved_without_time": 0,
+          "matched_with_source_line": 6,
+          "time_uncertain_count": 6,
+          "unknown_lines_missing_or_assigned_a_time": 0
+        },
+        "word_error_rate": {
+          "definition": "casefolded, whitespace-normalized words",
+          "errors": 4,
+          "rate": 0.0615,
+          "reference_units": 65
+        }
+      },
+      "scan_status": "not_scanned",
+      "sha256": "de9a7ebd5c80cb1244937c695700914afd1459cb5b1954e413eee4b7565e0124",
+      "variant": "two_column_low_resolution_blurred_skewed_scan"
+    },
+    {
+      "extraction": {
+        "ocr_dpi": 200,
+        "ocr_duplicate_lines_suppressed": 0,
+        "ocr_duration_seconds": 0.7686,
+        "ocr_engine": "Tesseract",
+        "ocr_engine_version": "tesseract 5.5.3",
+        "ocr_image_regions": {},
+        "ocr_issues": [],
+        "ocr_language": "eng",
+        "ocr_line_positions_available": false,
+        "ocr_page_durations_seconds": {
+          "1": 0.2073,
+          "2": 0.2365
+        },
+        "ocr_page_limit": 20,
+        "ocr_page_segmentation_modes": {
+          "1": [
+            6
+          ],
+          "2": [
+            6
+          ]
+        },
+        "ocr_page_timeout_seconds": 4,
+        "ocr_pages": [
+          1,
+          2
+        ],
+        "ocr_partial_pages": [],
+        "ocr_renderer": "pypdfium2",
+        "ocr_renderer_version": "5.15.2",
+        "ocr_status": "completed",
+        "ocr_timestamp_confidence": "uncertain",
+        "ocr_word_confidence_available": false,
+        "page_extraction": [
+          {
+            "method": "ocr",
+            "page": 1,
+            "status": "completed"
+          },
+          {
+            "method": "ocr",
+            "page": 2,
+            "status": "completed"
+          }
+        ],
+        "pages": 2,
+        "parser": "pypdf",
+        "sha256": "af4f0a81aaa19b43566aa9cf38aa020cab0228068da434acadedfdf4229b2ad2"
+      },
+      "filename": "phase3_two_page_valve_event_table_scan.pdf",
+      "metrics": {
+        "character_error_rate": {
+          "definition": "casefolded, whitespace-normalized characters",
+          "errors": 2,
+          "rate": 0.0039,
+          "reference_units": 510
+        },
+        "observation_source_attribution": {
+          "accuracy": 1.0,
+          "correct_page": 12,
+          "recognized_expected_lines": 12
+        },
+        "observations": {
+          "duplicate_observations": 0,
+          "expected": 12,
+          "incorrect_event_assignments": [],
+          "matched": 12,
+          "metrics_available": true,
+          "missed": [],
+          "precision": 1.0,
+          "recall": 1.0,
+          "repeated_events": [],
+          "unmatched_actual": [],
+          "unsupported_observations": 0
+        },
+        "page_method_attribution": {
+          "accuracy": 1.0,
+          "expected": 2,
+          "matched": 2
+        },
+        "processing": {
+          "isolated_parser_child_cpu_seconds": 1.1794,
+          "isolated_worker_wall_seconds": 1.3076,
+          "ocr_page_seconds": {
+            "1": 0.2073,
+            "2": 0.2365
+          },
+          "ocr_wall_seconds": 0.7686
+        },
+        "required_citations": {
+          "expected": 0,
+          "matched": 0,
+          "recall": null
+        },
+        "timestamps": {
+          "accuracy": 1.0,
+          "expected": 4,
+          "expected_unknown_information_lines": 2,
+          "expected_unknown_lines_preserved_without_time": 2,
+          "matched_with_source_line": 4,
+          "time_uncertain_count": 4,
+          "unknown_lines_missing_or_assigned_a_time": 0
+        },
+        "word_error_rate": {
+          "definition": "casefolded, whitespace-normalized words",
+          "errors": 2,
+          "rate": 0.025,
+          "reference_units": 80
+        }
+      },
+      "scan_status": "not_scanned",
+      "sha256": "af4f0a81aaa19b43566aa9cf38aa020cab0228068da434acadedfdf4229b2ad2",
+      "variant": "two_page_scanned_table_with_repeated_and_ambiguous_events"
+    },
+    {
+      "extraction": {
+        "ocr_status": "not_required",
+        "page_extraction": [
+          {
+            "method": "native_text",
+            "page": 1,
+            "status": "skipped"
+          }
+        ],
+        "pages": 1,
+        "parser": "pypdf",
+        "sha256": "c8dcb4d32a819ee4f55763453b1d15cfdae0ef189742535dca4ade457adc0792"
+      },
+      "filename": "phase3_conflicting_dispatch_memo.pdf",
+      "metrics": {
+        "character_error_rate": {
+          "definition": "casefolded, whitespace-normalized characters",
+          "errors": 0,
+          "rate": 0.0,
+          "reference_units": 221
+        },
+        "observation_source_attribution": {
+          "accuracy": 1.0,
+          "correct_page": 5,
+          "recognized_expected_lines": 5
+        },
+        "observations": {
+          "duplicate_observations": 0,
+          "expected": 5,
+          "incorrect_event_assignments": [],
+          "matched": 5,
+          "metrics_available": true,
+          "missed": [],
+          "precision": 1.0,
+          "recall": 1.0,
+          "repeated_events": [],
+          "unmatched_actual": [],
+          "unsupported_observations": 0
+        },
+        "page_method_attribution": {
+          "accuracy": 1.0,
+          "expected": 1,
+          "matched": 1
+        },
+        "processing": {
+          "isolated_parser_child_cpu_seconds": 0.3946,
+          "isolated_worker_wall_seconds": 0.4815,
+          "ocr_page_seconds": {},
+          "ocr_wall_seconds": 0
+        },
+        "required_citations": {
+          "expected": 0,
+          "matched": 0,
+          "recall": null
+        },
+        "timestamps": {
+          "accuracy": 1.0,
+          "expected": 2,
+          "expected_unknown_information_lines": 0,
+          "expected_unknown_lines_preserved_without_time": 0,
+          "matched_with_source_line": 2,
+          "time_uncertain_count": 0,
+          "unknown_lines_missing_or_assigned_a_time": 0
+        },
+        "word_error_rate": {
+          "definition": "casefolded, whitespace-normalized words",
+          "errors": 0,
+          "rate": 0.0,
+          "reference_units": 31
+        }
+      },
+      "scan_status": "not_scanned",
+      "sha256": "c8dcb4d32a819ee4f55763453b1d15cfdae0ef189742535dca4ade457adc0792",
+      "variant": "native_dispatch_memo_with_cross_source_conflict"
+    },
+    {
+      "filename": "phase3_unreadable_damaged_field_note.pdf",
+      "metrics": {
+        "character_error_rate": null,
+        "observation_source_attribution": {
+          "accuracy": null,
+          "correct_page": 0,
+          "recognized_expected_lines": 0
+        },
+        "observations": {
+          "duplicate_observations": 0,
+          "expected": 0,
+          "incorrect_event_assignments": [],
+          "matched": 0,
+          "metrics_available": false,
+          "missed": [],
+          "precision": null,
+          "recall": null,
+          "unmatched_actual": [],
+          "unsupported_observations": 0
+        },
+        "page_method_attribution": {
+          "accuracy": null,
+          "expected": 0,
+          "matched": 0
+        },
+        "processing": {
+          "isolated_parser_child_cpu_seconds": 0.5651,
+          "isolated_worker_wall_seconds": 0.6863,
+          "ocr_wall_seconds": null
+        },
+        "required_citations": {
+          "expected": 0,
+          "matched": 0,
+          "recall": null
+        },
+        "timestamps": {
+          "accuracy": null,
+          "expected": 0,
+          "matched_with_source_line": 0
+        },
+        "word_error_rate": null
+      },
+      "processing_error": {
+        "code": "EMPTY_PDF",
+        "message": "No selectable or OCR-readable text was found in this PDF."
+      },
+      "scan_status": "not_scanned",
+      "sha256": "a1e0d65fd5d71554b4c0012f2cc7b9e58967b89a48a0874ed02a9d9c925c937d",
+      "variant": "damaged_scan_with_no_recoverable_text"
+    }
+  ],
+  "labels": {
+    "independently_adjudicated": false,
+    "initial_labels_written_before_ocr": true,
+    "label_audit_after_initial_ocr_run": true,
+    "labels_authored_from_source_content": true,
+    "path": "evals/phase3/ground_truth.json",
+    "sha256": "ec9f035ee38bdd76fb15d52cb3797fda1f77a72754ff3ecaedeb9eee96d69055"
+  },
+  "limitations": [
+    "All evidence is developer-generated fiction; results are fixture measurements, not production accuracy.",
+    "OCR word confidence is not available or calibrated.",
+    "Per-pixel page navigation or highlighting is not supported by the existing source viewer.",
+    "The worker uses the configured upload scanner; this synthetic local run explicitly used scan_status=not_scanned."
+  ],
+  "metrics_unavailable": [
+    "Production OCR accuracy: all Phase 3 PDFs and labels are fictional and developer-authored.",
+    "Calibrated word confidence: OCR confidence is not calibrated for this application.",
+    "Text character error rate for the intentionally unrecoverable page: no OCR transcription target is available for scoring; intended source wording is retained separately in labels.",
+    "Pixel-level PDF highlighting accuracy: the application exposes page-level citations only."
+  ],
+  "paired_native_vs_scanned": {
+    "native_character_error_rate": null,
+    "native_page_attribution_accuracy": null,
+    "native_word_error_rate": null,
+    "scanned_character_error_rate": null,
+    "scanned_page_attribution_accuracy": null,
+    "scanned_word_error_rate": null
+  },
+  "phase2_baseline_fixtures": [
+    {
+      "extraction": {
+        "ocr_duration_seconds": 0,
+        "ocr_page_durations_seconds": {},
+        "ocr_pages": [],
+        "page_extraction": [
+          {
+            "method": "native_text",
+            "page": 1,
+            "status": "skipped"
+          },
+          {
+            "method": "native_text",
+            "page": 2,
+            "status": "skipped"
+          }
+        ]
+      },
+      "filename": "phase3_same_page_mixed_water_log.pdf",
+      "metrics": {
+        "character_error_rate": {
+          "definition": "casefolded, whitespace-normalized characters",
+          "errors": 48,
+          "rate": 0.1371,
+          "reference_units": 350
+        },
+        "observation_source_attribution": {
+          "accuracy": 0.8571,
+          "correct_page": 6,
+          "recognized_expected_lines": 7
+        },
+        "observations": {
+          "duplicate_observations": 0,
+          "expected": 8,
+          "incorrect_event_assignments": [
+            {
+              "actual_page": 2,
+              "actual_text": "Station B pump restored; pressure stable.",
+              "actual_timestamp": "14:11",
+              "expected_page": 1,
+              "expected_text": "Station B pump restored; pressure stable.",
+              "expected_timestamp": "14:11",
+              "text_similarity": 1.0
+            }
+          ],
+          "matched": 7,
+          "metrics_available": true,
+          "missed": [
+            {
+              "page": 2,
+              "text": "Station B pump restored; pressure stable.",
+              "time": "14:11"
+            }
+          ],
+          "precision": 1.0,
+          "recall": 0.875,
+          "repeated_events": [
+            {
+              "event_key": "station_b_pump_restored",
+              "expected_pages": [
+                1,
+                2
+              ],
+              "kept_separate_by_page": false,
+              "recognized_pages": [
+                2
+              ]
+            }
+          ],
+          "unmatched_actual": [],
+          "unsupported_observations": 0
+        },
+        "page_method_attribution": {
+          "accuracy": 0.5,
+          "expected": 2,
+          "matched": 1
+        },
+        "processing": {
+          "isolated_worker_wall_seconds": 0.0018,
+          "ocr_page_seconds": {},
+          "ocr_wall_seconds": 0
+        },
+        "required_citations": {
+          "expected": 1,
+          "matched": 0,
+          "recall": 0.0
+        },
+        "timestamps": {
+          "accuracy": 0.8,
+          "expected": 5,
+          "expected_unknown_information_lines": 0,
+          "expected_unknown_lines_preserved_without_time": 0,
+          "matched_with_source_line": 4,
+          "time_uncertain_count": 0,
+          "unknown_lines_missing_or_assigned_a_time": 0
+        },
+        "word_error_rate": {
+          "definition": "casefolded, whitespace-normalized words",
+          "errors": 7,
+          "rate": 0.1458,
+          "reference_units": 48
+        }
+      },
+      "sha256": "4714b783bf3a2ba60a00dba3e2b1f46a49893c5a691035b4d8931b8efb66b70f",
+      "variant": "same_page_native_plus_scanned_image"
+    },
+    {
+      "extraction": {
+        "ocr_duration_seconds": 0.2099,
+        "ocr_page_durations_seconds": {
+          "1": 0.2099
+        },
+        "ocr_pages": [
+          1
+        ],
+        "page_extraction": [
+          {
+            "method": "ocr",
+            "page": 1,
+            "status": "completed"
+          }
+        ]
+      },
+      "filename": "phase3_two_column_low_resolution_scan.pdf",
+      "metrics": {
+        "character_error_rate": {
+          "definition": "casefolded, whitespace-normalized characters",
+          "errors": 243,
+          "rate": 0.6328,
+          "reference_units": 384
+        },
+        "observation_source_attribution": {
+          "accuracy": 1.0,
+          "correct_page": 6,
+          "recognized_expected_lines": 6
+        },
+        "observations": {
+          "duplicate_observations": 0,
+          "expected": 10,
+          "incorrect_event_assignments": [
+            {
+              "actual_page": 1,
+              "actual_text": "Alarm logged at Booster 4. 14:07 Isolation switch 1-01 verified open.",
+              "actual_timestamp": "13:52",
+              "expected_page": 1,
+              "expected_text": "Isolation switch I-01 verified open.",
+              "expected_timestamp": "14:07",
+              "text_similarity": 0.6667
+            },
+            {
+              "actual_page": 1,
+              "actual_text": "Crew 0-1 arrived at Booster 4. 14:18 Shift lead declared the exercise complete.",
+              "actual_timestamp": "14:03",
+              "expected_page": 1,
+              "expected_text": "Shift lead declared the exercise complete.",
+              "expected_timestamp": "14:18",
+              "text_similarity": 0.6942
+            }
+          ],
+          "matched": 6,
+          "metrics_available": true,
+          "missed": [
+            {
+              "page": 1,
+              "text": "Alarm logged at Booster 4.",
+              "time": "13:52"
+            },
+            {
+              "page": 1,
+              "text": "Crew 0-1 arrived at Booster 4.",
+              "time": "14:03"
+            },
+            {
+              "page": 1,
+              "text": "Column B: Field team",
+              "time": null
+            },
+            {
+              "page": 1,
+              "text": "Flow measured at 42 L/s.",
+              "time": "14:13"
+            }
+          ],
+          "precision": 1.0,
+          "recall": 0.6,
+          "repeated_events": [],
+          "unmatched_actual": [],
+          "unsupported_observations": 0
+        },
+        "page_method_attribution": {
+          "accuracy": 1.0,
+          "expected": 1,
+          "matched": 1
+        },
+        "processing": {
+          "isolated_worker_wall_seconds": 0.3568,
+          "ocr_page_seconds": {
+            "1": 0.2099
+          },
+          "ocr_wall_seconds": 0.2099
+        },
+        "required_citations": {
+          "expected": 0,
+          "matched": 0,
+          "recall": null
+        },
+        "timestamps": {
+          "accuracy": 0.1667,
+          "expected": 6,
+          "expected_unknown_information_lines": 0,
+          "expected_unknown_lines_preserved_without_time": 0,
+          "matched_with_source_line": 1,
+          "time_uncertain_count": 3,
+          "unknown_lines_missing_or_assigned_a_time": 0
+        },
+        "word_error_rate": {
+          "definition": "casefolded, whitespace-normalized words",
+          "errors": 48,
+          "rate": 0.7385,
+          "reference_units": 65
+        }
+      },
+      "sha256": "de9a7ebd5c80cb1244937c695700914afd1459cb5b1954e413eee4b7565e0124",
+      "variant": "two_column_low_resolution_blurred_skewed_scan"
+    },
+    {
+      "extraction": {
+        "ocr_duration_seconds": 0.3515,
+        "ocr_page_durations_seconds": {
+          "1": 0.1649,
+          "2": 0.1866
+        },
+        "ocr_pages": [
+          1,
+          2
+        ],
+        "page_extraction": [
+          {
+            "method": "ocr",
+            "page": 1,
+            "status": "completed"
+          },
+          {
+            "method": "ocr",
+            "page": 2,
+            "status": "completed"
+          }
+        ]
+      },
+      "filename": "phase3_two_page_valve_event_table_scan.pdf",
+      "metrics": {
+        "character_error_rate": {
+          "definition": "casefolded, whitespace-normalized characters",
+          "errors": 2,
+          "rate": 0.0039,
+          "reference_units": 510
+        },
+        "observation_source_attribution": {
+          "accuracy": 1.0,
+          "correct_page": 12,
+          "recognized_expected_lines": 12
+        },
+        "observations": {
+          "duplicate_observations": 0,
+          "expected": 12,
+          "incorrect_event_assignments": [],
+          "matched": 12,
+          "metrics_available": true,
+          "missed": [],
+          "precision": 1.0,
+          "recall": 1.0,
+          "repeated_events": [],
+          "unmatched_actual": [],
+          "unsupported_observations": 0
+        },
+        "page_method_attribution": {
+          "accuracy": 1.0,
+          "expected": 2,
+          "matched": 2
+        },
+        "processing": {
+          "isolated_worker_wall_seconds": 0.5486,
+          "ocr_page_seconds": {
+            "1": 0.1649,
+            "2": 0.1866
+          },
+          "ocr_wall_seconds": 0.3515
+        },
+        "required_citations": {
+          "expected": 0,
+          "matched": 0,
+          "recall": null
+        },
+        "timestamps": {
+          "accuracy": 1.0,
+          "expected": 4,
+          "expected_unknown_information_lines": 2,
+          "expected_unknown_lines_preserved_without_time": 2,
+          "matched_with_source_line": 4,
+          "time_uncertain_count": 4,
+          "unknown_lines_missing_or_assigned_a_time": 0
+        },
+        "word_error_rate": {
+          "definition": "casefolded, whitespace-normalized words",
+          "errors": 2,
+          "rate": 0.025,
+          "reference_units": 80
+        }
+      },
+      "sha256": "af4f0a81aaa19b43566aa9cf38aa020cab0228068da434acadedfdf4229b2ad2",
+      "variant": "two_page_scanned_table_with_repeated_and_ambiguous_events"
+    },
+    {
+      "extraction": {
+        "ocr_duration_seconds": 0,
+        "ocr_page_durations_seconds": {},
+        "ocr_pages": [],
+        "page_extraction": [
+          {
+            "method": "native_text",
+            "page": 1,
+            "status": "skipped"
+          }
+        ]
+      },
+      "filename": "phase3_conflicting_dispatch_memo.pdf",
+      "metrics": {
+        "character_error_rate": {
+          "definition": "casefolded, whitespace-normalized characters",
+          "errors": 0,
+          "rate": 0.0,
+          "reference_units": 221
+        },
+        "observation_source_attribution": {
+          "accuracy": 1.0,
+          "correct_page": 5,
+          "recognized_expected_lines": 5
+        },
+        "observations": {
+          "duplicate_observations": 0,
+          "expected": 5,
+          "incorrect_event_assignments": [],
+          "matched": 5,
+          "metrics_available": true,
+          "missed": [],
+          "precision": 1.0,
+          "recall": 1.0,
+          "repeated_events": [],
+          "unmatched_actual": [],
+          "unsupported_observations": 0
+        },
+        "page_method_attribution": {
+          "accuracy": 1.0,
+          "expected": 1,
+          "matched": 1
+        },
+        "processing": {
+          "isolated_worker_wall_seconds": 0.0008,
+          "ocr_page_seconds": {},
+          "ocr_wall_seconds": 0
+        },
+        "required_citations": {
+          "expected": 0,
+          "matched": 0,
+          "recall": null
+        },
+        "timestamps": {
+          "accuracy": 1.0,
+          "expected": 2,
+          "expected_unknown_information_lines": 0,
+          "expected_unknown_lines_preserved_without_time": 0,
+          "matched_with_source_line": 2,
+          "time_uncertain_count": 0,
+          "unknown_lines_missing_or_assigned_a_time": 0
+        },
+        "word_error_rate": {
+          "definition": "casefolded, whitespace-normalized words",
+          "errors": 0,
+          "rate": 0.0,
+          "reference_units": 31
+        }
+      },
+      "sha256": "c8dcb4d32a819ee4f55763453b1d15cfdae0ef189742535dca4ade457adc0792",
+      "variant": "native_dispatch_memo_with_cross_source_conflict"
+    },
+    {
+      "extraction": {
+        "ocr_duration_seconds": 0.0771,
+        "ocr_page_durations_seconds": {
+          "1": 0.0771
+        },
+        "ocr_pages": [
+          1
+        ],
+        "page_extraction": [
+          {
+            "method": "ocr",
+            "page": 1,
+            "status": "completed_empty"
+          }
+        ]
+      },
+      "filename": "phase3_unreadable_damaged_field_note.pdf",
+      "metrics": {
+        "character_error_rate": null,
+        "observation_source_attribution": {
+          "accuracy": null,
+          "correct_page": 0,
+          "recognized_expected_lines": 0
+        },
+        "observations": {
+          "duplicate_observations": 0,
+          "expected": 0,
+          "incorrect_event_assignments": [],
+          "matched": 0,
+          "metrics_available": false,
+          "missed": [],
+          "precision": null,
+          "recall": null,
+          "repeated_events": [],
+          "unmatched_actual": [],
+          "unsupported_observations": 0
+        },
+        "page_method_attribution": {
+          "accuracy": null,
+          "expected": 0,
+          "matched": 0
+        },
+        "processing": {
+          "isolated_worker_wall_seconds": 0.0951,
+          "ocr_page_seconds": {
+            "1": 0.0771
+          },
+          "ocr_wall_seconds": 0.0771
+        },
+        "required_citations": {
+          "expected": 0,
+          "matched": 0,
+          "recall": null
+        },
+        "timestamps": {
+          "accuracy": null,
+          "expected": 0,
+          "expected_unknown_information_lines": 0,
+          "expected_unknown_lines_preserved_without_time": 0,
+          "matched_with_source_line": 0,
+          "time_uncertain_count": 0,
+          "unknown_lines_missing_or_assigned_a_time": 0
+        },
+        "word_error_rate": null
+      },
+      "processing_outcome": "accepted_without_readable_text_under_phase2_policy",
+      "sha256": "a1e0d65fd5d71554b4c0012f2cc7b9e58967b89a48a0874ed02a9d9c925c937d",
+      "variant": "damaged_scan_with_no_recoverable_text"
+    }
+  ],
+  "phase2_vs_phase3_comparison": {
+    "baseline_execution": "Phase 2 policy re-run by the evaluator in-process; production Phase 3 parses remain in the isolated worker.",
+    "per_document": {
+      "phase3_conflicting_dispatch_memo.pdf": {
+        "after_phase3_policy": {
+          "character_error_rate": {
+            "definition": "casefolded, whitespace-normalized characters",
+            "errors": 0,
+            "rate": 0.0,
+            "reference_units": 221
+          },
+          "observation_precision": 1.0,
+          "observation_recall": 1.0,
+          "page_method_attribution": 1.0,
+          "required_citation_recall": null,
+          "timestamp_accuracy": 1.0,
+          "word_error_rate": {
+            "definition": "casefolded, whitespace-normalized words",
+            "errors": 0,
+            "rate": 0.0,
+            "reference_units": 31
+          }
+        },
+        "before_phase2_policy": {
+          "character_error_rate": {
+            "definition": "casefolded, whitespace-normalized characters",
+            "errors": 0,
+            "rate": 0.0,
+            "reference_units": 221
+          },
+          "observation_precision": 1.0,
+          "observation_recall": 1.0,
+          "page_method_attribution": 1.0,
+          "required_citation_recall": null,
+          "timestamp_accuracy": 1.0,
+          "word_error_rate": {
+            "definition": "casefolded, whitespace-normalized words",
+            "errors": 0,
+            "rate": 0.0,
+            "reference_units": 31
+          }
+        },
+        "recognition_policy": "Phase 2 skipped all pages with native selectable text and used Tesseract PSM 6 on image-only pages. Phase 3 adds bounded same-page image-region OCR and a PSM 3 retry only when PSM 6 output puts multiple timestamps on one line."
+      },
+      "phase3_same_page_mixed_water_log.pdf": {
+        "after_phase3_policy": {
+          "character_error_rate": {
+            "definition": "casefolded, whitespace-normalized characters",
+            "errors": 0,
+            "rate": 0.0,
+            "reference_units": 350
+          },
+          "observation_precision": 1.0,
+          "observation_recall": 1.0,
+          "page_method_attribution": 1.0,
+          "required_citation_recall": 1.0,
+          "timestamp_accuracy": 1.0,
+          "word_error_rate": {
+            "definition": "casefolded, whitespace-normalized words",
+            "errors": 0,
+            "rate": 0.0,
+            "reference_units": 48
+          }
+        },
+        "before_phase2_policy": {
+          "character_error_rate": {
+            "definition": "casefolded, whitespace-normalized characters",
+            "errors": 48,
+            "rate": 0.1371,
+            "reference_units": 350
+          },
+          "observation_precision": 1.0,
+          "observation_recall": 0.875,
+          "page_method_attribution": 0.5,
+          "required_citation_recall": 0.0,
+          "timestamp_accuracy": 0.8,
+          "word_error_rate": {
+            "definition": "casefolded, whitespace-normalized words",
+            "errors": 7,
+            "rate": 0.1458,
+            "reference_units": 48
+          }
+        },
+        "recognition_policy": "Phase 2 skipped all pages with native selectable text and used Tesseract PSM 6 on image-only pages. Phase 3 adds bounded same-page image-region OCR and a PSM 3 retry only when PSM 6 output puts multiple timestamps on one line."
+      },
+      "phase3_two_column_low_resolution_scan.pdf": {
+        "after_phase3_policy": {
+          "character_error_rate": {
+            "definition": "casefolded, whitespace-normalized characters",
+            "errors": 11,
+            "rate": 0.0286,
+            "reference_units": 384
+          },
+          "observation_precision": 1.0,
+          "observation_recall": 1.0,
+          "page_method_attribution": 1.0,
+          "required_citation_recall": null,
+          "timestamp_accuracy": 1.0,
+          "word_error_rate": {
+            "definition": "casefolded, whitespace-normalized words",
+            "errors": 4,
+            "rate": 0.0615,
+            "reference_units": 65
+          }
+        },
+        "before_phase2_policy": {
+          "character_error_rate": {
+            "definition": "casefolded, whitespace-normalized characters",
+            "errors": 243,
+            "rate": 0.6328,
+            "reference_units": 384
+          },
+          "observation_precision": 1.0,
+          "observation_recall": 0.6,
+          "page_method_attribution": 1.0,
+          "required_citation_recall": null,
+          "timestamp_accuracy": 0.1667,
+          "word_error_rate": {
+            "definition": "casefolded, whitespace-normalized words",
+            "errors": 48,
+            "rate": 0.7385,
+            "reference_units": 65
+          }
+        },
+        "recognition_policy": "Phase 2 skipped all pages with native selectable text and used Tesseract PSM 6 on image-only pages. Phase 3 adds bounded same-page image-region OCR and a PSM 3 retry only when PSM 6 output puts multiple timestamps on one line."
+      },
+      "phase3_two_page_valve_event_table_scan.pdf": {
+        "after_phase3_policy": {
+          "character_error_rate": {
+            "definition": "casefolded, whitespace-normalized characters",
+            "errors": 2,
+            "rate": 0.0039,
+            "reference_units": 510
+          },
+          "observation_precision": 1.0,
+          "observation_recall": 1.0,
+          "page_method_attribution": 1.0,
+          "required_citation_recall": null,
+          "timestamp_accuracy": 1.0,
+          "word_error_rate": {
+            "definition": "casefolded, whitespace-normalized words",
+            "errors": 2,
+            "rate": 0.025,
+            "reference_units": 80
+          }
+        },
+        "before_phase2_policy": {
+          "character_error_rate": {
+            "definition": "casefolded, whitespace-normalized characters",
+            "errors": 2,
+            "rate": 0.0039,
+            "reference_units": 510
+          },
+          "observation_precision": 1.0,
+          "observation_recall": 1.0,
+          "page_method_attribution": 1.0,
+          "required_citation_recall": null,
+          "timestamp_accuracy": 1.0,
+          "word_error_rate": {
+            "definition": "casefolded, whitespace-normalized words",
+            "errors": 2,
+            "rate": 0.025,
+            "reference_units": 80
+          }
+        },
+        "recognition_policy": "Phase 2 skipped all pages with native selectable text and used Tesseract PSM 6 on image-only pages. Phase 3 adds bounded same-page image-region OCR and a PSM 3 retry only when PSM 6 output puts multiple timestamps on one line."
+      },
+      "phase3_unreadable_damaged_field_note.pdf": {
+        "after_phase3_policy": {
+          "character_error_rate": null,
+          "observation_precision": null,
+          "observation_recall": null,
+          "page_method_attribution": null,
+          "required_citation_recall": null,
+          "timestamp_accuracy": null,
+          "word_error_rate": null
+        },
+        "before_phase2_policy": {
+          "character_error_rate": null,
+          "observation_precision": null,
+          "observation_recall": null,
+          "page_method_attribution": null,
+          "required_citation_recall": null,
+          "timestamp_accuracy": null,
+          "word_error_rate": null
+        },
+        "recognition_policy": "Phase 2 skipped all pages with native selectable text and used Tesseract PSM 6 on image-only pages. Phase 3 adds bounded same-page image-region OCR and a PSM 3 retry only when PSM 6 output puts multiple timestamps on one line."
+      }
+    },
+    "phase2_aggregate_metrics": {
+      "character_error_rate_micro": {
+        "errors": 293,
+        "rate": 0.2,
+        "reference_units": 1465
+      },
+      "duplicate_observations": 0,
+      "latency_seconds_per_document": {
+        "phase3_conflicting_dispatch_memo.pdf": 0.0008,
+        "phase3_same_page_mixed_water_log.pdf": 0.0018,
+        "phase3_two_column_low_resolution_scan.pdf": 0.3568,
+        "phase3_two_page_valve_event_table_scan.pdf": 0.5486,
+        "phase3_unreadable_damaged_field_note.pdf": 0.0951
+      },
+      "metrics_documents": 5,
+      "observation_counts": {
+        "actual": 30,
+        "expected": 35,
+        "matched": 30
+      },
+      "observation_precision_micro": 1.0,
+      "observation_recall_micro": 0.8571,
+      "page_method_attribution_micro": 0.8333,
+      "page_method_counts": {
+        "expected": 6,
+        "matched": 5
+      },
+      "recognition_scored_documents": 4,
+      "recognition_unavailable_documents": 1,
+      "required_citation_counts": {
+        "expected": 1,
+        "matched": 0
+      },
+      "required_citation_recall_micro": 0.0,
+      "timestamp_accuracy_micro": 0.6471,
+      "timestamp_counts": {
+        "expected": 17,
+        "matched": 11
+      },
+      "unsupported_observations": 0,
+      "word_error_rate_micro": {
+        "errors": 57,
+        "rate": 0.2545,
+        "reference_units": 224
+      }
+    },
+    "phase3_aggregate_metrics": {
+      "character_error_rate_micro": {
+        "errors": 13,
+        "rate": 0.0089,
+        "reference_units": 1465
+      },
+      "duplicate_observations": 0,
+      "latency_seconds_per_document": {
+        "phase3_conflicting_dispatch_memo.pdf": 0.4815,
+        "phase3_same_page_mixed_water_log.pdf": 0.696,
+        "phase3_two_column_low_resolution_scan.pdf": 1.3054,
+        "phase3_two_page_valve_event_table_scan.pdf": 1.3076,
+        "phase3_unreadable_damaged_field_note.pdf": 0.6863
+      },
+      "metrics_documents": 5,
+      "observation_counts": {
+        "actual": 35,
+        "expected": 35,
+        "matched": 35
+      },
+      "observation_precision_micro": 1.0,
+      "observation_recall_micro": 1.0,
+      "page_method_attribution_micro": 1.0,
+      "page_method_counts": {
+        "expected": 6,
+        "matched": 6
+      },
+      "recognition_scored_documents": 4,
+      "recognition_unavailable_documents": 1,
+      "required_citation_counts": {
+        "expected": 1,
+        "matched": 1
+      },
+      "required_citation_recall_micro": 1.0,
+      "timestamp_accuracy_micro": 1.0,
+      "timestamp_counts": {
+        "expected": 17,
+        "matched": 17
+      },
+      "unsupported_observations": 0,
+      "word_error_rate_micro": {
+        "errors": 6,
+        "rate": 0.0268,
+        "reference_units": 224
+      }
+    },
+    "same_fixture_files_and_final_reference_labels": true
+  },
+  "resource_usage": {
+    "isolated_parser_children_system_cpu_seconds": 0.9046,
+    "isolated_parser_children_user_cpu_seconds": 4.6062,
+    "peak_child_rss_bytes": 213057536,
+    "scope": "Child CPU times are aggregated across isolated OCR/parser workers; RSS is the maximum per-child high-water measurement in this run, not a sum or production capacity measure."
+  },
+  "schema_version": "drillloop-ocr-evaluation/v2",
+  "stack": {
+    "language": "eng",
+    "native_extractor": "pypdf 6.21.4",
+    "renderer": "pypdfium2 5.15.2",
+    "resource_limits": {
+      "dpi": 200,
+      "max_embedded_image_objects_per_mixed_page": 64,
+      "max_embedded_image_regions_per_mixed_page": 8,
+      "max_ocr_pages": 20,
+      "max_pixels_per_page": 12000000,
+      "mixed_page_tesseract_deadline_seconds": 4,
+      "ocr_temporary_files": 0,
+      "parser_cpu_seconds": 10,
+      "parser_memory_limit_mb": 768,
+      "parser_timeout_seconds": 15,
+      "tesseract_timeout_seconds_per_page": 4
+    },
+    "tesseract": "tesseract 5.5.3"
+  }
+}

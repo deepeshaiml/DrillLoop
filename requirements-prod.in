@@ -6,5 +6,6 @@ alembic==1.20.1
 psycopg[binary]==3.3.4
 python-multipart==0.0.31
 pypdf==6.21.4
+pypdfium2==5.15.2
 python-docx==1.2.0
 reportlab==5.1.0

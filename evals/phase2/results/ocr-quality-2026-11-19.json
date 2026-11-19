@@ -1,0 +1,698 @@
+{
+  "aggregate_metrics": {
+    "character_error_rate_micro": {
+      "errors": 0,
+      "rate": 0.0,
+      "reference_units": 2206
+    },
+    "duplicate_observations": 0,
+    "latency_seconds_per_document": {
+      "utility_ambiguous_missing_scanned.pdf": 0.9135,
+      "utility_emergency_log_mixed.pdf": 0.7544,
+      "utility_emergency_log_native.pdf": 0.5022,
+      "utility_emergency_log_rotated_degraded.pdf": 0.9427,
+      "utility_emergency_log_scanned.pdf": 0.9416
+    },
+    "metrics_documents": 5,
+    "observation_counts": {
+      "actual": 45,
+      "expected": 45,
+      "matched": 45
+    },
+    "observation_precision_micro": 1.0,
+    "observation_recall_micro": 1.0,
+    "page_method_attribution_micro": 1.0,
+    "page_method_counts": {
+      "expected": 9,
+      "matched": 9
+    },
+    "recognition_scored_documents": 5,
+    "recognition_unavailable_documents": 0,
+    "required_citation_counts": {
+      "expected": 0,
+      "matched": 0
+    },
+    "required_citation_recall_micro": null,
+    "timestamp_accuracy_micro": 1.0,
+    "timestamp_counts": {
+      "expected": 16,
+      "matched": 16
+    },
+    "unsupported_observations": 0,
+    "word_error_rate_micro": {
+      "errors": 0,
+      "rate": 0.0,
+      "reference_units": 321
+    }
+  },
+  "application_workflow": {
+    "finding": {
+      "citation_page_matches_label": true,
+      "citations": [
+        {
+          "filename": "utility_emergency_log_scanned.pdf",
+          "locator": "page 2"
+        }
+      ],
+      "code": "STATION_B_RESTORED",
+      "present": true,
+      "reviewer_decision": null,
+      "status": "proposed"
+    },
+    "objective_assessments": {
+      "elapsed_time": {
+        "elapsed_seconds": [],
+        "state": "insufficient_information",
+        "unknowns": [
+          "No source-matched start event with a usable timestamp was found.",
+          "Matching start evidence has missing or uncertain time."
+        ]
+      },
+      "station_b_presence": {
+        "expected": "confirmed_success",
+        "state": "confirmed_success"
+      }
+    },
+    "report": {
+      "contains_finding_title": true,
+      "contains_page_citation": true,
+      "content_type": "application/pdf",
+      "status": "exported"
+    },
+    "source": {
+      "filename": "utility_emergency_log_scanned.pdf",
+      "ocr_pages": [
+        1,
+        2
+      ],
+      "ocr_status": "completed",
+      "scan_status": "not_scanned",
+      "sha256_matches_original": true,
+      "timeline_observations": 10
+    },
+    "workflow": [
+      "fictional exercise created in disposable SQLite database",
+      "image-only PDF passed through upload scan boundary and isolated OCR parser",
+      "original PDF was byte-for-byte downloadable",
+      "page-cited OCR observations entered the timeline",
+      "existing objective rules ran without threshold changes",
+      "source-linked finding remained proposed with no reviewer decision",
+      "PDF report exported"
+    ]
+  },
+  "created_at_utc": "2026-11-19T19:27:36.611081+00:00",
+  "duplicate_upload_behavior": {
+    "behavior": "Each explicit upload creates a distinct source record; identical-file deduplication is not implemented.",
+    "observations_per_source": {
+      "0ffa4b5a-d937-4a8d-a1f9-a85556ad5ce8": 10,
+      "f00bf38a-71d5-46b6-8b1a-037f754239e5": 10
+    },
+    "same_file_uploads_are_separate_sources": true,
+    "within_source_duplicate_observation_count": 0
+  },
+  "fictional": true,
+  "fixtures": [
+    {
+      "extraction": {
+        "ocr_status": "not_required",
+        "page_extraction": [
+          {
+            "method": "native_text",
+            "page": 1,
+            "status": "skipped"
+          },
+          {
+            "method": "native_text",
+            "page": 2,
+            "status": "skipped"
+          }
+        ],
+        "pages": 2,
+        "parser": "pypdf",
+        "sha256": "aa4a60a96171a485ce0438edbe6b83c3d76b127d03cf38c7f438daac712c2d8e"
+      },
+      "filename": "utility_emergency_log_native.pdf",
+      "metrics": {
+        "character_error_rate": {
+          "definition": "casefolded, whitespace-normalized characters",
+          "errors": 0,
+          "rate": 0.0,
+          "reference_units": 491
+        },
+        "observation_source_attribution": {
+          "accuracy": 1.0,
+          "correct_page": 10,
+          "recognized_expected_lines": 10
+        },
+        "observations": {
+          "duplicate_observations": 0,
+          "expected": 10,
+          "incorrect_event_assignments": [],
+          "matched": 10,
+          "metrics_available": true,
+          "missed": [],
+          "precision": 1.0,
+          "recall": 1.0,
+          "repeated_events": [],
+          "unmatched_actual": [],
+          "unsupported_observations": 0
+        },
+        "page_method_attribution": {
+          "accuracy": 1.0,
+          "expected": 2,
+          "matched": 2
+        },
+        "processing": {
+          "isolated_parser_child_cpu_seconds": 0.4007,
+          "isolated_worker_wall_seconds": 0.5022,
+          "ocr_page_seconds": {},
+          "ocr_wall_seconds": 0
+        },
+        "required_citations": {
+          "expected": 0,
+          "matched": 0,
+          "recall": null
+        },
+        "timestamps": {
+          "accuracy": 1.0,
+          "expected": 4,
+          "expected_unknown_information_lines": 0,
+          "expected_unknown_lines_preserved_without_time": 0,
+          "matched_with_source_line": 4,
+          "time_uncertain_count": 0,
+          "unknown_lines_missing_or_assigned_a_time": 0
+        },
+        "word_error_rate": {
+          "definition": "casefolded, whitespace-normalized words",
+          "errors": 0,
+          "rate": 0.0,
+          "reference_units": 71
+        }
+      },
+      "scan_status": "not_scanned",
+      "sha256": "aa4a60a96171a485ce0438edbe6b83c3d76b127d03cf38c7f438daac712c2d8e",
+      "variant": "selectable_text"
+    },
+    {
+      "extraction": {
+        "ocr_dpi": 200,
+        "ocr_duplicate_lines_suppressed": 0,
+        "ocr_duration_seconds": 0.4094,
+        "ocr_engine": "Tesseract",
+        "ocr_engine_version": "tesseract 5.5.3",
+        "ocr_image_regions": {},
+        "ocr_issues": [],
+        "ocr_language": "eng",
+        "ocr_line_positions_available": false,
+        "ocr_page_durations_seconds": {
+          "1": 0.1626,
+          "2": 0.1638
+        },
+        "ocr_page_limit": 20,
+        "ocr_page_segmentation_modes": {
+          "1": [
+            6
+          ],
+          "2": [
+            6
+          ]
+        },
+        "ocr_page_timeout_seconds": 4,
+        "ocr_pages": [
+          1,
+          2
+        ],
+        "ocr_partial_pages": [],
+        "ocr_renderer": "pypdfium2",
+        "ocr_renderer_version": "5.15.2",
+        "ocr_status": "completed",
+        "ocr_timestamp_confidence": "uncertain",
+        "ocr_word_confidence_available": false,
+        "page_extraction": [
+          {
+            "method": "ocr",
+            "page": 1,
+            "status": "completed"
+          },
+          {
+            "method": "ocr",
+            "page": 2,
+            "status": "completed"
+          }
+        ],
+        "pages": 2,
+        "parser": "pypdf",
+        "sha256": "baa3450a70d66a7b02dccd1ac5f339de2b37afcf8b2d2e444cd60f81988b4f90"
+      },
+      "filename": "utility_emergency_log_scanned.pdf",
+      "metrics": {
+        "character_error_rate": {
+          "definition": "casefolded, whitespace-normalized characters",
+          "errors": 0,
+          "rate": 0.0,
+          "reference_units": 491
+        },
+        "observation_source_attribution": {
+          "accuracy": 1.0,
+          "correct_page": 10,
+          "recognized_expected_lines": 10
+        },
+        "observations": {
+          "duplicate_observations": 0,
+          "expected": 10,
+          "incorrect_event_assignments": [],
+          "matched": 10,
+          "metrics_available": true,
+          "missed": [],
+          "precision": 1.0,
+          "recall": 1.0,
+          "repeated_events": [],
+          "unmatched_actual": [],
+          "unsupported_observations": 0
+        },
+        "page_method_attribution": {
+          "accuracy": 1.0,
+          "expected": 2,
+          "matched": 2
+        },
+        "processing": {
+          "isolated_parser_child_cpu_seconds": 0.8124,
+          "isolated_worker_wall_seconds": 0.9416,
+          "ocr_page_seconds": {
+            "1": 0.1626,
+            "2": 0.1638
+          },
+          "ocr_wall_seconds": 0.4094
+        },
+        "required_citations": {
+          "expected": 0,
+          "matched": 0,
+          "recall": null
+        },
+        "timestamps": {
+          "accuracy": 1.0,
+          "expected": 4,
+          "expected_unknown_information_lines": 0,
+          "expected_unknown_lines_preserved_without_time": 0,
+          "matched_with_source_line": 4,
+          "time_uncertain_count": 4,
+          "unknown_lines_missing_or_assigned_a_time": 0
+        },
+        "word_error_rate": {
+          "definition": "casefolded, whitespace-normalized words",
+          "errors": 0,
+          "rate": 0.0,
+          "reference_units": 71
+        }
+      },
+      "scan_status": "not_scanned",
+      "sha256": "baa3450a70d66a7b02dccd1ac5f339de2b37afcf8b2d2e444cd60f81988b4f90",
+      "variant": "image_only_scan"
+    },
+    {
+      "extraction": {
+        "ocr_dpi": 200,
+        "ocr_duplicate_lines_suppressed": 0,
+        "ocr_duration_seconds": 0.23,
+        "ocr_engine": "Tesseract",
+        "ocr_engine_version": "tesseract 5.5.3",
+        "ocr_image_regions": {},
+        "ocr_issues": [],
+        "ocr_language": "eng",
+        "ocr_line_positions_available": false,
+        "ocr_page_durations_seconds": {
+          "2": 0.1644
+        },
+        "ocr_page_limit": 20,
+        "ocr_page_segmentation_modes": {
+          "2": [
+            6
+          ]
+        },
+        "ocr_page_timeout_seconds": 4,
+        "ocr_pages": [
+          2
+        ],
+        "ocr_partial_pages": [],
+        "ocr_renderer": "pypdfium2",
+        "ocr_renderer_version": "5.15.2",
+        "ocr_status": "completed",
+        "ocr_timestamp_confidence": "uncertain",
+        "ocr_word_confidence_available": false,
+        "page_extraction": [
+          {
+            "method": "native_text",
+            "page": 1,
+            "status": "skipped"
+          },
+          {
+            "method": "ocr",
+            "page": 2,
+            "status": "completed"
+          }
+        ],
+        "pages": 2,
+        "parser": "pypdf",
+        "sha256": "11fc9fe68ab2e62c2844fb02b4a089b219006d4bd0a9f908ef2ee7cbeb38a75e"
+      },
+      "filename": "utility_emergency_log_mixed.pdf",
+      "metrics": {
+        "character_error_rate": {
+          "definition": "casefolded, whitespace-normalized characters",
+          "errors": 0,
+          "rate": 0.0,
+          "reference_units": 491
+        },
+        "observation_source_attribution": {
+          "accuracy": 1.0,
+          "correct_page": 10,
+          "recognized_expected_lines": 10
+        },
+        "observations": {
+          "duplicate_observations": 0,
+          "expected": 10,
+          "incorrect_event_assignments": [],
+          "matched": 10,
+          "metrics_available": true,
+          "missed": [],
+          "precision": 1.0,
+          "recall": 1.0,
+          "repeated_events": [],
+          "unmatched_actual": [],
+          "unsupported_observations": 0
+        },
+        "page_method_attribution": {
+          "accuracy": 1.0,
+          "expected": 2,
+          "matched": 2
+        },
+        "processing": {
+          "isolated_parser_child_cpu_seconds": 0.6558,
+          "isolated_worker_wall_seconds": 0.7544,
+          "ocr_page_seconds": {
+            "2": 0.1644
+          },
+          "ocr_wall_seconds": 0.23
+        },
+        "required_citations": {
+          "expected": 0,
+          "matched": 0,
+          "recall": null
+        },
+        "timestamps": {
+          "accuracy": 1.0,
+          "expected": 4,
+          "expected_unknown_information_lines": 0,
+          "expected_unknown_lines_preserved_without_time": 0,
+          "matched_with_source_line": 4,
+          "time_uncertain_count": 1,
+          "unknown_lines_missing_or_assigned_a_time": 0
+        },
+        "word_error_rate": {
+          "definition": "casefolded, whitespace-normalized words",
+          "errors": 0,
+          "rate": 0.0,
+          "reference_units": 71
+        }
+      },
+      "scan_status": "not_scanned",
+      "sha256": "11fc9fe68ab2e62c2844fb02b4a089b219006d4bd0a9f908ef2ee7cbeb38a75e",
+      "variant": "native_page_plus_scanned_page"
+    },
+    {
+      "extraction": {
+        "ocr_dpi": 200,
+        "ocr_duplicate_lines_suppressed": 0,
+        "ocr_duration_seconds": 0.4155,
+        "ocr_engine": "Tesseract",
+        "ocr_engine_version": "tesseract 5.5.3",
+        "ocr_image_regions": {},
+        "ocr_issues": [],
+        "ocr_language": "eng",
+        "ocr_line_positions_available": false,
+        "ocr_page_durations_seconds": {
+          "1": 0.1675,
+          "2": 0.1593
+        },
+        "ocr_page_limit": 20,
+        "ocr_page_segmentation_modes": {
+          "1": [
+            6
+          ],
+          "2": [
+            6
+          ]
+        },
+        "ocr_page_timeout_seconds": 4,
+        "ocr_pages": [
+          1,
+          2
+        ],
+        "ocr_partial_pages": [],
+        "ocr_renderer": "pypdfium2",
+        "ocr_renderer_version": "5.15.2",
+        "ocr_status": "completed",
+        "ocr_timestamp_confidence": "uncertain",
+        "ocr_word_confidence_available": false,
+        "page_extraction": [
+          {
+            "method": "ocr",
+            "page": 1,
+            "status": "completed"
+          },
+          {
+            "method": "ocr",
+            "page": 2,
+            "status": "completed"
+          }
+        ],
+        "pages": 2,
+        "parser": "pypdf",
+        "sha256": "5eb50f59a353604ed30f5e232c70a2a5b01aa4d98badab8ee0a210b46fdd3f5c"
+      },
+      "filename": "utility_emergency_log_rotated_degraded.pdf",
+      "metrics": {
+        "character_error_rate": {
+          "definition": "casefolded, whitespace-normalized characters",
+          "errors": 0,
+          "rate": 0.0,
+          "reference_units": 491
+        },
+        "observation_source_attribution": {
+          "accuracy": 1.0,
+          "correct_page": 10,
+          "recognized_expected_lines": 10
+        },
+        "observations": {
+          "duplicate_observations": 0,
+          "expected": 10,
+          "incorrect_event_assignments": [],
+          "matched": 10,
+          "metrics_available": true,
+          "missed": [],
+          "precision": 1.0,
+          "recall": 1.0,
+          "repeated_events": [],
+          "unmatched_actual": [],
+          "unsupported_observations": 0
+        },
+        "page_method_attribution": {
+          "accuracy": 1.0,
+          "expected": 2,
+          "matched": 2
+        },
+        "processing": {
+          "isolated_parser_child_cpu_seconds": 0.8366,
+          "isolated_worker_wall_seconds": 0.9427,
+          "ocr_page_seconds": {
+            "1": 0.1675,
+            "2": 0.1593
+          },
+          "ocr_wall_seconds": 0.4155
+        },
+        "required_citations": {
+          "expected": 0,
+          "matched": 0,
+          "recall": null
+        },
+        "timestamps": {
+          "accuracy": 1.0,
+          "expected": 4,
+          "expected_unknown_information_lines": 0,
+          "expected_unknown_lines_preserved_without_time": 0,
+          "matched_with_source_line": 4,
+          "time_uncertain_count": 4,
+          "unknown_lines_missing_or_assigned_a_time": 0
+        },
+        "word_error_rate": {
+          "definition": "casefolded, whitespace-normalized words",
+          "errors": 0,
+          "rate": 0.0,
+          "reference_units": 71
+        }
+      },
+      "scan_status": "not_scanned",
+      "sha256": "5eb50f59a353604ed30f5e232c70a2a5b01aa4d98badab8ee0a210b46fdd3f5c",
+      "variant": "moderately_rotated_and_degraded_scan"
+    },
+    {
+      "extraction": {
+        "ocr_dpi": 200,
+        "ocr_duplicate_lines_suppressed": 0,
+        "ocr_duration_seconds": 0.3875,
+        "ocr_engine": "Tesseract",
+        "ocr_engine_version": "tesseract 5.5.3",
+        "ocr_image_regions": {},
+        "ocr_issues": [],
+        "ocr_language": "eng",
+        "ocr_line_positions_available": false,
+        "ocr_page_durations_seconds": {
+          "1": 0.3288
+        },
+        "ocr_page_limit": 20,
+        "ocr_page_segmentation_modes": {
+          "1": [
+            6,
+            3
+          ]
+        },
+        "ocr_page_timeout_seconds": 4,
+        "ocr_pages": [
+          1
+        ],
+        "ocr_partial_pages": [],
+        "ocr_renderer": "pypdfium2",
+        "ocr_renderer_version": "5.15.2",
+        "ocr_status": "completed",
+        "ocr_timestamp_confidence": "uncertain",
+        "ocr_word_confidence_available": false,
+        "page_extraction": [
+          {
+            "method": "ocr",
+            "page": 1,
+            "status": "completed"
+          }
+        ],
+        "pages": 1,
+        "parser": "pypdf",
+        "sha256": "01ed298810f9117180e9a6c835d29251e785f38c14ff9e2cf8312cd6fe7de9ed"
+      },
+      "filename": "utility_ambiguous_missing_scanned.pdf",
+      "metrics": {
+        "character_error_rate": {
+          "definition": "casefolded, whitespace-normalized characters",
+          "errors": 0,
+          "rate": 0.0,
+          "reference_units": 242
+        },
+        "observation_source_attribution": {
+          "accuracy": 1.0,
+          "correct_page": 5,
+          "recognized_expected_lines": 5
+        },
+        "observations": {
+          "duplicate_observations": 0,
+          "expected": 5,
+          "incorrect_event_assignments": [],
+          "matched": 5,
+          "metrics_available": true,
+          "missed": [],
+          "precision": 1.0,
+          "recall": 1.0,
+          "repeated_events": [],
+          "unmatched_actual": [],
+          "unsupported_observations": 0
+        },
+        "page_method_attribution": {
+          "accuracy": 1.0,
+          "expected": 1,
+          "matched": 1
+        },
+        "processing": {
+          "isolated_parser_child_cpu_seconds": 0.7905,
+          "isolated_worker_wall_seconds": 0.9135,
+          "ocr_page_seconds": {
+            "1": 0.3288
+          },
+          "ocr_wall_seconds": 0.3875
+        },
+        "required_citations": {
+          "expected": 0,
+          "matched": 0,
+          "recall": null
+        },
+        "timestamps": {
+          "accuracy": null,
+          "expected": 0,
+          "expected_unknown_information_lines": 3,
+          "expected_unknown_lines_preserved_without_time": 3,
+          "matched_with_source_line": 0,
+          "time_uncertain_count": 0,
+          "unknown_lines_missing_or_assigned_a_time": 0
+        },
+        "word_error_rate": {
+          "definition": "casefolded, whitespace-normalized words",
+          "errors": 0,
+          "rate": 0.0,
+          "reference_units": 37
+        }
+      },
+      "scan_status": "not_scanned",
+      "sha256": "01ed298810f9117180e9a6c835d29251e785f38c14ff9e2cf8312cd6fe7de9ed",
+      "variant": "ambiguous_and_missing_information_scan"
+    }
+  ],
+  "labels": {
+    "independently_adjudicated": false,
+    "initial_labels_written_before_ocr": true,
+    "label_audit_after_initial_ocr_run": false,
+    "labels_authored_from_source_content": true,
+    "path": "evals/phase2/ground_truth.json",
+    "sha256": "beffb2ff8f7a67694fa817fed37050ea28e7570254f193363e9eee172c84e051"
+  },
+  "limitations": [
+    "All evidence is developer-generated fiction; results are fixture measurements, not production accuracy.",
+    "OCR word confidence is not available or calibrated.",
+    "Per-pixel page navigation or highlighting is not supported by the existing source viewer.",
+    "The worker uses the configured upload scanner; this synthetic local run explicitly used scan_status=not_scanned."
+  ],
+  "metrics_unavailable": [
+    "OCR confidence calibration and word-level confidence, because the OCR path intentionally stores no confidence values.",
+    "Pixel-level citation or PDF highlight accuracy, because the source viewer supports page locators and original-file download only.",
+    "Production OCR accuracy, because all files and labels are fictional and developer-authored."
+  ],
+  "paired_native_vs_scanned": {
+    "native_character_error_rate": 0.0,
+    "native_page_attribution_accuracy": 1.0,
+    "native_word_error_rate": 0.0,
+    "scanned_character_error_rate": 0.0,
+    "scanned_page_attribution_accuracy": 1.0,
+    "scanned_word_error_rate": 0.0
+  },
+  "resource_usage": {
+    "isolated_parser_children_system_cpu_seconds": 1.0872,
+    "isolated_parser_children_user_cpu_seconds": 4.861,
+    "peak_child_rss_bytes": 176406528,
+    "scope": "Child CPU times are aggregated across isolated OCR/parser workers; RSS is the maximum per-child high-water measurement in this run, not a sum or production capacity measure."
+  },
+  "schema_version": "drillloop-ocr-evaluation/v2",
+  "stack": {
+    "language": "eng",
+    "native_extractor": "pypdf 6.21.4",
+    "renderer": "pypdfium2 5.15.2",
+    "resource_limits": {
+      "dpi": 200,
+      "max_embedded_image_objects_per_mixed_page": 64,
+      "max_embedded_image_regions_per_mixed_page": 8,
+      "max_ocr_pages": 20,
+      "max_pixels_per_page": 12000000,
+      "mixed_page_tesseract_deadline_seconds": 4,
+      "ocr_temporary_files": 0,
+      "parser_cpu_seconds": 10,
+      "parser_memory_limit_mb": 768,
+      "parser_timeout_seconds": 15,
+      "tesseract_timeout_seconds_per_page": 4
+    },
+    "tesseract": "tesseract 5.5.3"
+  }
+}

@@ -279,6 +279,13 @@ const eventTimeLabel = (value: string) => ({
   unknown: 'Event time not recorded',
 }[value] || value)
 const scanLabel = (value: Source['scan_status']) => value === 'clean' ? 'Upload scan passed' : value === 'not_scanned' ? 'Upload scan not performed' : `Upload scan: ${value.replace(/_/g, ' ')}`
+const pdfExtractionLabel = (source: Source) => {
+  if (source.kind !== 'pdf') return null
+  const pages = source.provenance.ocr_pages
+  const ocrPageCount = Array.isArray(pages) ? pages.length : 0
+  if (source.provenance.ocr_status === 'partial') return `Partial OCR · ${ocrPageCount} page${ocrPageCount === 1 ? '' : 's'}`
+  return ocrPageCount ? `OCR completed · ${ocrPageCount} page${ocrPageCount === 1 ? '' : 's'}` : 'Selectable text extracted'
+}
 const isTranscript = (source: Source | undefined) => source?.kind === 'transcript'
 const timeMentions = (value: string) => Array.from(new Set(value.match(/\b(?:[01]?\d|2[0-3]):[0-5]\d(?::[0-5]\d)?\b/g) || []))
 const DEMO_SOURCE_HASHES: Record<string, string> = {
@@ -493,6 +500,8 @@ export default function App() {
         if (uploadError.code?.startsWith('SCANNER_') || uploadError.code === 'QUARANTINE_UNAVAILABLE') throw new Error('The required upload scan could not be completed, so no source was imported. Try again later or contact your administrator.')
         if (uploadError.code === 'PARSER_CAPACITY_EXHAUSTED') throw new Error('Evidence processing is busy. No files were imported. Wait a few seconds, then retry.')
         if (uploadError.code === 'PARSER_TIMEOUT') throw new Error('Evidence processing took too long, so no files were imported. Try a smaller file or retry.')
+        if (uploadError.code?.startsWith('OCR_')) throw new Error(`${uploadError.message} No source was imported.`)
+        if (uploadError.code === 'EMPTY_PDF') throw new Error('No readable text was found in this PDF. No source was imported. Try a clearer scan or provide another copy for evaluator review.')
         throw err
       }
       await refreshDetail(); setNotice(result.message)
@@ -1163,7 +1172,7 @@ function EvidenceView({ data, capabilities, canEdit, busy, uploading, filteredSo
   const validateSelection = (files: File[]) => {
     if (files.length > 10) return 'Choose up to 10 files in one upload.'
     const unsupported = files.find(file => !/\.(txt|md|log|csv|json|pdf)$/i.test(file.name))
-    if (unsupported) return `${unsupported.name} is not a supported evidence format. Choose TXT, MD, LOG, CSV, JSON, or selectable-text PDF.`
+    if (unsupported) return `${unsupported.name} is not a supported evidence format. Choose TXT, MD, LOG, CSV, JSON, or PDF.`
     if (files.some(file => file.size === 0)) return 'One or more selected files are empty. Choose a file that contains evidence.'
     if (files.some(file => file.size > 15 * 1024 * 1024)) return 'Each file must be 15 MB or smaller.'
     if (files.reduce((total, file) => total + file.size, 0) > 30 * 1024 * 1024) return 'The selected files exceed the 30 MB batch limit. Remove a file and try again.'
@@ -1185,7 +1194,7 @@ function EvidenceView({ data, capabilities, canEdit, busy, uploading, filteredSo
   }
   const isFictionalExercise = data.exercise.id === 'HOSP-PO-2026-01'
   const totalObservations = data.timeline.length
-  const supportedDescription = 'TXT, MD, LOG, CSV, JSON, or selectable-text PDF. Up to 15 MB per file, 10 files, and 30 MB per upload.'
+  const supportedDescription = 'TXT, MD, LOG, CSV, JSON, or PDF with selectable text or scanned pages. Scanned pages are OCR processed and need human verification. Up to 15 MB per file, 10 files, and 30 MB per upload.'
   return <div className="tab-page et-page">
     <div className="et-page-head">
       <div className="et-page-copy"><p className="et-eyebrow">SOURCE RECORDS</p><h2 id="evidence-page-title">Evidence</h2><p>Review uploaded records and the observations extracted from each one.</p></div>
@@ -1193,13 +1202,13 @@ function EvidenceView({ data, capabilities, canEdit, busy, uploading, filteredSo
     </div>
     {isFictionalExercise && <div className="et-fictional-banner"><Sparkles size={17} /><p><strong>Fictional demo exercise.</strong> Preloaded records are synthetic. Later imports are labeled as uploaded sources.</p></div>}
     {canEdit && <section className={`et-dropzone ${dragging ? 'is-dragging' : ''}`} onDragOver={event => { event.preventDefault(); setDragging(true) }} onDragLeave={event => { if (event.currentTarget === event.target) setDragging(false) }} onDrop={event => { event.preventDefault(); setDragging(false); handleFileList(event.dataTransfer.files) }} aria-label="Evidence file drop area">
-      <div className="et-drop-icon"><Upload size={20} /></div><div><strong>Or drop files here</strong><p id="evidence-upload-guidance">{supportedDescription} PDF must contain selectable text. PDFs are limited to 250 pages; structured evidence to 10,000 records.</p></div>
+      <div className="et-drop-icon"><Upload size={20} /></div><div><strong>Or drop files here</strong><p id="evidence-upload-guidance">{supportedDescription} PDFs are limited to 250 pages and 20 scanned pages per file; OCR is limited to 200 DPI and four seconds per scanned page.</p></div>
     </section>}
     {selectedFiles.length > 0 && <section className="et-upload-review" aria-labelledby="selected-files-heading">
       <div className="et-upload-review-head"><div><h3 id="selected-files-heading">Selected files</h3><p>{uploading ? 'The server is checking and extracting these files.' : `${selectedFiles.length} file${selectedFiles.length === 1 ? '' : 's'} selected for review before import`}</p></div><button type="button" className="et-text-button" onClick={() => { setSelectedFiles([]); setSelectionError('') }} disabled={busy}>Clear selection</button></div>
       <ul className="et-selected-files">{selectedFiles.map((file, index) => <li key={`${file.name}-${file.size}-${index}`}><FileText size={17} /><span><strong title={file.name}>{file.name}</strong><small>{file.size === 0 ? 'Empty file' : file.size < 1024 * 1024 ? `${Math.max(1, Math.round(file.size / 1024))} KB` : `${(file.size / (1024 * 1024)).toFixed(2)} MB`}</small></span><button type="button" className="et-remove-file" aria-label={`Remove ${file.name}`} onClick={() => { const rest = selectedFiles.filter((_, fileIndex) => fileIndex !== index); setSelectedFiles(rest); setSelectionError(validateSelection(rest)) }} disabled={busy}><X size={16} /></button></li>)}</ul>
       {selectionError && <p className="et-inline-error" role="alert"><AlertTriangle size={16} />{selectionError}</p>}
-      {uploading && <p className="et-upload-status" role="status"><LoaderCircle className="spin" size={16} /> Checking and extracting the selected files. This may take a moment.</p>}
+      {uploading && <p className="et-upload-status" role="status"><LoaderCircle className="spin" size={16} /> {selectedFiles.some(file => /\.pdf$/i.test(file.name)) ? 'Checking the upload and extracting selectable text or scanning PDF pages for OCR. This may take a moment.' : 'Checking and extracting the selected files. This may take a moment.'}</p>}
       <div className="et-upload-review-footer"><span>No source is added until the server finishes checking and extracting the files.</span><button type="button" className="button primary" onClick={() => void submitUpload()} disabled={busy || Boolean(selectionError)}><Upload size={15} />{uploading ? 'Processing evidence…' : `Upload ${selectedFiles.length} file${selectedFiles.length === 1 ? '' : 's'}`}</button></div>
     </section>}
     {!canEdit && <div className="et-readonly-note"><LockKeyhole size={16} /> Evidence is available for review. An editor can add more source records.</div>}
@@ -1210,7 +1219,7 @@ function EvidenceView({ data, capabilities, canEdit, busy, uploading, filteredSo
         const count = source.observation_count
         const sourceTypeIcon = source.kind === 'csv' ? <Activity size={19} /> : source.kind === 'transcript' ? <AudioLines size={19} /> : source.kind === 'pdf' ? <FileText size={19} /> : <MessageSquareText size={19} />
          return <button type="button" className="et-source-card" key={source.id} onClick={() => onSource(source)}>
-          <span className={`et-source-icon ${source.kind}`}>{sourceTypeIcon}</span><span className="et-source-card-copy"><span className="et-source-name-row"><strong title={source.filename}>{source.filename}</strong><span className="et-source-type">{source.kind}</span></span><span className="et-source-summary">{count} extracted observation{count === 1 ? '' : 's'} · SHA-256 {source.sha256.slice(0, 12)}…</span><span className="et-source-badges"><span className={`et-source-badge ${synthetic ? 'synthetic' : 'uploaded'}`}>{synthetic ? 'Fictional demo source' : 'Uploaded source'}</span><span className={`et-scan-badge ${source.scan_status}`}>{scanLabel(source.scan_status)}</span></span></span><ChevronRight size={18} className="et-source-chevron" aria-hidden="true" />
+          <span className={`et-source-icon ${source.kind}`}>{sourceTypeIcon}</span><span className="et-source-card-copy"><span className="et-source-name-row"><strong title={source.filename}>{source.filename}</strong><span className="et-source-type">{source.kind}</span></span><span className="et-source-summary">{count} extracted observation{count === 1 ? '' : 's'} · SHA-256 {source.sha256.slice(0, 12)}…</span><span className="et-source-badges"><span className={`et-source-badge ${synthetic ? 'synthetic' : 'uploaded'}`}>{synthetic ? 'Fictional demo source' : 'Uploaded source'}</span><span className={`et-scan-badge ${source.scan_status}`}>{scanLabel(source.scan_status)}</span>{pdfExtractionLabel(source) && <span className={`et-source-badge ocr ${source.provenance.ocr_status === 'partial' ? 'partial' : ''}`}>{pdfExtractionLabel(source)}</span>}</span></span><ChevronRight size={18} className="et-source-chevron" aria-hidden="true" />
         </button>
       })}</div> : data.sources.length ? <div className="et-empty et-empty-search"><Search size={23} /><h4>No source matches “{sourceFilter}”</h4><p>Clear the search to see all {data.sources.length} source{data.sources.length === 1 ? '' : 's'}.</p><button type="button" className="button secondary" onClick={() => setSourceFilter('')}>Show all sources</button></div> : <div className="et-empty"><div className="et-empty-icon"><FolderOpen size={23} /></div><h4>Upload exercise evidence to begin</h4><p>Add notes, logs, transcripts, or selectable-text reports. DrillLoop will keep each extracted observation linked to its source location.</p></div>}
     </section>
@@ -1221,7 +1230,7 @@ function EvidenceView({ data, capabilities, canEdit, busy, uploading, filteredSo
         const conflict = conflictIds.has(observation.id)
         return <article className={`et-observation ${conflict ? 'has-conflict' : ''}`} key={observation.id}>
           <div className="et-observation-time"><strong>{conflict ? 'No agreed event time' : timelineTime(observation.event_time_normalized, data.exercise.exercise_date)}</strong><span>{conflict ? `Source note time · ${timelineTime(observation.event_time_normalized, data.exercise.exercise_date)}` : eventTimeLabel(observation.time_confidence)}</span></div>
-          <div className="et-observation-copy"><p>{observation.text}</p><span className="et-observation-ref">{observation.source_filename} <span aria-hidden="true">·</span> {observation.source_locator}</span>{isTranscript(source) && <small className="et-locator-help">Transcript segment offsets locate speech in the recording; they are not event times.</small>}</div>
+          <div className="et-observation-copy"><p>{observation.text}</p><span className="et-observation-ref">{observation.source_filename} <span aria-hidden="true">·</span> {observation.source_locator}</span>{observation.extraction_method === 'ocr' && <small className="et-locator-help">OCR text needs human verification. This citation identifies the original PDF page; line positions and word confidence are unavailable.</small>}{isTranscript(source) && <small className="et-locator-help">Transcript segment offsets locate speech in the recording; they are not event times.</small>}</div>
           <div className="et-observation-actions">{observation.recognition_confidence !== null && <span className={`et-recognition ${observation.recognition_confidence < .75 ? 'low' : ''}`}>Speech match {Math.round(observation.recognition_confidence * 100)}%</span>}<button type="button" className="et-inline-link" onClick={() => onEvidence({ source_id: observation.source_id, source_filename: observation.source_filename, observation_id: observation.id, source_locator: observation.source_locator, text: observation.text, event_time_normalized: observation.event_time_normalized, time_confidence: observation.time_confidence })}><FileText size={15} /> Open source record</button></div>
         </article>
       })}</div> : <div className="et-empty et-empty-compact"><FileText size={21} /><p>Extracted observations will appear here after evidence is imported.</p></div>}
@@ -1299,6 +1308,14 @@ function SourceModal({ source, data, isSynthetic, focusedObservationId, onTimeli
   const dialogRef = useAccessibleDialog<HTMLElement>(onClose)
   const observations = data.timeline.filter(item => item.source_id === source.id)
   const provenance = source.provenance
+  const pageExtraction = Array.isArray(provenance.page_extraction)
+    ? provenance.page_extraction as { page: number; method: string; status: string }[]
+    : []
+  const ocrPages = Array.isArray(provenance.ocr_pages) ? provenance.ocr_pages.join(', ') : ''
+  const partialPages = Array.isArray(provenance.ocr_partial_pages) ? provenance.ocr_partial_pages.join(', ') : ''
+  const ocrIssues = Array.isArray(provenance.ocr_issues)
+    ? provenance.ocr_issues as { page: number; message: string }[]
+    : []
   useEffect(() => {
     if (!focusedObservationId) return
     document.getElementById(`source-observation-${focusedObservationId}`)?.scrollIntoView({ block: 'nearest' })
@@ -1306,11 +1323,13 @@ function SourceModal({ source, data, isSynthetic, focusedObservationId, onTimeli
   return <div className="modal-shade et-modal-shade" onMouseDown={event => { if (event.target === event.currentTarget) onClose() }}><section ref={dialogRef} className="et-source-modal" role="dialog" aria-modal="true" aria-labelledby="source-detail-heading" tabIndex={-1}>
     <div className="et-modal-heading"><div className="et-modal-file-icon"><FileText size={19} /></div><div><span>SOURCE DETAILS</span><h2 id="source-detail-heading" title={source.filename}>{source.filename}</h2><small>{source.kind} · {observations.length} extracted observation{observations.length === 1 ? '' : 's'}</small></div><button type="button" className="icon-button" onClick={onClose} aria-label="Close source details"><X size={18} /></button></div>
     {isSynthetic && <div className="et-modal-fictional"><Sparkles size={16} /><strong>Fictional synthetic demo evidence</strong></div>}
-    <div className="et-source-status-row"><span className="et-source-badge uploaded">{isSynthetic ? 'Seeded demo source' : 'Uploaded source'}</span><span className={`et-scan-badge ${source.scan_status}`}>{scanLabel(source.scan_status)}</span><span>{observations.length} observation{observations.length === 1 ? '' : 's'} extracted</span></div>
-    <div className="et-source-modal-body"><h3>Extracted observations</h3><p>Wording is preserved from the source. Locators identify a row, line, page, or transcript segment when available.</p>
+    <div className="et-source-status-row"><span className="et-source-badge uploaded">{isSynthetic ? 'Seeded demo source' : 'Uploaded source'}</span><span className={`et-scan-badge ${source.scan_status}`}>{scanLabel(source.scan_status)}</span>{pdfExtractionLabel(source) && <span className={`et-source-badge ocr ${source.provenance.ocr_status === 'partial' ? 'partial' : ''}`}>{pdfExtractionLabel(source)}</span>}<span>{observations.length} observation{observations.length === 1 ? '' : 's'} extracted</span></div>
+    <div className="et-source-modal-body"><h3>Extracted observations</h3><p>Source wording stays linked to its original filename and available row, line, page, or transcript locator. OCR wording is unverified machine recognition.</p>
+      {source.kind === 'pdf' && <p className="et-locator-help">{provenance.ocr_status === 'partial' ? `OCR was partial on original PDF page${Array.isArray(provenance.ocr_partial_pages) && provenance.ocr_partial_pages.length === 1 ? '' : 's'} ${partialPages}. Readable selectable text is retained; review the listed pages and the original PDF for content that may not have been recovered.` : provenance.ocr_status === 'completed' ? `OCR processed original PDF page${Array.isArray(provenance.ocr_pages) && provenance.ocr_pages.length === 1 ? '' : 's'} ${ocrPages}, including embedded image areas where present. OCR-derived timestamps remain uncertain until checked by a reviewer. OCR citations identify the page because line positions and word confidence are unavailable.` : 'Selectable page text was extracted directly; OCR was not needed.'} The source viewer does not navigate or highlight the PDF page; use the original file download below.</p>}
+      {ocrIssues.map((issue, index) => <p className="et-locator-help" key={`${issue.page}-${index}`}>Page {issue.page}: {issue.message}</p>)}
       {observations.length ? <div className="et-source-observation-list">{observations.map(observation => <article id={`source-observation-${observation.id}`} className={`et-source-observation ${focusedObservationId === observation.id ? 'et-source-observation-focused' : ''}`} key={observation.id}><div className="et-source-observation-top"><span><MapPin size={14} /> {observation.source_locator}</span><span>{observation.event_time_raw ? `Source time: ${observation.event_time_raw}` : 'No explicit event time'}</span></div><blockquote>{observation.text}</blockquote><div className="et-source-observation-actions"><span>{eventTimeLabel(observation.time_confidence)}{observation.recognition_confidence !== null ? ` · Speech match ${Math.round(observation.recognition_confidence * 100)}%` : ''}</span><button type="button" className="et-inline-link" onClick={() => onTimeline(observation.id)}>View on timeline <ChevronRight size={15} /></button></div></article>)}</div> : <div className="et-empty et-empty-compact"><p>No observations were extracted from this file.</p></div>}
       {source.kind === 'transcript' && <p className="et-locator-help">Segment offsets locate transcript text inside the recording. They are not event timestamps unless the source explicitly includes an event time.</p>}
-      <details className="et-source-provenance"><summary>Source reference and processing details</summary><dl><div><dt>Source ID</dt><dd>{source.id}</dd></div><div><dt>SHA-256 file fingerprint</dt><dd>{source.sha256}</dd></div><div><dt>Media type</dt><dd>{source.mime_type}</dd></div>{typeof provenance.model === 'string' && <div><dt>Transcript model</dt><dd>{provenance.model}</dd></div>}{typeof provenance.language === 'string' && <div><dt>Transcript language value</dt><dd>{provenance.language}</dd></div>}</dl></details>
+      <details className="et-source-provenance"><summary>Source reference and processing details</summary><dl><div><dt>Source ID</dt><dd>{source.id}</dd></div><div><dt>SHA-256 file fingerprint</dt><dd>{source.sha256}</dd></div><div><dt>Media type</dt><dd>{source.mime_type}</dd></div>{typeof provenance.ocr_engine === 'string' && <div><dt>OCR engine</dt><dd>{provenance.ocr_engine} {typeof provenance.ocr_engine_version === 'string' ? provenance.ocr_engine_version : ''} · {typeof provenance.ocr_language === 'string' ? provenance.ocr_language : 'language not recorded'}</dd></div>}{typeof provenance.ocr_renderer === 'string' && <div><dt>PDF renderer</dt><dd>{provenance.ocr_renderer} {typeof provenance.ocr_renderer_version === 'string' ? provenance.ocr_renderer_version : ''} · {typeof provenance.ocr_dpi === 'number' ? `${provenance.ocr_dpi} DPI` : ''}</dd></div>}{typeof provenance.ocr_duration_seconds === 'number' && <div><dt>OCR processing time</dt><dd>{provenance.ocr_duration_seconds.toFixed(3)} seconds</dd></div>}{pageExtraction.length > 0 && <div><dt>Page extraction</dt><dd>{pageExtraction.map(page => `Page ${page.page}: ${page.method === 'native_text_plus_ocr' ? `selectable text + OCR ${page.status.replace(/_/g, ' ')}` : page.method === 'ocr' ? `OCR ${page.status.replace(/_/g, ' ')}` : 'selectable text'}`).join(' · ')}</dd></div>}{typeof provenance.model === 'string' && <div><dt>Transcript model</dt><dd>{provenance.model}</dd></div>}{typeof provenance.language === 'string' && <div><dt>Transcript language value</dt><dd>{provenance.language}</dd></div>}</dl></details>
     </div>
     <div className="et-modal-footer"><span>Original file remains linked to this source record.</span><div><a className="button secondary" href={`/api/sources/${source.id}/download`}><ArrowDownToLine size={15} /> Download original file</a><button type="button" className="button secondary" onClick={onClose}>Close</button></div></div>
   </section></div>

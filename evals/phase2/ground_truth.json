@@ -1,0 +1,192 @@
+{
+  "fictional": true,
+  "labeling_note": "Developer-authored expected wording, times, page numbers, and objective labels were recorded before running OCR. They are not inferred from application predictions and are not independently adjudicated.",
+  "documents": [
+    {
+      "filename": "utility_emergency_log_native.pdf",
+      "variant": "selectable_text",
+      "pages": [
+        {
+          "page": 1,
+          "method": "native_text",
+          "source_lines": [
+            "FICTIONAL EXERCISE RECORD - SYNTHETIC ONLY",
+            "Water utility emergency exercise log",
+            "[09:00] Primary pump P-4 tripped; low-pressure alarm activated.",
+            "[09:03] Control room operator acknowledged the alarm.",
+            "[09:12] Backup pump P-7 reached stable pressure at 42 psi."
+          ]
+        },
+        {
+          "page": 2,
+          "method": "native_text",
+          "source_lines": [
+            "FICTIONAL EXERCISE RECORD - SYNTHETIC ONLY",
+            "[09:14] Station B confirmed service restored.",
+            "The field crew acknowledgement time was not recorded.",
+            "The cause of the P-4 trip is unknown.",
+            "Objective: restore stable pressure within 15 minutes."
+          ]
+        }
+      ],
+      "path": "evals/phase2/sources/utility_emergency_log_native.pdf",
+      "sha256": "aa4a60a96171a485ce0438edbe6b83c3d76b127d03cf38c7f438daac712c2d8e",
+      "bytes": 2491
+    },
+    {
+      "filename": "utility_emergency_log_scanned.pdf",
+      "variant": "image_only_scan",
+      "pages": [
+        {
+          "page": 1,
+          "method": "ocr",
+          "source_lines": [
+            "FICTIONAL EXERCISE RECORD - SYNTHETIC ONLY",
+            "Water utility emergency exercise log",
+            "[09:00] Primary pump P-4 tripped; low-pressure alarm activated.",
+            "[09:03] Control room operator acknowledged the alarm.",
+            "[09:12] Backup pump P-7 reached stable pressure at 42 psi."
+          ]
+        },
+        {
+          "page": 2,
+          "method": "ocr",
+          "source_lines": [
+            "FICTIONAL EXERCISE RECORD - SYNTHETIC ONLY",
+            "[09:14] Station B confirmed service restored.",
+            "The field crew acknowledgement time was not recorded.",
+            "The cause of the P-4 trip is unknown.",
+            "Objective: restore stable pressure within 15 minutes."
+          ]
+        }
+      ],
+      "path": "evals/phase2/sources/utility_emergency_log_scanned.pdf",
+      "sha256": "baa3450a70d66a7b02dccd1ac5f339de2b37afcf8b2d2e444cd60f81988b4f90",
+      "bytes": 263914
+    },
+    {
+      "filename": "utility_emergency_log_mixed.pdf",
+      "variant": "native_page_plus_scanned_page",
+      "pages": [
+        {
+          "page": 1,
+          "method": "native_text",
+          "source_lines": [
+            "FICTIONAL EXERCISE RECORD - SYNTHETIC ONLY",
+            "Water utility emergency exercise log",
+            "[09:00] Primary pump P-4 tripped; low-pressure alarm activated.",
+            "[09:03] Control room operator acknowledged the alarm.",
+            "[09:12] Backup pump P-7 reached stable pressure at 42 psi."
+          ]
+        },
+        {
+          "page": 2,
+          "method": "ocr",
+          "source_lines": [
+            "FICTIONAL EXERCISE RECORD - SYNTHETIC ONLY",
+            "[09:14] Station B confirmed service restored.",
+            "The field crew acknowledgement time was not recorded.",
+            "The cause of the P-4 trip is unknown.",
+            "Objective: restore stable pressure within 15 minutes."
+          ]
+        }
+      ],
+      "path": "evals/phase2/sources/utility_emergency_log_mixed.pdf",
+      "sha256": "11fc9fe68ab2e62c2844fb02b4a089b219006d4bd0a9f908ef2ee7cbeb38a75e",
+      "bytes": 122206
+    },
+    {
+      "filename": "utility_emergency_log_rotated_degraded.pdf",
+      "variant": "moderately_rotated_and_degraded_scan",
+      "pages": [
+        {
+          "page": 1,
+          "method": "ocr",
+          "source_lines": [
+            "FICTIONAL EXERCISE RECORD - SYNTHETIC ONLY",
+            "Water utility emergency exercise log",
+            "[09:00] Primary pump P-4 tripped; low-pressure alarm activated.",
+            "[09:03] Control room operator acknowledged the alarm.",
+            "[09:12] Backup pump P-7 reached stable pressure at 42 psi."
+          ]
+        },
+        {
+          "page": 2,
+          "method": "ocr",
+          "source_lines": [
+            "FICTIONAL EXERCISE RECORD - SYNTHETIC ONLY",
+            "[09:14] Station B confirmed service restored.",
+            "The field crew acknowledgement time was not recorded.",
+            "The cause of the P-4 trip is unknown.",
+            "Objective: restore stable pressure within 15 minutes."
+          ]
+        }
+      ],
+      "path": "evals/phase2/sources/utility_emergency_log_rotated_degraded.pdf",
+      "sha256": "5eb50f59a353604ed30f5e232c70a2a5b01aa4d98badab8ee0a210b46fdd3f5c",
+      "bytes": 348670
+    },
+    {
+      "filename": "utility_ambiguous_missing_scanned.pdf",
+      "variant": "ambiguous_and_missing_information_scan",
+      "pages": [
+        {
+          "page": 1,
+          "method": "ocr",
+          "source_lines": [
+            "FICTIONAL EXERCISE RECORD - SYNTHETIC ONLY",
+            "Water utility response note",
+            "Pressure may have stabilized near 09:12 or 09:17; verify against the control record.",
+            "The field crew acknowledgement time was not recorded.",
+            "Cause of the pump trip: unknown."
+          ]
+        }
+      ],
+      "expected_unknowns": [
+        "Two alternative pressure stabilization times are reported in the wording.",
+        "The field crew acknowledgement time is explicitly not recorded.",
+        "The pump-trip cause is unknown."
+      ],
+      "expected_unknown_source_lines": [
+        "Pressure may have stabilized near 09:12 or 09:17; verify against the control record.",
+        "The field crew acknowledgement time was not recorded.",
+        "Cause of the pump trip: unknown."
+      ],
+      "path": "evals/phase2/sources/utility_ambiguous_missing_scanned.pdf",
+      "sha256": "01ed298810f9117180e9a6c835d29251e785f38c14ff9e2cf8312cd6fe7de9ed",
+      "bytes": 127077
+    }
+  ],
+  "objective_labels": [
+    {
+      "objective_id": "OBJ-PRESSURE-15",
+      "expected_source_claim": "Stable pressure was reported at 09:12 after the low-pressure alarm at 09:00.",
+      "expected_elapsed_seconds": 720,
+      "threshold_seconds": 900,
+      "ocr_time_confidence": "uncertain",
+      "expected_scanned_assessment": "insufficient_information"
+    },
+    {
+      "objective_id": "OBJ-STATION-B",
+      "expected_source_claim": "Station B confirmed service restored.",
+      "expected_scanned_assessment": "confirmed_success",
+      "expected_finding_code": "STATION_B_RESTORED",
+      "expected_finding_decision": "proposed",
+      "expected_review_decision": null,
+      "expected_citation": {
+        "source": "utility_emergency_log_scanned.pdf",
+        "locator": "page 2"
+      }
+    }
+  ],
+  "measurements_not_available": [
+    "OCR confidence calibration and word-level confidence, because the OCR path intentionally stores no confidence values.",
+    "Pixel-level citation or PDF highlight accuracy, because the source viewer supports page locators and original-file download only.",
+    "Production OCR accuracy, because all files and labels are fictional and developer-authored."
+  ],
+  "native_pdf_page_count": 2,
+  "initial_labels_written_before_ocr": true,
+  "label_audit_after_initial_ocr_run": false,
+  "labels_authored_from_source_content": true,
+  "independently_adjudicated": false
+}
