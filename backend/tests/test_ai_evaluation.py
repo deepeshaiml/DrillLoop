@@ -163,7 +163,7 @@ def test_grounded_response_quarantines_invalid_citations_and_leaves_detail_uncha
         {"suggestions": [suggestion(kind="root_cause_confirmed")]},
         {"suggestions": [suggestion(status="approved", action="Issue an order.")]},
         {"suggestions": [], "tool_calls": [{"name": "approve"}]},
-        "A" * (MAX_REPLY_BYTES + 1),
+        pytest.param("A" * (MAX_REPLY_BYTES + 1), id="oversized-reply"),
     ],
 )
 def test_malformed_or_unsupported_model_output_fails_closed(ai_client, answer):
@@ -298,7 +298,13 @@ def test_objectives_and_extracted_evidence_required(ai_client):
     assert not provider.inputs
 
 
-@pytest.mark.parametrize("content", [b"x" * 20_000, b"Short line.\n" * (MAX_RECORDS + 1)])
+@pytest.mark.parametrize(
+    "content",
+    [
+        pytest.param(b"x" * 20_000, id="byte-limit"),
+        pytest.param(b"Short line.\n" * (MAX_RECORDS + 1), id="record-limit"),
+    ],
+)
 def test_oversized_context_rejected_before_provider(ai_client, content):
     upload(ai_client, create(ai_client), content)
     provider = fake(lambda _: {"suggestions": []})
