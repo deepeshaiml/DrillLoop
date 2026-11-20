@@ -71,7 +71,7 @@ export default function CandidateDetailView({ api, exerciseId, candidateId, canR
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
-  const [decision, setDecision] = useState<ReviewDecision | null>(null)
+  const [review, setReview] = useState<Pick<ReviewOperation, 'decision' | 'etag'> | null>(null)
   const [reviewDenied, setReviewDenied] = useState(false)
   const [historyBusy, setHistoryBusy] = useState(false)
   const [historyError, setHistoryError] = useState('')
@@ -134,6 +134,7 @@ export default function CandidateDetailView({ api, exerciseId, candidateId, canR
       const status = (reason as ApiError).status
       if (status === 401 || status === 403 || status === 404) {
         setDetail(null)
+        setReview(null)
         setError(candidateError(reason, 'Candidate access is unavailable.'))
       } else {
         setHistoryError(candidateError(reason, 'More audit events could not be loaded. Try again.'))
@@ -146,7 +147,7 @@ export default function CandidateDetailView({ api, exerciseId, candidateId, canR
 
   const afterReview = (message: string, reviewForbidden = false) => {
     if (reviewForbidden) setReviewDenied(true)
-    setDecision(null)
+    setReview(null)
     setNotice(message)
     void reload()
     onChange()
@@ -207,7 +208,10 @@ export default function CandidateDetailView({ api, exerciseId, candidateId, canR
         {!detail.etag && canReview && !historical && candidate.review_state !== 'rejected' && <p role="alert" className="cr-warning">The response did not include a review version. Reload before recording a decision.</p>}
         {actions.length > 0 && <div className="cr-toolbar">{actions.map(action => <button type="button" key={action}
           className={`button ${action === 'accepted_for_consideration' ? 'primary' : action === 'rejected' ? 'reject' : 'secondary'}`}
-          onClick={() => setDecision(action)}>{reviewActions[action].label}</button>)}</div>}
+          onClick={() => {
+            // Bind the decision to the version visible when the reviewer chooses it.
+            if (detail.etag) setReview({ decision: action, etag: detail.etag })
+          }}>{reviewActions[action].label}</button>)}</div>}
         {!loading && !error && !detail.etag && canReview && !historical && candidate.review_state !== 'rejected' && <button type="button" className="button secondary" onClick={() => void reload()}>Reload review version</button>}
       </section>
       <section className="cr-section" aria-label="Candidate audit history">
@@ -234,8 +238,8 @@ export default function CandidateDetailView({ api, exerciseId, candidateId, canR
         </dl>
       </details>
     </>}
-    {decision && detail?.etag && <ReviewDialog api={api} exerciseId={exerciseId} candidateId={candidateId}
-      decision={decision} etag={detail.etag} headingRef={headingRef} onClose={() => setDecision(null)} onReload={afterReview} />}
+    {review && <ReviewDialog api={api} exerciseId={exerciseId} candidateId={candidateId}
+      decision={review.decision} etag={review.etag} headingRef={headingRef} onClose={() => setReview(null)} onReload={afterReview} />}
   </section>
 }
 

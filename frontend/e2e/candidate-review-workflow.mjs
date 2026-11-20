@@ -150,6 +150,58 @@ async function confirm(page, dialog, status, etag, buttonLabel = 'Confirm decisi
   return response
 }
 
+async function verifyReviewVersionDuringHistoryRefresh(admin, reviewer, path) {
+  const { page } = reviewer
+  const candidateDetail = await api(admin, path, 200)
+  let version = candidateDetail.body.version
+  let state = candidateDetail.body.review_state
+  // Fill the first audit page using supported human review transitions.
+  while (version <= 20) {
+    const decision = state === 'accepted_for_consideration' ? 'more_evidence_required' : 'accepted_for_consideration'
+    const updated = await api(admin, `${path}/review`, 200, {
+      method: 'POST', data: { decision, note: 'Fictional audit pagination fixture.' },
+      headers: { 'If-Match': `"${version}"`, 'Idempotency-Key': randomUUID() },
+    })
+    version = updated.body.version
+    state = updated.body.decision
+  }
+  await backToQueue(page)
+  await openCandidate(page, 'OBJ-CONFLICT')
+  const historyUrl = url => url.pathname === path && url.searchParams.get('history_after_version') === '20'
+  const releaseHistory = Promise.withResolvers()
+  await page.route(historyUrl, async route => {
+    await releaseHistory.promise
+    await route.continue()
+  }, { times: 1 })
+  try {
+    const historyRequested = page.waitForRequest(request => historyUrl(new URL(request.url())))
+    await audit(page).getByRole('button', { name: 'Load more audit events' }).click()
+    await historyRequested
+    const pending = await beginReview(page, 'Reject candidate')
+    await pending.dialog.getByLabel('Reviewer note (optional)').fill('Decision based on the older audit history.')
+    const otherReview = await api(admin, `${path}/review`, 200, {
+      method: 'POST', data: { decision: 'more_evidence_required', note: 'Confirm the notebook date with the exercise lead.' },
+      headers: { 'If-Match': `"${version}"`, 'Idempotency-Key': randomUUID() },
+    })
+    const refresh = page.waitForResponse(response => {
+      const url = new URL(response.url())
+      return url.pathname === path && url.searchParams.get('history_after_version') === '0'
+        && response.headers().etag === `"${otherReview.body.version}"`
+    })
+    releaseHistory.resolve()
+    await refresh
+    await page.locator('.cr-detail .cr-status--more_evidence_required').waitFor()
+    await confirm(page, pending.dialog, 412, `"${version}"`)
+    await candidate(page).getByText(/Another reviewer or an evidence update changed this candidate/).waitFor()
+    const latest = await api(admin, path + '?history_after_version=20', 200)
+    assert.equal(latest.body.version, otherReview.body.version)
+    assert.equal(latest.body.latest_decision.note, 'Confirm the notebook date with the exercise lead.')
+    assert.equal(latest.body.history.some(event => event.note === 'Decision based on the older audit history.'), false)
+  } finally {
+    releaseHistory.resolve()
+  }
+}
+
 async function reviewJourney() {
   const admin = await signIn('admin')
   const { page } = admin
@@ -195,7 +247,9 @@ async function reviewJourney() {
       await page.context().setOffline(false)
     }
     const responsePromise = page.waitForResponse(response => response.url().endsWith(candidatePath) && response.request().method() === 'POST')
-    await card.getByRole('button', { name: failedSave ? 'Retry save' : 'Save for review' }).click()
+    const saveButton = card.getByRole('button', { name: failedSave ? 'Retry save' : 'Save for review' })
+    if (id === 'OBJ-REJECT') await saveButton.dblclick()
+    else await saveButton.click()
     const response = await responsePromise
     assert.equal(response.status(), 201)
     const { id: candidateId, version } = await response.json()
@@ -329,6 +383,7 @@ async function reviewJourney() {
   const newReview = await beginReview(reviewer.page, 'Accept for consideration')
   await confirm(reviewer.page, newReview.dialog, 200, '"2"')
   await audit(reviewer.page).getByText('Fictional Independent Reviewer', { exact: true }).waitFor()
+  await verifyReviewVersionDuringHistoryRefresh(admin, reviewer, `${candidatePath}/${saved['OBJ-CONFLICT']}`)
 
   await backToQueue(page)
   await generate(page)
@@ -422,6 +477,8 @@ async function disabledJourney() {
   const row = queue(page).getByRole('listitem').filter({ hasText: 'Evidence stale' }).first()
   await row.getByRole('button').click()
   await candidate(page).getByRole('heading', { name: 'Evidence is stale' }).waitFor()
+  const moreAudit = audit(page).getByRole('button', { name: 'Load more audit events' })
+  if (await moreAudit.isVisible()) await moreAudit.click()
   await audit(page).getByText('Evidence invalidated', { exact: true }).waitFor()
   assert.equal(await candidate(page).locator('blockquote').first().textContent(), wording)
   await page.reload()
