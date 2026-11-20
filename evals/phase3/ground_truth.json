@@ -234,6 +234,7 @@
     {
       "filename": "phase3_unreadable_damaged_field_note.pdf",
       "variant": "damaged_scan_with_no_recoverable_text",
+      "expected_processing_error": "EMPTY_PDF",
       "pages": [
         {
           "page": 1,

@@ -11,7 +11,8 @@ from types import SimpleNamespace
 import pytest
 from app import pdf_ocr
 from app.evidence import EvidenceError, parse_evidence
-from pypdf import PdfReader, PdfWriter
+from pypdf import PdfReader, PdfWriter, Transformation
+from pypdf.generic import RectangleObject
 
 ROOT = Path(__file__).resolve().parents[2]
 FIXTURES = ROOT / "evals" / "phase2" / "sources"
@@ -388,3 +389,101 @@ def test_same_page_mixed_region_ocr_writes_no_temporary_page_files(monkeypatch, 
     assert parsed.provenance["ocr_status"] == "completed"
     assert parsed.provenance["ocr_image_regions"] == {1: 1}
     assert list(temporary_root.iterdir()) == []
+
+
+def test_mixed_pdf_preserves_native_observations_when_ocr_is_unavailable(monkeypatch):
+    monkeypatch.setattr(pdf_ocr.shutil, "which", lambda _command: None)
+    filename = "phase3_same_page_mixed_water_log.pdf"
+
+    parsed = parse_evidence(filename, "application/pdf", _phase3_fixture(filename), EXERCISE_DATE)
+
+    assert parsed.provenance["ocr_status"] == "partial"
+    assert parsed.provenance["ocr_partial_pages"] == [1]
+    assert parsed.provenance["ocr_issues"][0]["code"] == "OCR_UNAVAILABLE"
+    assert {row.extraction_method for row in parsed.observations} == {"parser"}
+    assert any(row.source_locator == "page 1, line 4" for row in parsed.observations)
+
+
+def test_unreadable_scan_page_marks_otherwise_readable_pdf_partial():
+    native_name = "utility_emergency_log_native.pdf"
+    scan_name = "phase3_unreadable_damaged_field_note.pdf"
+    writer = PdfWriter()
+    writer.add_page(PdfReader(BytesIO(_fixture(native_name))).pages[0])
+    writer.add_page(PdfReader(BytesIO(_phase3_fixture(scan_name))).pages[0])
+    source = BytesIO()
+    writer.write(source)
+
+    parsed = parse_evidence(
+        "partly-readable.pdf", "application/pdf", source.getvalue(), EXERCISE_DATE
+    )
+
+    assert parsed.provenance["ocr_status"] == "partial"
+    assert parsed.provenance["ocr_partial_pages"] == [2]
+    assert parsed.provenance["ocr_issues"][0]["code"] == "OCR_NO_READABLE_TEXT"
+    assert len(parsed.observations) == 5
+    assert all(row.source_locator.startswith("page 1, line ") for row in parsed.observations)
+
+
+@pytest.mark.parametrize("rotation", [0, 90, 180, 270])
+def test_mixed_pdf_ocr_uses_the_visible_page_coordinates(rotation):
+    filename = "phase3_same_page_mixed_water_log.pdf"
+    writer = PdfWriter()
+    page = writer.add_page(PdfReader(BytesIO(_phase3_fixture(filename))).pages[0])
+    width, height = page.mediabox.width, page.mediabox.height
+    if rotation:
+        x_shift, y_shift = {90: (height, 0), 180: (width, height), 270: (0, width)}[rotation]
+        page.add_transformation(Transformation().rotate(rotation).translate(x_shift, y_shift))
+        if rotation in {90, 270}:
+            width, height = height, width
+        page.mediabox = RectangleObject((0, 0, width, height))
+        page.rotate(rotation)
+    else:
+        page.cropbox.lower_left = (30, 75)
+    source = BytesIO()
+    writer.write(source)
+
+    parsed = parse_evidence(filename, "application/pdf", source.getvalue(), EXERCISE_DATE)
+
+    restoration = [
+        row
+        for row in parsed.observations
+        if row.extraction_method == "ocr" and "Station B pump restored" in row.text
+    ]
+    assert [(row.source_locator, row.event_time_raw) for row in restoration] == [
+        ("page 1", "14:11")
+    ]
+    assert parsed.provenance["ocr_duplicate_lines_suppressed"] == 1
+
+
+@pytest.mark.parametrize("expected_error", [None, "OCR_TIMEOUT"])
+def test_ocr_evaluator_fails_on_unexpected_extraction_errors(tmp_path, expected_error):
+    import json
+    import sys
+
+    labels = json.loads((ROOT / "evals" / "phase3" / "ground_truth.json").read_text())
+    document = next(item for item in labels["documents"] if item.get("expected_processing_error"))
+    document["expected_processing_error"] = expected_error
+    labels["documents"] = [document]
+    fixture = tmp_path / "labels.json"
+    fixture.write_text(json.dumps(labels))
+    report = tmp_path / "report.json"
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            str(ROOT / "scripts" / "evaluate_ocr.py"),
+            "--labels",
+            str(fixture),
+            "--skip-application-workflow",
+            "--output",
+            str(report),
+        ],
+        capture_output=True,
+        text=True,
+        timeout=30,
+        check=False,
+    )
+
+    assert result.returncode != 0
+    assert "unexpected extraction error EMPTY_PDF" in result.stderr
+    assert not report.exists()

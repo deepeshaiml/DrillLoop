@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 import asyncio
+import os
 import threading
 import time
 from datetime import date
+from pathlib import Path
 from unittest.mock import Mock
 
 import pytest
@@ -260,6 +262,8 @@ def test_parser_timeout_terminates_child_and_removes_quarantine(monkeypatch, tmp
             return None
 
     class Process:
+        pid = None
+
         def __init__(self, **_kwargs):
             self.alive = True
             self.terminated = False
@@ -425,6 +429,8 @@ def test_cancelled_parser_terminates_child_and_removes_quarantine(monkeypatch, t
             return None
 
     class Process:
+        pid = None
+
         def __init__(self, **_kwargs):
             self.alive = True
             self.terminated = False
@@ -684,3 +690,50 @@ def test_request_body_limit_rejects_declared_oversize_before_reading():
 
     assert response_messages[0]["status"] == 413
     assert b"REQUEST_TOO_LARGE" in response_messages[1]["body"]
+
+
+@pytest.mark.skipif(os.name != "posix", reason="Parser process groups require POSIX.")
+def test_cancelled_pdf_parser_stops_its_ocr_subprocess(monkeypatch, tmp_path):
+    executable = tmp_path / "tesseract"
+    marker = tmp_path / "ocr-started"
+    completed = tmp_path / "ocr-completed"
+    executable.write_text(
+        "#!/bin/sh\n"
+        'case "$1" in\n'
+        "  --version) echo 'tesseract 5';;\n"
+        "  --list-langs) echo 'eng';;\n"
+        f"  stdin) touch '{marker}'; sleep 2; touch '{completed}';;\n"
+        "esac\n"
+    )
+    executable.chmod(0o700)
+    monkeypatch.setenv("PATH", f"{tmp_path}:{os.environ['PATH']}")
+    fixture = (
+        Path(__file__).resolve().parents[2]
+        / "evals/phase2/sources/utility_emergency_log_scanned.pdf"
+    )
+    cancellation = threading.Event()
+
+    def cancel_when_ocr_starts():
+        for _ in range(300):
+            if marker.exists():
+                cancellation.set()
+                return
+            time.sleep(0.02)
+
+    canceller = threading.Thread(target=cancel_when_ocr_starts)
+    canceller.start()
+    try:
+        with pytest.raises(UploadCancelled):
+            process_upload_isolated(
+                fixture.name,
+                "application/pdf",
+                fixture.read_bytes(),
+                date(2026, 11, 20),
+                timeout_seconds=10,
+                cancellation_event=cancellation,
+            )
+    finally:
+        canceller.join(timeout=7)
+    assert marker.is_file()
+    time.sleep(2.1)
+    assert not completed.exists()

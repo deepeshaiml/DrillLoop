@@ -423,6 +423,12 @@ def parse_evidence(
         ocr_page_durations: dict[int, float] = {}
         ocr_page_segmentation_modes: dict[int, list[int]] = {}
         ocr_page_texts: dict[int, str] = {}
+
+        def mark_ocr_partial(page_index: int, code: str, message: str) -> None:
+            ocr_partial_pages.append(page_index + 1)
+            page_extraction[page_index]["status"] = "partial"
+            ocr_issues.append({"page": page_index + 1, "code": code, "message": message})
+
         if ocr_target_indices:
             from app.pdf_ocr import (
                 PdfOcrError,
@@ -431,114 +437,116 @@ def parse_evidence(
                 ocr_pdf_page,
             )
 
+            has_native_text = any(page_texts)
+            rendered_document = None
             try:
                 runtime, pdfium = check_pdf_ocr_runtime()
+                try:
+                    rendered_document = pdfium.PdfDocument(data)
+                except Exception as exc:
+                    raise PdfOcrError(
+                        "OCR_RENDER_FAILED", "Could not open this PDF for OCR."
+                    ) from exc
             except PdfOcrError as exc:
-                raise EvidenceError(exc.code, exc.message, exc.status_code) from exc
-            try:
-                rendered_document = pdfium.PdfDocument(data)
-            except Exception as exc:
-                raise EvidenceError("MALFORMED_PDF", "Could not render this PDF safely.") from exc
-            ocr_started = time.perf_counter()
-            try:
+                if not has_native_text:
+                    raise EvidenceError(exc.code, exc.message, exc.status_code) from exc
                 for page_index in ocr_target_indices:
-                    try:
-                        if page_index in ocr_page_indices:
-                            page_text, page_duration, segmentation_modes = ocr_pdf_page(
-                                rendered_document, page_index, runtime
-                            )
-                            page_texts[page_index] = page_text
-                            ocr_page_segmentation_modes[page_index + 1] = list(segmentation_modes)
-                        else:
-                            result = ocr_pdf_image_regions(rendered_document, page_index, runtime)
-                            page_text = result.text
-                            page_duration = result.duration_seconds
-                            ocr_page_texts[page_index] = page_text
-                            ocr_image_regions[page_index + 1] = result.attempted_regions
-                            ocr_page_segmentation_modes[page_index + 1] = [6]
-                            for code, message in result.issues:
-                                ocr_issues.append(
-                                    {"page": page_index + 1, "code": code, "message": message}
+                    mark_ocr_partial(page_index, exc.code, exc.message)
+
+            if rendered_document is not None:
+                ocr_started = time.perf_counter()
+                try:
+                    for page_index in ocr_target_indices:
+                        try:
+                            if page_index in ocr_page_indices:
+                                page_text, page_duration, segmentation_modes = ocr_pdf_page(
+                                    rendered_document, page_index, runtime
                                 )
-                            if result.issues or result.omitted_regions:
-                                ocr_partial_pages.append(page_index + 1)
-                                page_extraction[page_index]["status"] = "partial"
+                                page_texts[page_index] = page_text
+                                ocr_page_segmentation_modes[page_index + 1] = list(
+                                    segmentation_modes
+                                )
+                                if not page_text:
+                                    mark_ocr_partial(
+                                        page_index,
+                                        "OCR_NO_READABLE_TEXT",
+                                        "OCR recovered no readable text. Review the original page.",
+                                    )
+                                else:
+                                    page_extraction[page_index]["status"] = "completed"
                             else:
+                                result = ocr_pdf_image_regions(
+                                    rendered_document, page_index, runtime
+                                )
+                                page_text = result.text
+                                page_duration = result.duration_seconds
+                                ocr_page_texts[page_index] = page_text
+                                ocr_image_regions[page_index + 1] = result.attempted_regions
+                                if result.attempted_regions:
+                                    ocr_page_segmentation_modes[page_index + 1] = [6]
                                 page_extraction[page_index]["status"] = "completed"
-                    except PdfOcrError as exc:
-                        if page_index in mixed_image_page_indices:
-                            ocr_partial_pages.append(page_index + 1)
-                            page_extraction[page_index]["status"] = "partial"
-                            ocr_issues.append(
-                                {"page": page_index + 1, "code": exc.code, "message": exc.message}
+                                for code, message in result.issues:
+                                    mark_ocr_partial(page_index, code, message)
+                        except PdfOcrError as exc:
+                            if not has_native_text:
+                                raise EvidenceError(exc.code, exc.message, exc.status_code) from exc
+                            mark_ocr_partial(page_index, exc.code, exc.message)
+                            continue
+                        extracted_size += len(page_text)
+                        if extracted_size > MAX_EXTRACTED_CHARACTERS:
+                            raise EvidenceError(
+                                "EXTRACTED_TEXT_TOO_LARGE",
+                                "Extracted PDF text exceeds the 2 MB limit.",
+                                413,
                             )
-                            page_duration = 0.0
-                            page_text = ""
-                        else:
-                            raise EvidenceError(exc.code, exc.message, exc.status_code) from exc
-                    extracted_size += len(page_text)
-                    if extracted_size > MAX_EXTRACTED_CHARACTERS:
-                        raise EvidenceError(
-                            "EXTRACTED_TEXT_TOO_LARGE",
-                            "Extracted PDF text exceeds the 2 MB limit.",
-                            413,
-                        )
-                    if page_index in ocr_page_indices:
-                        page_extraction[page_index]["status"] = (
-                            "completed" if page_text else "completed_empty"
-                        )
-                    ocr_page_durations[page_index + 1] = round(page_duration, 4)
-            finally:
-                rendered_document.close()
-            duplicate_ocr_lines_suppressed = 0
-            for page_index, ocr_text in ocr_page_texts.items():
-                native_lines = {
-                    re.sub(r"\s+", " ", line).strip().casefold()
-                    for line in page_texts[page_index].splitlines()
-                    if line.strip()
-                }
-                kept_lines = []
-                for line in ocr_text.splitlines():
-                    if not line.strip():
-                        continue
-                    key = re.sub(r"\s+", " ", line).strip().casefold()
-                    if key in native_lines:
-                        duplicate_ocr_lines_suppressed += 1
-                        continue
-                    kept_lines.append(line.strip())
-                ocr_page_texts[page_index] = "\n".join(kept_lines)
-                extracted_size += sum(len(line) for line in kept_lines)
-                if extracted_size > MAX_EXTRACTED_CHARACTERS:
-                    raise EvidenceError(
-                        "EXTRACTED_TEXT_TOO_LARGE",
-                        "Extracted PDF text exceeds the 2 MB limit.",
-                        413,
-                    )
-            if ocr_partial_pages:
-                provenance["ocr_status"] = "partial"
+                        ocr_page_durations[page_index + 1] = round(page_duration, 4)
+                finally:
+                    rendered_document.close()
+
+                duplicate_ocr_lines_suppressed = 0
+                for page_index, ocr_text in ocr_page_texts.items():
+                    native_lines = {
+                        re.sub(r"\s+", " ", line).strip().casefold()
+                        for line in page_texts[page_index].splitlines()
+                        if line.strip()
+                    }
+                    kept_lines = []
+                    for line in ocr_text.splitlines():
+                        if not line.strip():
+                            continue
+                        key = re.sub(r"\s+", " ", line).strip().casefold()
+                        if key in native_lines:
+                            duplicate_ocr_lines_suppressed += 1
+                            continue
+                        kept_lines.append(line.strip())
+                    ocr_page_texts[page_index] = "\n".join(kept_lines)
+                provenance.update(
+                    {
+                        "ocr_engine": "Tesseract",
+                        "ocr_engine_version": runtime.engine_version,
+                        "ocr_language": "eng",
+                        "ocr_renderer": "pypdfium2",
+                        "ocr_renderer_version": runtime.renderer_version,
+                        "ocr_dpi": 200,
+                        "ocr_page_limit": MAX_OCR_PAGES,
+                        "ocr_page_timeout_seconds": 4,
+                        "ocr_pages": [index + 1 for index in ocr_target_indices],
+                        "ocr_duration_seconds": round(time.perf_counter() - ocr_started, 4),
+                        "ocr_page_durations_seconds": ocr_page_durations,
+                        "ocr_page_segmentation_modes": ocr_page_segmentation_modes,
+                        "ocr_word_confidence_available": False,
+                        "ocr_line_positions_available": False,
+                        "ocr_timestamp_confidence": "uncertain",
+                        "ocr_image_regions": ocr_image_regions,
+                        "ocr_duplicate_lines_suppressed": duplicate_ocr_lines_suppressed,
+                        "ocr_issues": ocr_issues,
+                        "ocr_partial_pages": [],
+                    }
+                )
+        if ocr_partial_pages:
+            provenance["ocr_status"] = "partial"
             provenance["ocr_partial_pages"] = sorted(set(ocr_partial_pages))
             provenance["ocr_issues"] = ocr_issues
-            provenance["ocr_image_regions"] = ocr_image_regions
-            provenance["ocr_duplicate_lines_suppressed"] = duplicate_ocr_lines_suppressed
-            provenance.update(
-                {
-                    "ocr_engine": "Tesseract",
-                    "ocr_engine_version": runtime.engine_version,
-                    "ocr_language": "eng",
-                    "ocr_renderer": "pypdfium2",
-                    "ocr_renderer_version": runtime.renderer_version,
-                    "ocr_dpi": 200,
-                    "ocr_page_limit": MAX_OCR_PAGES,
-                    "ocr_page_timeout_seconds": 4,
-                    "ocr_pages": [index + 1 for index in ocr_target_indices],
-                    "ocr_duration_seconds": round(time.perf_counter() - ocr_started, 4),
-                    "ocr_page_durations_seconds": ocr_page_durations,
-                    "ocr_page_segmentation_modes": ocr_page_segmentation_modes,
-                    "ocr_word_confidence_available": False,
-                    "ocr_line_positions_available": False,
-                    "ocr_timestamp_confidence": "uncertain",
-                }
-            )
 
         pages: list[str] = []
         observations = []

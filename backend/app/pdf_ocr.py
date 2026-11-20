@@ -75,7 +75,7 @@ def check_pdf_ocr_runtime() -> tuple[PdfOcrRuntime, object]:
     if "eng" not in language_output.split():
         raise PdfOcrError(
             "OCR_LANGUAGE_UNAVAILABLE",
-            "English OCR data is not installed; the PDF was not imported.",
+            "English OCR data is not installed.",
             503,
         )
     engine_version = next(
@@ -195,6 +195,15 @@ def ocr_pdf_image_regions(document, page_index: int, runtime: PdfOcrRuntime) -> 
 
         page = document[page_index]
         page_width, page_height = page.get_size()
+        page_left, page_bottom, page_right, page_top = page.get_bbox()
+        # Crop offsets are in the rendered page's coordinate system. Object bounds
+        # use the PDF coordinate system, which can have a different origin and rotation.
+        page_transform = {
+            0: pdfium.PdfMatrix(1, 0, 0, 1, -page_left, -page_bottom),
+            90: pdfium.PdfMatrix(0, -1, 1, 0, -page_bottom, page_right),
+            180: pdfium.PdfMatrix(-1, 0, 0, -1, page_right, page_top),
+            270: pdfium.PdfMatrix(0, 1, -1, 0, page_top, -page_left),
+        }[page.get_rotation()]
         object_iterator = page.get_objects(filter=[pdfium.raw.FPDF_PAGEOBJ_IMAGE])
         rectangles = []
         overflow = False
@@ -204,7 +213,13 @@ def ocr_pdf_image_regions(document, page_index: int, runtime: PdfOcrRuntime) -> 
                 overflow = True
                 break
             try:
-                x0, y0, x1, y1 = image_object.get_bounds()
+                bounds = image_object.get_bounds()
+                container = image_object.container
+                transform = pdfium.PdfMatrix()
+                while container is not None:
+                    transform = transform.multiply(container.get_matrix())
+                    container = container.container
+                x0, y0, x1, y1 = transform.multiply(page_transform).on_rect(*bounds)
             except Exception:
                 issues.append(
                     (
