@@ -1,0 +1,2 @@
+For AP-17 the floor lead suspected the handheld battery caused the stalled queue but did not test that explanation.
+For AP-18 the final door sensor result was never entered on the form.

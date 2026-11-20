@@ -1,0 +1,2 @@
+A reviewer suggested the console warning triggered FR-7. No diagnostic check verified that mechanism.
+The final result for FR-8 was never entered in the record.

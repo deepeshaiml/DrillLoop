@@ -1,0 +1,1638 @@
+{
+  "fictional": true,
+  "labeling": {
+    "version": "phase4b1-confirmation-v1",
+    "independent_reviewed": false,
+    "method": "Developer-authored from original fictional sources and frozen before implementing the validator-only recovery."
+  },
+  "real_inference": true,
+  "cases": [
+    {
+      "exercise_id": "PH4B1-CONFIRMATION-POWER",
+      "provider": "ollama",
+      "model": "qwen3.6:35b-a3b-coding-nvfp4",
+      "http_status": 200,
+      "error_code": null,
+      "context_limited": false,
+      "deterministic": {
+        "latency_ms": 4,
+        "finding_codes": [],
+        "matches_phase1_finding_labels": null,
+        "objective_states": {
+          "BREAKER": "needs_review",
+          "FEEDER": "needs_review"
+        },
+        "entire_exercise_detail_unchanged_after_ai_request": true
+      },
+      "hybrid": {
+        "latency_ms": 2016,
+        "input_tokens": 964,
+        "output_tokens": 141,
+        "citations_attempted": 4,
+        "citations_matched": 4,
+        "rejected_suggestion_count": 0,
+        "unassessed_objective_ids": []
+      },
+      "developer_label_comparison": [
+        {
+          "objective_id": "BREAKER",
+          "challenge": "incompatible_times",
+          "kind": "contradiction",
+          "target_met": true,
+          "expected_abstention": false,
+          "abstained": false,
+          "cross_source_target": false,
+          "expected_conflict": true,
+          "ocr_expected": false,
+          "ocr_preserved": true,
+          "classified_conflict": true,
+          "unsupported_claim": false,
+          "advisory_returned": true,
+          "citation_examples": [
+            {
+              "observation_id": "f13ccc6f-1b1b-4072-ba1f-16890016dd6f",
+              "source_id": "aaefa149-9e7b-4c2b-bf24-c7eeb57422b5",
+              "source_filename": "fictional_power_ledger.txt",
+              "source_locator": "line 1",
+              "text": "For test PB-3 the main breaker reclosed.",
+              "extraction_method": "parser",
+              "time_confidence": "medium",
+              "event_time_raw": "08:24"
+            },
+            {
+              "observation_id": "d4d3d549-b288-46b2-a17f-ce01397c1081",
+              "source_id": "12b9b040-18f5-4f80-b91f-361b5fc38a6a",
+              "source_filename": "fictional_power_witness.txt",
+              "source_locator": "line 1",
+              "text": "For PB-3 I saw the main breaker reclose at 08:29.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            }
+          ],
+          "unknowns": []
+        },
+        {
+          "objective_id": "FEEDER",
+          "challenge": "compatible_paraphrase",
+          "kind": "corroboration",
+          "target_met": true,
+          "expected_abstention": false,
+          "abstained": false,
+          "cross_source_target": true,
+          "expected_conflict": false,
+          "ocr_expected": false,
+          "ocr_preserved": true,
+          "classified_conflict": false,
+          "unsupported_claim": false,
+          "advisory_returned": true,
+          "citation_examples": [
+            {
+              "observation_id": "99ec4eae-4176-4abb-9b9b-3e8a45c7bfc3",
+              "source_id": "aaefa149-9e7b-4c2b-bf24-c7eeb57422b5",
+              "source_filename": "fictional_power_ledger.txt",
+              "source_locator": "line 2",
+              "text": "For test PB-4 the backup feeder was energized.",
+              "extraction_method": "parser",
+              "time_confidence": "medium",
+              "event_time_raw": "08:40"
+            },
+            {
+              "observation_id": "8722252e-7fff-48dd-9ca1-2a210b7a136e",
+              "source_id": "12b9b040-18f5-4f80-b91f-361b5fc38a6a",
+              "source_filename": "fictional_power_witness.txt",
+              "source_locator": "line 2",
+              "text": "For PB-4 the standby supply went live at 08:40 in front of me.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            }
+          ],
+          "unknowns": []
+        }
+      ]
+    },
+    {
+      "exercise_id": "PH4B1-CONFIRMATION-PANEL",
+      "provider": "ollama",
+      "model": "qwen3.6:35b-a3b-coding-nvfp4",
+      "http_status": 200,
+      "error_code": null,
+      "context_limited": false,
+      "deterministic": {
+        "latency_ms": 3,
+        "finding_codes": [],
+        "matches_phase1_finding_labels": null,
+        "objective_states": {
+          "PANEL-STAGES": "needs_review",
+          "PANEL-ID": "needs_review"
+        },
+        "entire_exercise_detail_unchanged_after_ai_request": true
+      },
+      "hybrid": {
+        "latency_ms": 3673,
+        "input_tokens": 1015,
+        "output_tokens": 274,
+        "citations_attempted": 4,
+        "citations_matched": 4,
+        "rejected_suggestion_count": 0,
+        "unassessed_objective_ids": []
+      },
+      "developer_label_comparison": [
+        {
+          "objective_id": "PANEL-STAGES",
+          "challenge": "different_phases",
+          "kind": "corroboration",
+          "target_met": false,
+          "expected_abstention": true,
+          "abstained": false,
+          "cross_source_target": false,
+          "expected_conflict": false,
+          "ocr_expected": false,
+          "ocr_preserved": true,
+          "classified_conflict": false,
+          "unsupported_claim": true,
+          "advisory_returned": true,
+          "citation_examples": [
+            {
+              "observation_id": "a9b06fa7-8233-478b-b2ee-3e244de0852b",
+              "source_id": "ec938f35-de62-40b3-8ec0-906ab3859e3c",
+              "source_filename": "fictional_panel_control.txt",
+              "source_locator": "line 1",
+              "text": "In drill QC-7 the operator isolated Panel D for testing.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            },
+            {
+              "observation_id": "2529181f-e2ae-4efa-9a3e-55ce570f1665",
+              "source_id": "fafedf09-cd4e-4cc9-8afe-9d78fc110ae8",
+              "source_filename": "fictional_panel_observer.txt",
+              "source_locator": "line 1",
+              "text": "In drill QC-7 I saw Panel D returned to service after testing.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            }
+          ],
+          "unknowns": [
+            "Confirmation of which event the wording refers to."
+          ]
+        },
+        {
+          "objective_id": "PANEL-ID",
+          "challenge": "shared_location",
+          "kind": "corroboration",
+          "target_met": false,
+          "expected_abstention": true,
+          "abstained": false,
+          "cross_source_target": false,
+          "expected_conflict": false,
+          "ocr_expected": false,
+          "ocr_preserved": true,
+          "classified_conflict": false,
+          "unsupported_claim": true,
+          "advisory_returned": true,
+          "citation_examples": [
+            {
+              "observation_id": "a9b06fa7-8233-478b-b2ee-3e244de0852b",
+              "source_id": "ec938f35-de62-40b3-8ec0-906ab3859e3c",
+              "source_filename": "fictional_panel_control.txt",
+              "source_locator": "line 1",
+              "text": "In drill QC-7 the operator isolated Panel D for testing.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            },
+            {
+              "observation_id": "2529181f-e2ae-4efa-9a3e-55ce570f1665",
+              "source_id": "fafedf09-cd4e-4cc9-8afe-9d78fc110ae8",
+              "source_filename": "fictional_panel_observer.txt",
+              "source_locator": "line 1",
+              "text": "In drill QC-7 I saw Panel D returned to service after testing.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            }
+          ],
+          "unknowns": [
+            "Confirmation of which event the wording refers to."
+          ]
+        }
+      ]
+    },
+    {
+      "exercise_id": "PH4B1-CONFIRMATION-MESSAGE",
+      "provider": "ollama",
+      "model": "qwen3.6:35b-a3b-coding-nvfp4",
+      "http_status": 200,
+      "error_code": null,
+      "context_limited": false,
+      "deterministic": {
+        "latency_ms": 3,
+        "finding_codes": [],
+        "matches_phase1_finding_labels": null,
+        "objective_states": {
+          "MESSAGE-MISSING": "needs_review",
+          "MESSAGE-DENIAL": "needs_review"
+        },
+        "entire_exercise_detail_unchanged_after_ai_request": true
+      },
+      "hybrid": {
+        "latency_ms": 1633,
+        "input_tokens": 947,
+        "output_tokens": 111,
+        "citations_attempted": 2,
+        "citations_matched": 2,
+        "rejected_suggestion_count": 0,
+        "unassessed_objective_ids": []
+      },
+      "developer_label_comparison": [
+        {
+          "objective_id": "MESSAGE-MISSING",
+          "challenge": "missing_acknowledgement",
+          "kind": "insufficient_evidence",
+          "target_met": true,
+          "expected_abstention": true,
+          "abstained": true,
+          "cross_source_target": false,
+          "expected_conflict": false,
+          "ocr_expected": false,
+          "ocr_preserved": true,
+          "classified_conflict": false,
+          "unsupported_claim": false,
+          "advisory_returned": false,
+          "citation_examples": [],
+          "unknowns": [
+            "A reliable record of when the event occurred.",
+            "A record that confirms the expected outcome occurred.",
+            "Evidence that establishes what caused the reported outcome."
+          ]
+        },
+        {
+          "objective_id": "MESSAGE-DENIAL",
+          "challenge": "explicit_denial",
+          "kind": "contradiction",
+          "target_met": true,
+          "expected_abstention": false,
+          "abstained": false,
+          "cross_source_target": false,
+          "expected_conflict": true,
+          "ocr_expected": false,
+          "ocr_preserved": true,
+          "classified_conflict": true,
+          "unsupported_claim": false,
+          "advisory_returned": true,
+          "citation_examples": [
+            {
+              "observation_id": "be6cdc66-9f04-4f7f-9990-700daf01ed80",
+              "source_id": "ba5a8b9a-f395-4316-8d74-8f8e133d6184",
+              "source_filename": "fictional_message_desk.txt",
+              "source_locator": "line 2",
+              "text": "During message test WT-3, Central reported Security confirmed receipt over the intercom.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            },
+            {
+              "observation_id": "0fb522ae-e223-4cae-b3b8-437540231ab9",
+              "source_id": "fa441bfe-0ed6-4b8c-ab53-ac0fc1bde4d9",
+              "source_filename": "fictional_message_review.txt",
+              "source_locator": "line 2",
+              "text": "Security explicitly reported that nobody from their team confirmed receipt of WT-3 over the intercom.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            }
+          ],
+          "unknowns": []
+        }
+      ]
+    },
+    {
+      "exercise_id": "PH4B1-CONFIRMATION-WEIR",
+      "provider": "ollama",
+      "model": "qwen3.6:35b-a3b-coding-nvfp4",
+      "http_status": 200,
+      "error_code": null,
+      "context_limited": false,
+      "deterministic": {
+        "latency_ms": 3,
+        "finding_codes": [],
+        "matches_phase1_finding_labels": null,
+        "objective_states": {
+          "WEIR-TIME": "needs_review"
+        },
+        "entire_exercise_detail_unchanged_after_ai_request": true
+      },
+      "hybrid": {
+        "latency_ms": 2087,
+        "input_tokens": 851,
+        "output_tokens": 149,
+        "citations_attempted": 2,
+        "citations_matched": 2,
+        "rejected_suggestion_count": 0,
+        "unassessed_objective_ids": []
+      },
+      "developer_label_comparison": [
+        {
+          "objective_id": "WEIR-TIME",
+          "challenge": "scan_time",
+          "kind": "insufficient_evidence",
+          "target_met": true,
+          "expected_abstention": true,
+          "abstained": true,
+          "cross_source_target": false,
+          "expected_conflict": false,
+          "ocr_expected": true,
+          "ocr_preserved": true,
+          "classified_conflict": false,
+          "unsupported_claim": false,
+          "advisory_returned": false,
+          "citation_examples": [
+            {
+              "observation_id": "621db08c-b37f-4396-8b96-3393bdc8d896",
+              "source_id": "20ea8bdd-1dce-4891-9fd2-b36ad4782572",
+              "source_filename": "fictional_weir_scan.pdf",
+              "source_locator": "page 1",
+              "text": "Weir level fell below the warning line in trial VO-6.",
+              "extraction_method": "ocr",
+              "time_confidence": "uncertain",
+              "event_time_raw": "06:52"
+            },
+            {
+              "observation_id": "9e923336-e2f0-4023-a565-7df94eca4901",
+              "source_id": "b03f0821-b7c0-4221-a136-932d8198f5a3",
+              "source_filename": "fictional_weir_typed.txt",
+              "source_locator": "line 1",
+              "text": "The desk observed the water below the warning line during trial VQ-6.",
+              "extraction_method": "parser",
+              "time_confidence": "medium",
+              "event_time_raw": "06:58"
+            }
+          ],
+          "unknowns": [
+            "Confirmation of which event the wording refers to.",
+            "A reliable record of when the event occurred."
+          ]
+        }
+      ]
+    },
+    {
+      "exercise_id": "PH4B1-CONFIRMATION-FAN",
+      "provider": "ollama",
+      "model": "qwen3.6:35b-a3b-coding-nvfp4",
+      "http_status": 200,
+      "error_code": null,
+      "context_limited": false,
+      "deterministic": {
+        "latency_ms": 3,
+        "finding_codes": [],
+        "matches_phase1_finding_labels": null,
+        "objective_states": {
+          "RESTART-CAUSE": "needs_review",
+          "FAN-RESULT": "needs_review"
+        },
+        "entire_exercise_detail_unchanged_after_ai_request": true
+      },
+      "hybrid": {
+        "latency_ms": 3272,
+        "input_tokens": 946,
+        "output_tokens": 244,
+        "citations_attempted": 3,
+        "citations_matched": 3,
+        "rejected_suggestion_count": 0,
+        "unassessed_objective_ids": []
+      },
+      "developer_label_comparison": [
+        {
+          "objective_id": "RESTART-CAUSE",
+          "challenge": "unverified_causality",
+          "kind": "insufficient_evidence",
+          "target_met": true,
+          "expected_abstention": true,
+          "abstained": true,
+          "cross_source_target": false,
+          "expected_conflict": false,
+          "ocr_expected": false,
+          "ocr_preserved": true,
+          "classified_conflict": false,
+          "unsupported_claim": false,
+          "advisory_returned": false,
+          "citation_examples": [
+            {
+              "observation_id": "5b46a4bd-722d-4140-bf4b-b387a6751600",
+              "source_id": "550593af-da73-4249-8146-92c2dbe685af",
+              "source_filename": "fictional_fan_log.txt",
+              "source_locator": "line 1",
+              "text": "Fan recovery FR-7 began after a warning light appeared on the service console.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            },
+            {
+              "observation_id": "90fff0c9-a11d-4c4a-9689-823471567c8c",
+              "source_id": "a612b17a-05e8-428c-8b2f-aae8cc24fe98",
+              "source_filename": "fictional_fan_notes.txt",
+              "source_locator": "line 1",
+              "text": "A reviewer suggested the console warning triggered FR-7. No diagnostic check verified that mechanism.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            }
+          ],
+          "unknowns": [
+            "Evidence that establishes what caused the reported outcome."
+          ]
+        },
+        {
+          "objective_id": "FAN-RESULT",
+          "challenge": "incomplete_outcome",
+          "kind": "insufficient_evidence",
+          "target_met": true,
+          "expected_abstention": true,
+          "abstained": true,
+          "cross_source_target": false,
+          "expected_conflict": false,
+          "ocr_expected": false,
+          "ocr_preserved": true,
+          "classified_conflict": false,
+          "unsupported_claim": false,
+          "advisory_returned": false,
+          "citation_examples": [
+            {
+              "observation_id": "605f0c98-22d6-4d22-9924-46e43539db92",
+              "source_id": "a612b17a-05e8-428c-8b2f-aae8cc24fe98",
+              "source_filename": "fictional_fan_notes.txt",
+              "source_locator": "line 2",
+              "text": "The final result for FR-8 was never entered in the record.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            }
+          ],
+          "unknowns": [
+            "A record that confirms the expected outcome occurred."
+          ]
+        }
+      ]
+    },
+    {
+      "exercise_id": "PH4B1-CONFIRMATION-POWER",
+      "provider": "ollama",
+      "model": "qwen3.6:35b-a3b-coding-nvfp4",
+      "http_status": 200,
+      "error_code": null,
+      "context_limited": false,
+      "deterministic": {
+        "latency_ms": 4,
+        "finding_codes": [],
+        "matches_phase1_finding_labels": null,
+        "objective_states": {
+          "BREAKER": "needs_review",
+          "FEEDER": "needs_review"
+        },
+        "entire_exercise_detail_unchanged_after_ai_request": true
+      },
+      "hybrid": {
+        "latency_ms": 3425,
+        "input_tokens": 964,
+        "output_tokens": 273,
+        "citations_attempted": 4,
+        "citations_matched": 4,
+        "rejected_suggestion_count": 0,
+        "unassessed_objective_ids": []
+      },
+      "developer_label_comparison": [
+        {
+          "objective_id": "BREAKER",
+          "challenge": "incompatible_times",
+          "kind": "contradiction",
+          "target_met": true,
+          "expected_abstention": false,
+          "abstained": false,
+          "cross_source_target": false,
+          "expected_conflict": true,
+          "ocr_expected": false,
+          "ocr_preserved": true,
+          "classified_conflict": true,
+          "unsupported_claim": false,
+          "advisory_returned": true,
+          "citation_examples": [
+            {
+              "observation_id": "f13ccc6f-1b1b-4072-ba1f-16890016dd6f",
+              "source_id": "aaefa149-9e7b-4c2b-bf24-c7eeb57422b5",
+              "source_filename": "fictional_power_ledger.txt",
+              "source_locator": "line 1",
+              "text": "For test PB-3 the main breaker reclosed.",
+              "extraction_method": "parser",
+              "time_confidence": "medium",
+              "event_time_raw": "08:24"
+            },
+            {
+              "observation_id": "d4d3d549-b288-46b2-a17f-ce01397c1081",
+              "source_id": "12b9b040-18f5-4f80-b91f-361b5fc38a6a",
+              "source_filename": "fictional_power_witness.txt",
+              "source_locator": "line 1",
+              "text": "For PB-3 I saw the main breaker reclose at 08:29.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            }
+          ],
+          "unknowns": [
+            "A reliable record of when the event occurred."
+          ]
+        },
+        {
+          "objective_id": "FEEDER",
+          "challenge": "compatible_paraphrase",
+          "kind": "corroboration",
+          "target_met": true,
+          "expected_abstention": false,
+          "abstained": false,
+          "cross_source_target": true,
+          "expected_conflict": false,
+          "ocr_expected": false,
+          "ocr_preserved": true,
+          "classified_conflict": false,
+          "unsupported_claim": false,
+          "advisory_returned": true,
+          "citation_examples": [
+            {
+              "observation_id": "99ec4eae-4176-4abb-9b9b-3e8a45c7bfc3",
+              "source_id": "aaefa149-9e7b-4c2b-bf24-c7eeb57422b5",
+              "source_filename": "fictional_power_ledger.txt",
+              "source_locator": "line 2",
+              "text": "For test PB-4 the backup feeder was energized.",
+              "extraction_method": "parser",
+              "time_confidence": "medium",
+              "event_time_raw": "08:40"
+            },
+            {
+              "observation_id": "8722252e-7fff-48dd-9ca1-2a210b7a136e",
+              "source_id": "12b9b040-18f5-4f80-b91f-361b5fc38a6a",
+              "source_filename": "fictional_power_witness.txt",
+              "source_locator": "line 2",
+              "text": "For PB-4 the standby supply went live at 08:40 in front of me.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            }
+          ],
+          "unknowns": []
+        }
+      ]
+    },
+    {
+      "exercise_id": "PH4B1-CONFIRMATION-PANEL",
+      "provider": "ollama",
+      "model": "qwen3.6:35b-a3b-coding-nvfp4",
+      "http_status": 200,
+      "error_code": null,
+      "context_limited": false,
+      "deterministic": {
+        "latency_ms": 3,
+        "finding_codes": [],
+        "matches_phase1_finding_labels": null,
+        "objective_states": {
+          "PANEL-STAGES": "needs_review",
+          "PANEL-ID": "needs_review"
+        },
+        "entire_exercise_detail_unchanged_after_ai_request": true
+      },
+      "hybrid": {
+        "latency_ms": 3487,
+        "input_tokens": 1015,
+        "output_tokens": 277,
+        "citations_attempted": 4,
+        "citations_matched": 4,
+        "rejected_suggestion_count": 0,
+        "unassessed_objective_ids": []
+      },
+      "developer_label_comparison": [
+        {
+          "objective_id": "PANEL-STAGES",
+          "challenge": "different_phases",
+          "kind": "corroboration",
+          "target_met": false,
+          "expected_abstention": true,
+          "abstained": false,
+          "cross_source_target": false,
+          "expected_conflict": false,
+          "ocr_expected": false,
+          "ocr_preserved": true,
+          "classified_conflict": false,
+          "unsupported_claim": true,
+          "advisory_returned": true,
+          "citation_examples": [
+            {
+              "observation_id": "a9b06fa7-8233-478b-b2ee-3e244de0852b",
+              "source_id": "ec938f35-de62-40b3-8ec0-906ab3859e3c",
+              "source_filename": "fictional_panel_control.txt",
+              "source_locator": "line 1",
+              "text": "In drill QC-7 the operator isolated Panel D for testing.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            },
+            {
+              "observation_id": "2529181f-e2ae-4efa-9a3e-55ce570f1665",
+              "source_id": "fafedf09-cd4e-4cc9-8afe-9d78fc110ae8",
+              "source_filename": "fictional_panel_observer.txt",
+              "source_locator": "line 1",
+              "text": "In drill QC-7 I saw Panel D returned to service after testing.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            }
+          ],
+          "unknowns": [
+            "Confirmation of which event the wording refers to."
+          ]
+        },
+        {
+          "objective_id": "PANEL-ID",
+          "challenge": "shared_location",
+          "kind": "corroboration",
+          "target_met": false,
+          "expected_abstention": true,
+          "abstained": false,
+          "cross_source_target": false,
+          "expected_conflict": false,
+          "ocr_expected": false,
+          "ocr_preserved": true,
+          "classified_conflict": false,
+          "unsupported_claim": true,
+          "advisory_returned": true,
+          "citation_examples": [
+            {
+              "observation_id": "a9b06fa7-8233-478b-b2ee-3e244de0852b",
+              "source_id": "ec938f35-de62-40b3-8ec0-906ab3859e3c",
+              "source_filename": "fictional_panel_control.txt",
+              "source_locator": "line 1",
+              "text": "In drill QC-7 the operator isolated Panel D for testing.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            },
+            {
+              "observation_id": "2529181f-e2ae-4efa-9a3e-55ce570f1665",
+              "source_id": "fafedf09-cd4e-4cc9-8afe-9d78fc110ae8",
+              "source_filename": "fictional_panel_observer.txt",
+              "source_locator": "line 1",
+              "text": "In drill QC-7 I saw Panel D returned to service after testing.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            }
+          ],
+          "unknowns": [
+            "Confirmation of which event the wording refers to."
+          ]
+        }
+      ]
+    },
+    {
+      "exercise_id": "PH4B1-CONFIRMATION-MESSAGE",
+      "provider": "ollama",
+      "model": "qwen3.6:35b-a3b-coding-nvfp4",
+      "http_status": 200,
+      "error_code": null,
+      "context_limited": false,
+      "deterministic": {
+        "latency_ms": 3,
+        "finding_codes": [],
+        "matches_phase1_finding_labels": null,
+        "objective_states": {
+          "MESSAGE-MISSING": "needs_review",
+          "MESSAGE-DENIAL": "needs_review"
+        },
+        "entire_exercise_detail_unchanged_after_ai_request": true
+      },
+      "hybrid": {
+        "latency_ms": 1396,
+        "input_tokens": 947,
+        "output_tokens": 108,
+        "citations_attempted": 2,
+        "citations_matched": 2,
+        "rejected_suggestion_count": 0,
+        "unassessed_objective_ids": []
+      },
+      "developer_label_comparison": [
+        {
+          "objective_id": "MESSAGE-MISSING",
+          "challenge": "missing_acknowledgement",
+          "kind": "insufficient_evidence",
+          "target_met": true,
+          "expected_abstention": true,
+          "abstained": true,
+          "cross_source_target": false,
+          "expected_conflict": false,
+          "ocr_expected": false,
+          "ocr_preserved": true,
+          "classified_conflict": false,
+          "unsupported_claim": false,
+          "advisory_returned": false,
+          "citation_examples": [],
+          "unknowns": [
+            "A record that confirms the expected outcome occurred.",
+            "Evidence that establishes what caused the reported outcome."
+          ]
+        },
+        {
+          "objective_id": "MESSAGE-DENIAL",
+          "challenge": "explicit_denial",
+          "kind": "contradiction",
+          "target_met": true,
+          "expected_abstention": false,
+          "abstained": false,
+          "cross_source_target": false,
+          "expected_conflict": true,
+          "ocr_expected": false,
+          "ocr_preserved": true,
+          "classified_conflict": true,
+          "unsupported_claim": false,
+          "advisory_returned": true,
+          "citation_examples": [
+            {
+              "observation_id": "be6cdc66-9f04-4f7f-9990-700daf01ed80",
+              "source_id": "ba5a8b9a-f395-4316-8d74-8f8e133d6184",
+              "source_filename": "fictional_message_desk.txt",
+              "source_locator": "line 2",
+              "text": "During message test WT-3, Central reported Security confirmed receipt over the intercom.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            },
+            {
+              "observation_id": "0fb522ae-e223-4cae-b3b8-437540231ab9",
+              "source_id": "fa441bfe-0ed6-4b8c-ab53-ac0fc1bde4d9",
+              "source_filename": "fictional_message_review.txt",
+              "source_locator": "line 2",
+              "text": "Security explicitly reported that nobody from their team confirmed receipt of WT-3 over the intercom.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            }
+          ],
+          "unknowns": []
+        }
+      ]
+    },
+    {
+      "exercise_id": "PH4B1-CONFIRMATION-WEIR",
+      "provider": "ollama",
+      "model": "qwen3.6:35b-a3b-coding-nvfp4",
+      "http_status": 200,
+      "error_code": null,
+      "context_limited": false,
+      "deterministic": {
+        "latency_ms": 3,
+        "finding_codes": [],
+        "matches_phase1_finding_labels": null,
+        "objective_states": {
+          "WEIR-TIME": "needs_review"
+        },
+        "entire_exercise_detail_unchanged_after_ai_request": true
+      },
+      "hybrid": {
+        "latency_ms": 1912,
+        "input_tokens": 851,
+        "output_tokens": 149,
+        "citations_attempted": 2,
+        "citations_matched": 2,
+        "rejected_suggestion_count": 0,
+        "unassessed_objective_ids": []
+      },
+      "developer_label_comparison": [
+        {
+          "objective_id": "WEIR-TIME",
+          "challenge": "scan_time",
+          "kind": "insufficient_evidence",
+          "target_met": true,
+          "expected_abstention": true,
+          "abstained": true,
+          "cross_source_target": false,
+          "expected_conflict": false,
+          "ocr_expected": true,
+          "ocr_preserved": true,
+          "classified_conflict": false,
+          "unsupported_claim": false,
+          "advisory_returned": false,
+          "citation_examples": [
+            {
+              "observation_id": "621db08c-b37f-4396-8b96-3393bdc8d896",
+              "source_id": "20ea8bdd-1dce-4891-9fd2-b36ad4782572",
+              "source_filename": "fictional_weir_scan.pdf",
+              "source_locator": "page 1",
+              "text": "Weir level fell below the warning line in trial VO-6.",
+              "extraction_method": "ocr",
+              "time_confidence": "uncertain",
+              "event_time_raw": "06:52"
+            },
+            {
+              "observation_id": "9e923336-e2f0-4023-a565-7df94eca4901",
+              "source_id": "b03f0821-b7c0-4221-a136-932d8198f5a3",
+              "source_filename": "fictional_weir_typed.txt",
+              "source_locator": "line 1",
+              "text": "The desk observed the water below the warning line during trial VQ-6.",
+              "extraction_method": "parser",
+              "time_confidence": "medium",
+              "event_time_raw": "06:58"
+            }
+          ],
+          "unknowns": [
+            "Confirmation of which event the wording refers to.",
+            "A reliable record of when the event occurred."
+          ]
+        }
+      ]
+    },
+    {
+      "exercise_id": "PH4B1-CONFIRMATION-FAN",
+      "provider": "ollama",
+      "model": "qwen3.6:35b-a3b-coding-nvfp4",
+      "http_status": 200,
+      "error_code": null,
+      "context_limited": false,
+      "deterministic": {
+        "latency_ms": 3,
+        "finding_codes": [],
+        "matches_phase1_finding_labels": null,
+        "objective_states": {
+          "RESTART-CAUSE": "needs_review",
+          "FAN-RESULT": "needs_review"
+        },
+        "entire_exercise_detail_unchanged_after_ai_request": true
+      },
+      "hybrid": {
+        "latency_ms": 2962,
+        "input_tokens": 946,
+        "output_tokens": 235,
+        "citations_attempted": 3,
+        "citations_matched": 3,
+        "rejected_suggestion_count": 0,
+        "unassessed_objective_ids": []
+      },
+      "developer_label_comparison": [
+        {
+          "objective_id": "RESTART-CAUSE",
+          "challenge": "unverified_causality",
+          "kind": "insufficient_evidence",
+          "target_met": true,
+          "expected_abstention": true,
+          "abstained": true,
+          "cross_source_target": false,
+          "expected_conflict": false,
+          "ocr_expected": false,
+          "ocr_preserved": true,
+          "classified_conflict": false,
+          "unsupported_claim": false,
+          "advisory_returned": false,
+          "citation_examples": [
+            {
+              "observation_id": "5b46a4bd-722d-4140-bf4b-b387a6751600",
+              "source_id": "550593af-da73-4249-8146-92c2dbe685af",
+              "source_filename": "fictional_fan_log.txt",
+              "source_locator": "line 1",
+              "text": "Fan recovery FR-7 began after a warning light appeared on the service console.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            },
+            {
+              "observation_id": "90fff0c9-a11d-4c4a-9689-823471567c8c",
+              "source_id": "a612b17a-05e8-428c-8b2f-aae8cc24fe98",
+              "source_filename": "fictional_fan_notes.txt",
+              "source_locator": "line 1",
+              "text": "A reviewer suggested the console warning triggered FR-7. No diagnostic check verified that mechanism.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            }
+          ],
+          "unknowns": [
+            "Evidence that establishes what caused the reported outcome."
+          ]
+        },
+        {
+          "objective_id": "FAN-RESULT",
+          "challenge": "incomplete_outcome",
+          "kind": "insufficient_evidence",
+          "target_met": true,
+          "expected_abstention": true,
+          "abstained": true,
+          "cross_source_target": false,
+          "expected_conflict": false,
+          "ocr_expected": false,
+          "ocr_preserved": true,
+          "classified_conflict": false,
+          "unsupported_claim": false,
+          "advisory_returned": false,
+          "citation_examples": [
+            {
+              "observation_id": "605f0c98-22d6-4d22-9924-46e43539db92",
+              "source_id": "a612b17a-05e8-428c-8b2f-aae8cc24fe98",
+              "source_filename": "fictional_fan_notes.txt",
+              "source_locator": "line 2",
+              "text": "The final result for FR-8 was never entered in the record.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            }
+          ],
+          "unknowns": [
+            "A record that confirms the expected outcome occurred."
+          ]
+        }
+      ]
+    },
+    {
+      "exercise_id": "PH4B1-CONFIRMATION-POWER",
+      "provider": "ollama",
+      "model": "qwen3.6:35b-a3b-coding-nvfp4",
+      "http_status": 200,
+      "error_code": null,
+      "context_limited": false,
+      "deterministic": {
+        "latency_ms": 4,
+        "finding_codes": [],
+        "matches_phase1_finding_labels": null,
+        "objective_states": {
+          "BREAKER": "needs_review",
+          "FEEDER": "needs_review"
+        },
+        "entire_exercise_detail_unchanged_after_ai_request": true
+      },
+      "hybrid": {
+        "latency_ms": 3420,
+        "input_tokens": 964,
+        "output_tokens": 273,
+        "citations_attempted": 4,
+        "citations_matched": 4,
+        "rejected_suggestion_count": 0,
+        "unassessed_objective_ids": []
+      },
+      "developer_label_comparison": [
+        {
+          "objective_id": "BREAKER",
+          "challenge": "incompatible_times",
+          "kind": "contradiction",
+          "target_met": true,
+          "expected_abstention": false,
+          "abstained": false,
+          "cross_source_target": false,
+          "expected_conflict": true,
+          "ocr_expected": false,
+          "ocr_preserved": true,
+          "classified_conflict": true,
+          "unsupported_claim": false,
+          "advisory_returned": true,
+          "citation_examples": [
+            {
+              "observation_id": "f13ccc6f-1b1b-4072-ba1f-16890016dd6f",
+              "source_id": "aaefa149-9e7b-4c2b-bf24-c7eeb57422b5",
+              "source_filename": "fictional_power_ledger.txt",
+              "source_locator": "line 1",
+              "text": "For test PB-3 the main breaker reclosed.",
+              "extraction_method": "parser",
+              "time_confidence": "medium",
+              "event_time_raw": "08:24"
+            },
+            {
+              "observation_id": "d4d3d549-b288-46b2-a17f-ce01397c1081",
+              "source_id": "12b9b040-18f5-4f80-b91f-361b5fc38a6a",
+              "source_filename": "fictional_power_witness.txt",
+              "source_locator": "line 1",
+              "text": "For PB-3 I saw the main breaker reclose at 08:29.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            }
+          ],
+          "unknowns": [
+            "A reliable record of when the event occurred."
+          ]
+        },
+        {
+          "objective_id": "FEEDER",
+          "challenge": "compatible_paraphrase",
+          "kind": "corroboration",
+          "target_met": true,
+          "expected_abstention": false,
+          "abstained": false,
+          "cross_source_target": true,
+          "expected_conflict": false,
+          "ocr_expected": false,
+          "ocr_preserved": true,
+          "classified_conflict": false,
+          "unsupported_claim": false,
+          "advisory_returned": true,
+          "citation_examples": [
+            {
+              "observation_id": "99ec4eae-4176-4abb-9b9b-3e8a45c7bfc3",
+              "source_id": "aaefa149-9e7b-4c2b-bf24-c7eeb57422b5",
+              "source_filename": "fictional_power_ledger.txt",
+              "source_locator": "line 2",
+              "text": "For test PB-4 the backup feeder was energized.",
+              "extraction_method": "parser",
+              "time_confidence": "medium",
+              "event_time_raw": "08:40"
+            },
+            {
+              "observation_id": "8722252e-7fff-48dd-9ca1-2a210b7a136e",
+              "source_id": "12b9b040-18f5-4f80-b91f-361b5fc38a6a",
+              "source_filename": "fictional_power_witness.txt",
+              "source_locator": "line 2",
+              "text": "For PB-4 the standby supply went live at 08:40 in front of me.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            }
+          ],
+          "unknowns": []
+        }
+      ]
+    },
+    {
+      "exercise_id": "PH4B1-CONFIRMATION-PANEL",
+      "provider": "ollama",
+      "model": "qwen3.6:35b-a3b-coding-nvfp4",
+      "http_status": 200,
+      "error_code": null,
+      "context_limited": false,
+      "deterministic": {
+        "latency_ms": 3,
+        "finding_codes": [],
+        "matches_phase1_finding_labels": null,
+        "objective_states": {
+          "PANEL-STAGES": "needs_review",
+          "PANEL-ID": "needs_review"
+        },
+        "entire_exercise_detail_unchanged_after_ai_request": true
+      },
+      "hybrid": {
+        "latency_ms": 3547,
+        "input_tokens": 1015,
+        "output_tokens": 283,
+        "citations_attempted": 4,
+        "citations_matched": 4,
+        "rejected_suggestion_count": 0,
+        "unassessed_objective_ids": []
+      },
+      "developer_label_comparison": [
+        {
+          "objective_id": "PANEL-STAGES",
+          "challenge": "different_phases",
+          "kind": "corroboration",
+          "target_met": false,
+          "expected_abstention": true,
+          "abstained": false,
+          "cross_source_target": false,
+          "expected_conflict": false,
+          "ocr_expected": false,
+          "ocr_preserved": true,
+          "classified_conflict": false,
+          "unsupported_claim": true,
+          "advisory_returned": true,
+          "citation_examples": [
+            {
+              "observation_id": "a9b06fa7-8233-478b-b2ee-3e244de0852b",
+              "source_id": "ec938f35-de62-40b3-8ec0-906ab3859e3c",
+              "source_filename": "fictional_panel_control.txt",
+              "source_locator": "line 1",
+              "text": "In drill QC-7 the operator isolated Panel D for testing.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            },
+            {
+              "observation_id": "2529181f-e2ae-4efa-9a3e-55ce570f1665",
+              "source_id": "fafedf09-cd4e-4cc9-8afe-9d78fc110ae8",
+              "source_filename": "fictional_panel_observer.txt",
+              "source_locator": "line 1",
+              "text": "In drill QC-7 I saw Panel D returned to service after testing.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            }
+          ],
+          "unknowns": [
+            "A reliable record of when the event occurred.",
+            "Evidence that establishes what caused the reported outcome."
+          ]
+        },
+        {
+          "objective_id": "PANEL-ID",
+          "challenge": "shared_location",
+          "kind": "corroboration",
+          "target_met": false,
+          "expected_abstention": true,
+          "abstained": false,
+          "cross_source_target": false,
+          "expected_conflict": false,
+          "ocr_expected": false,
+          "ocr_preserved": true,
+          "classified_conflict": false,
+          "unsupported_claim": true,
+          "advisory_returned": true,
+          "citation_examples": [
+            {
+              "observation_id": "a9b06fa7-8233-478b-b2ee-3e244de0852b",
+              "source_id": "ec938f35-de62-40b3-8ec0-906ab3859e3c",
+              "source_filename": "fictional_panel_control.txt",
+              "source_locator": "line 1",
+              "text": "In drill QC-7 the operator isolated Panel D for testing.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            },
+            {
+              "observation_id": "2529181f-e2ae-4efa-9a3e-55ce570f1665",
+              "source_id": "fafedf09-cd4e-4cc9-8afe-9d78fc110ae8",
+              "source_filename": "fictional_panel_observer.txt",
+              "source_locator": "line 1",
+              "text": "In drill QC-7 I saw Panel D returned to service after testing.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            }
+          ],
+          "unknowns": [
+            "A reliable record of when the event occurred."
+          ]
+        }
+      ]
+    },
+    {
+      "exercise_id": "PH4B1-CONFIRMATION-MESSAGE",
+      "provider": "ollama",
+      "model": "qwen3.6:35b-a3b-coding-nvfp4",
+      "http_status": 200,
+      "error_code": null,
+      "context_limited": false,
+      "deterministic": {
+        "latency_ms": 3,
+        "finding_codes": [],
+        "matches_phase1_finding_labels": null,
+        "objective_states": {
+          "MESSAGE-MISSING": "needs_review",
+          "MESSAGE-DENIAL": "needs_review"
+        },
+        "entire_exercise_detail_unchanged_after_ai_request": true
+      },
+      "hybrid": {
+        "latency_ms": 1386,
+        "input_tokens": 947,
+        "output_tokens": 108,
+        "citations_attempted": 2,
+        "citations_matched": 2,
+        "rejected_suggestion_count": 0,
+        "unassessed_objective_ids": []
+      },
+      "developer_label_comparison": [
+        {
+          "objective_id": "MESSAGE-MISSING",
+          "challenge": "missing_acknowledgement",
+          "kind": "insufficient_evidence",
+          "target_met": true,
+          "expected_abstention": true,
+          "abstained": true,
+          "cross_source_target": false,
+          "expected_conflict": false,
+          "ocr_expected": false,
+          "ocr_preserved": true,
+          "classified_conflict": false,
+          "unsupported_claim": false,
+          "advisory_returned": false,
+          "citation_examples": [],
+          "unknowns": [
+            "A record that confirms the expected outcome occurred.",
+            "Evidence that establishes what caused the reported outcome."
+          ]
+        },
+        {
+          "objective_id": "MESSAGE-DENIAL",
+          "challenge": "explicit_denial",
+          "kind": "contradiction",
+          "target_met": true,
+          "expected_abstention": false,
+          "abstained": false,
+          "cross_source_target": false,
+          "expected_conflict": true,
+          "ocr_expected": false,
+          "ocr_preserved": true,
+          "classified_conflict": true,
+          "unsupported_claim": false,
+          "advisory_returned": true,
+          "citation_examples": [
+            {
+              "observation_id": "be6cdc66-9f04-4f7f-9990-700daf01ed80",
+              "source_id": "ba5a8b9a-f395-4316-8d74-8f8e133d6184",
+              "source_filename": "fictional_message_desk.txt",
+              "source_locator": "line 2",
+              "text": "During message test WT-3, Central reported Security confirmed receipt over the intercom.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            },
+            {
+              "observation_id": "0fb522ae-e223-4cae-b3b8-437540231ab9",
+              "source_id": "fa441bfe-0ed6-4b8c-ab53-ac0fc1bde4d9",
+              "source_filename": "fictional_message_review.txt",
+              "source_locator": "line 2",
+              "text": "Security explicitly reported that nobody from their team confirmed receipt of WT-3 over the intercom.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            }
+          ],
+          "unknowns": []
+        }
+      ]
+    },
+    {
+      "exercise_id": "PH4B1-CONFIRMATION-WEIR",
+      "provider": "ollama",
+      "model": "qwen3.6:35b-a3b-coding-nvfp4",
+      "http_status": 200,
+      "error_code": null,
+      "context_limited": false,
+      "deterministic": {
+        "latency_ms": 3,
+        "finding_codes": [],
+        "matches_phase1_finding_labels": null,
+        "objective_states": {
+          "WEIR-TIME": "needs_review"
+        },
+        "entire_exercise_detail_unchanged_after_ai_request": true
+      },
+      "hybrid": {
+        "latency_ms": 1910,
+        "input_tokens": 851,
+        "output_tokens": 149,
+        "citations_attempted": 2,
+        "citations_matched": 2,
+        "rejected_suggestion_count": 0,
+        "unassessed_objective_ids": []
+      },
+      "developer_label_comparison": [
+        {
+          "objective_id": "WEIR-TIME",
+          "challenge": "scan_time",
+          "kind": "insufficient_evidence",
+          "target_met": true,
+          "expected_abstention": true,
+          "abstained": true,
+          "cross_source_target": false,
+          "expected_conflict": false,
+          "ocr_expected": true,
+          "ocr_preserved": true,
+          "classified_conflict": false,
+          "unsupported_claim": false,
+          "advisory_returned": false,
+          "citation_examples": [
+            {
+              "observation_id": "621db08c-b37f-4396-8b96-3393bdc8d896",
+              "source_id": "20ea8bdd-1dce-4891-9fd2-b36ad4782572",
+              "source_filename": "fictional_weir_scan.pdf",
+              "source_locator": "page 1",
+              "text": "Weir level fell below the warning line in trial VO-6.",
+              "extraction_method": "ocr",
+              "time_confidence": "uncertain",
+              "event_time_raw": "06:52"
+            },
+            {
+              "observation_id": "9e923336-e2f0-4023-a565-7df94eca4901",
+              "source_id": "b03f0821-b7c0-4221-a136-932d8198f5a3",
+              "source_filename": "fictional_weir_typed.txt",
+              "source_locator": "line 1",
+              "text": "The desk observed the water below the warning line during trial VQ-6.",
+              "extraction_method": "parser",
+              "time_confidence": "medium",
+              "event_time_raw": "06:58"
+            }
+          ],
+          "unknowns": [
+            "Confirmation of which event the wording refers to.",
+            "A reliable record of when the event occurred."
+          ]
+        }
+      ]
+    },
+    {
+      "exercise_id": "PH4B1-CONFIRMATION-FAN",
+      "provider": "ollama",
+      "model": "qwen3.6:35b-a3b-coding-nvfp4",
+      "http_status": 200,
+      "error_code": null,
+      "context_limited": false,
+      "deterministic": {
+        "latency_ms": 3,
+        "finding_codes": [],
+        "matches_phase1_finding_labels": null,
+        "objective_states": {
+          "RESTART-CAUSE": "needs_review",
+          "FAN-RESULT": "needs_review"
+        },
+        "entire_exercise_detail_unchanged_after_ai_request": true
+      },
+      "hybrid": {
+        "latency_ms": 3098,
+        "input_tokens": 946,
+        "output_tokens": 246,
+        "citations_attempted": 3,
+        "citations_matched": 3,
+        "rejected_suggestion_count": 0,
+        "unassessed_objective_ids": []
+      },
+      "developer_label_comparison": [
+        {
+          "objective_id": "RESTART-CAUSE",
+          "challenge": "unverified_causality",
+          "kind": "insufficient_evidence",
+          "target_met": true,
+          "expected_abstention": true,
+          "abstained": true,
+          "cross_source_target": false,
+          "expected_conflict": false,
+          "ocr_expected": false,
+          "ocr_preserved": true,
+          "classified_conflict": false,
+          "unsupported_claim": false,
+          "advisory_returned": false,
+          "citation_examples": [
+            {
+              "observation_id": "5b46a4bd-722d-4140-bf4b-b387a6751600",
+              "source_id": "550593af-da73-4249-8146-92c2dbe685af",
+              "source_filename": "fictional_fan_log.txt",
+              "source_locator": "line 1",
+              "text": "Fan recovery FR-7 began after a warning light appeared on the service console.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            },
+            {
+              "observation_id": "90fff0c9-a11d-4c4a-9689-823471567c8c",
+              "source_id": "a612b17a-05e8-428c-8b2f-aae8cc24fe98",
+              "source_filename": "fictional_fan_notes.txt",
+              "source_locator": "line 1",
+              "text": "A reviewer suggested the console warning triggered FR-7. No diagnostic check verified that mechanism.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            }
+          ],
+          "unknowns": [
+            "Evidence that establishes what caused the reported outcome."
+          ]
+        },
+        {
+          "objective_id": "FAN-RESULT",
+          "challenge": "incomplete_outcome",
+          "kind": "insufficient_evidence",
+          "target_met": true,
+          "expected_abstention": true,
+          "abstained": true,
+          "cross_source_target": false,
+          "expected_conflict": false,
+          "ocr_expected": false,
+          "ocr_preserved": true,
+          "classified_conflict": false,
+          "unsupported_claim": false,
+          "advisory_returned": false,
+          "citation_examples": [
+            {
+              "observation_id": "605f0c98-22d6-4d22-9924-46e43539db92",
+              "source_id": "a612b17a-05e8-428c-8b2f-aae8cc24fe98",
+              "source_filename": "fictional_fan_notes.txt",
+              "source_locator": "line 2",
+              "text": "The final result for FR-8 was never entered in the record.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            }
+          ],
+          "unknowns": [
+            "A record that confirms the expected outcome occurred."
+          ]
+        }
+      ]
+    }
+  ],
+  "run_metadata": {
+    "backend_commit": "00d680eae0f0676b5e26821eff81c131737904ca",
+    "backend_has_local_changes": true,
+    "backend_ai_sha256": "017d2227115a18e81c5eb324fd456d0a4c3d67ad01361fe75fabb77c46ade0be",
+    "ollama_version": "0.40.16",
+    "model": "qwen3.6:35b-a3b-coding-nvfp4",
+    "model_digest": "cd2692a833e66c4c98991b67e9fbaa0bb15a93285baac9240c022f2f40075b6d",
+    "prompt_version": "phase4b-v5",
+    "prompt_sha256": "6ae089f405989311112921e5a2b25dd7e117d1e7b401a56bb7024da022c2af5b",
+    "max_input_bytes": 12000,
+    "timeout_seconds": 60,
+    "inference_calls": [
+      {
+        "think": false,
+        "stream": false,
+        "temperature": 0,
+        "num_predict": 2048,
+        "num_ctx": 8192
+      },
+      {
+        "think": false,
+        "stream": false,
+        "temperature": 0,
+        "num_predict": 2048,
+        "num_ctx": 8192
+      },
+      {
+        "think": false,
+        "stream": false,
+        "temperature": 0,
+        "num_predict": 2048,
+        "num_ctx": 8192
+      },
+      {
+        "think": false,
+        "stream": false,
+        "temperature": 0,
+        "num_predict": 2048,
+        "num_ctx": 8192
+      },
+      {
+        "think": false,
+        "stream": false,
+        "temperature": 0,
+        "num_predict": 2048,
+        "num_ctx": 8192
+      },
+      {
+        "think": false,
+        "stream": false,
+        "temperature": 0,
+        "num_predict": 2048,
+        "num_ctx": 8192
+      },
+      {
+        "think": false,
+        "stream": false,
+        "temperature": 0,
+        "num_predict": 2048,
+        "num_ctx": 8192
+      },
+      {
+        "think": false,
+        "stream": false,
+        "temperature": 0,
+        "num_predict": 2048,
+        "num_ctx": 8192
+      },
+      {
+        "think": false,
+        "stream": false,
+        "temperature": 0,
+        "num_predict": 2048,
+        "num_ctx": 8192
+      },
+      {
+        "think": false,
+        "stream": false,
+        "temperature": 0,
+        "num_predict": 2048,
+        "num_ctx": 8192
+      },
+      {
+        "think": false,
+        "stream": false,
+        "temperature": 0,
+        "num_predict": 2048,
+        "num_ctx": 8192
+      },
+      {
+        "think": false,
+        "stream": false,
+        "temperature": 0,
+        "num_predict": 2048,
+        "num_ctx": 8192
+      },
+      {
+        "think": false,
+        "stream": false,
+        "temperature": 0,
+        "num_predict": 2048,
+        "num_ctx": 8192
+      },
+      {
+        "think": false,
+        "stream": false,
+        "temperature": 0,
+        "num_predict": 2048,
+        "num_ctx": 8192
+      },
+      {
+        "think": false,
+        "stream": false,
+        "temperature": 0,
+        "num_predict": 2048,
+        "num_ctx": 8192
+      }
+    ]
+  },
+  "repetitions": 3,
+  "metrics": {
+    "target_behavior": [
+      21,
+      27
+    ],
+    "cross_source_matching": [
+      3,
+      3
+    ],
+    "true_conflict_detection": [
+      6,
+      6
+    ],
+    "false_conflict_rate": [
+      0,
+      21
+    ],
+    "abstention_precision": [
+      12,
+      12
+    ],
+    "abstention_recall": [
+      12,
+      18
+    ],
+    "unsupported_claim_rate": [
+      6,
+      15
+    ],
+    "exact_citation_validation": [
+      45,
+      45
+    ],
+    "ocr_uncertainty_preserved": [
+      3,
+      3
+    ],
+    "deterministic_detail_preserved": [
+      15,
+      15
+    ],
+    "latency_ms": [
+      2016,
+      3673,
+      1633,
+      2087,
+      3272,
+      3425,
+      3487,
+      1396,
+      1912,
+      2962,
+      3420,
+      3547,
+      1386,
+      1910,
+      3098
+    ],
+    "input_tokens": [
+      964,
+      1015,
+      947,
+      851,
+      946,
+      964,
+      1015,
+      947,
+      851,
+      946,
+      964,
+      1015,
+      947,
+      851,
+      946
+    ],
+    "output_tokens": [
+      141,
+      274,
+      111,
+      149,
+      244,
+      273,
+      277,
+      108,
+      149,
+      235,
+      273,
+      283,
+      108,
+      149,
+      246
+    ]
+  },
+  "scripted_provider_probes": null
+}

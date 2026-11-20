@@ -1,0 +1,2158 @@
+{
+  "fictional": true,
+  "labeling": {
+    "version": "phase4b-v1",
+    "method": "Developer labels based on fictional source content before the paired runs. Each required group needs at least one cited original locator and any specified wording. Supported advisory alternatives receive claim credit without target credit. No independent adjudication."
+  },
+  "repetitions_per_version": 3,
+  "historical_phase4a_rerun_original_labels": {
+    "target_behavior": [
+      8,
+      9
+    ],
+    "objective_kinds": {
+      "WTR-OBJ-01": "relevant_observation",
+      "WTR-OBJ-02": "relevant_observation",
+      "WTR-OBJ-03": "ambiguous_observation",
+      "WTR-OBJ-04": "unverified_cause",
+      "TRN-OBJ-01": "conflicting_accounts",
+      "TRN-OBJ-02": "insufficient_evidence",
+      "OCR-TIMING": "ambiguous_observation",
+      "RECEPTION-OPEN": "relevant_observation",
+      "SIGNED-REGISTER": "insufficient_evidence"
+    }
+  },
+  "phase4a": {
+    "metadata": {
+      "backend_commit": "a8d146f5040f39f72c51778de1057ee55d1d056a",
+      "backend_has_local_changes": false,
+      "backend_ai_sha256": "e38e187d458b77b65543bd041613b68b62cc5b76c1f41531c9d2a8cb5158b950",
+      "ollama_version": "0.40.16",
+      "model": "qwen3.6:35b-a3b-coding-nvfp4",
+      "model_digest": "cd2692a833e66c4c98991b67e9fbaa0bb15a93285baac9240c022f2f40075b6d",
+      "prompt_sha256": "9a91b403fb13aa942d4cad885b64a0bffc7864bab9f0f9a2603c4db55886c045",
+      "max_input_bytes": 12000,
+      "timeout_seconds": 60,
+      "prompt_version": "phase4a"
+    },
+    "requested_inference_settings": {
+      "think": false,
+      "stream": false,
+      "temperature": 0,
+      "num_predict": 2048,
+      "num_ctx": 8192
+    },
+    "metrics": {
+      "target_behavior": [
+        18,
+        51
+      ],
+      "cross_source_matching": [
+        0,
+        6
+      ],
+      "true_conflict_detection": [
+        6,
+        6
+      ],
+      "false_conflict_rate": [
+        12,
+        45
+      ],
+      "abstention_precision": [
+        6,
+        6
+      ],
+      "abstention_recall": [
+        6,
+        33
+      ],
+      "unsupported_claim_rate": [
+        21,
+        39
+      ],
+      "exact_citation_validation": [
+        75,
+        75
+      ],
+      "deterministic_detail_preserved": [
+        21,
+        21
+      ]
+    },
+    "telemetry_per_request": {
+      "latency_ms": {
+        "min": 1910,
+        "median": 3276,
+        "max": 7031
+      },
+      "input_tokens": {
+        "min": 512,
+        "median": 776,
+        "max": 916
+      },
+      "output_tokens": {
+        "min": 149,
+        "median": 257,
+        "max": 539
+      }
+    },
+    "case_metrics_per_repeat": [
+      [
+        [
+          "PH1-WATER-2026-01",
+          6425,
+          791,
+          494,
+          0
+        ],
+        [
+          "PH1-TRANSIT-2026-01",
+          3411,
+          660,
+          257,
+          0
+        ],
+        [
+          "PH4A-FICTIONAL-OCR",
+          2325,
+          810,
+          166,
+          1
+        ],
+        [
+          "PH4A-FICTIONAL-NARRATIVE",
+          2051,
+          525,
+          160,
+          0
+        ],
+        [
+          "PH4B-FICTIONAL-FACILITIES",
+          7031,
+          916,
+          539,
+          0
+        ],
+        [
+          "PH4B-FICTIONAL-DISPATCH",
+          5083,
+          776,
+          386,
+          0
+        ],
+        [
+          "PH4B-FICTIONAL-COPIES",
+          2014,
+          512,
+          149,
+          0
+        ]
+      ],
+      [
+        [
+          "PH1-WATER-2026-01",
+          6210,
+          791,
+          491,
+          0
+        ],
+        [
+          "PH1-TRANSIT-2026-01",
+          3272,
+          660,
+          257,
+          0
+        ],
+        [
+          "PH4A-FICTIONAL-OCR",
+          2097,
+          810,
+          163,
+          1
+        ],
+        [
+          "PH4A-FICTIONAL-NARRATIVE",
+          2050,
+          525,
+          160,
+          0
+        ],
+        [
+          "PH4B-FICTIONAL-FACILITIES",
+          6816,
+          916,
+          539,
+          0
+        ],
+        [
+          "PH4B-FICTIONAL-DISPATCH",
+          4902,
+          776,
+          386,
+          0
+        ],
+        [
+          "PH4B-FICTIONAL-COPIES",
+          1917,
+          512,
+          149,
+          0
+        ]
+      ],
+      [
+        [
+          "PH1-WATER-2026-01",
+          6309,
+          791,
+          500,
+          0
+        ],
+        [
+          "PH1-TRANSIT-2026-01",
+          3276,
+          660,
+          257,
+          0
+        ],
+        [
+          "PH4A-FICTIONAL-OCR",
+          2077,
+          810,
+          163,
+          1
+        ],
+        [
+          "PH4A-FICTIONAL-NARRATIVE",
+          2045,
+          525,
+          160,
+          0
+        ],
+        [
+          "PH4B-FICTIONAL-FACILITIES",
+          6820,
+          916,
+          539,
+          0
+        ],
+        [
+          "PH4B-FICTIONAL-DISPATCH",
+          4876,
+          776,
+          386,
+          0
+        ],
+        [
+          "PH4B-FICTIONAL-COPIES",
+          1910,
+          512,
+          149,
+          0
+        ]
+      ]
+    ],
+    "objective_results_per_repeat": {
+      "WTR-OBJ-01": [
+        {
+          "kind": "conflicting_accounts",
+          "target_met": false,
+          "abstained": false,
+          "unsupported_claim": true,
+          "source_locators": [
+            [
+              "water_utility_log.csv",
+              "row 3 \u00b7 WU-02"
+            ],
+            [
+              "water_utility_log.csv",
+              "row 2 \u00b7 WU-01"
+            ]
+          ]
+        },
+        {
+          "kind": "conflicting_accounts",
+          "target_met": false,
+          "abstained": false,
+          "unsupported_claim": true,
+          "source_locators": [
+            [
+              "water_utility_log.csv",
+              "row 3 \u00b7 WU-02"
+            ],
+            [
+              "water_utility_log.csv",
+              "row 2 \u00b7 WU-01"
+            ]
+          ]
+        },
+        {
+          "kind": "conflicting_accounts",
+          "target_met": false,
+          "abstained": false,
+          "unsupported_claim": true,
+          "source_locators": [
+            [
+              "water_utility_log.csv",
+              "row 3 \u00b7 WU-02"
+            ],
+            [
+              "water_utility_log.csv",
+              "row 2 \u00b7 WU-01"
+            ]
+          ]
+        }
+      ],
+      "WTR-OBJ-02": [
+        {
+          "kind": "relevant_observation",
+          "target_met": true,
+          "abstained": false,
+          "unsupported_claim": false,
+          "source_locators": [
+            [
+              "water_utility_log.csv",
+              "row 4 \u00b7 WU-03"
+            ],
+            [
+              "water_utility_log.csv",
+              "row 5 \u00b7 WU-04"
+            ]
+          ]
+        },
+        {
+          "kind": "relevant_observation",
+          "target_met": true,
+          "abstained": false,
+          "unsupported_claim": false,
+          "source_locators": [
+            [
+              "water_utility_log.csv",
+              "row 4 \u00b7 WU-03"
+            ],
+            [
+              "water_utility_log.csv",
+              "row 5 \u00b7 WU-04"
+            ]
+          ]
+        },
+        {
+          "kind": "relevant_observation",
+          "target_met": true,
+          "abstained": false,
+          "unsupported_claim": false,
+          "source_locators": [
+            [
+              "water_utility_log.csv",
+              "row 4 \u00b7 WU-03"
+            ],
+            [
+              "water_utility_log.csv",
+              "row 5 \u00b7 WU-04"
+            ]
+          ]
+        }
+      ],
+      "WTR-OBJ-03": [
+        {
+          "kind": "ambiguous_observation",
+          "target_met": false,
+          "abstained": false,
+          "unsupported_claim": false,
+          "source_locators": [
+            [
+              "fictional_shift_notes.txt",
+              "line 3"
+            ]
+          ]
+        },
+        {
+          "kind": "ambiguous_observation",
+          "target_met": false,
+          "abstained": false,
+          "unsupported_claim": false,
+          "source_locators": [
+            [
+              "fictional_shift_notes.txt",
+              "line 3"
+            ]
+          ]
+        },
+        {
+          "kind": "ambiguous_observation",
+          "target_met": false,
+          "abstained": false,
+          "unsupported_claim": false,
+          "source_locators": [
+            [
+              "fictional_shift_notes.txt",
+              "line 3"
+            ]
+          ]
+        }
+      ],
+      "WTR-OBJ-04": [
+        {
+          "kind": "unverified_cause",
+          "target_met": false,
+          "abstained": false,
+          "unsupported_claim": false,
+          "source_locators": [
+            [
+              "fictional_shift_notes.txt",
+              "line 2"
+            ]
+          ]
+        },
+        {
+          "kind": "unverified_cause",
+          "target_met": false,
+          "abstained": false,
+          "unsupported_claim": false,
+          "source_locators": [
+            [
+              "fictional_shift_notes.txt",
+              "line 2"
+            ]
+          ]
+        },
+        {
+          "kind": "unverified_cause",
+          "target_met": false,
+          "abstained": false,
+          "unsupported_claim": false,
+          "source_locators": [
+            [
+              "fictional_shift_notes.txt",
+              "line 2"
+            ]
+          ]
+        }
+      ],
+      "TRN-OBJ-01": [
+        {
+          "kind": "conflicting_accounts",
+          "target_met": true,
+          "abstained": false,
+          "unsupported_claim": false,
+          "source_locators": [
+            [
+              "transit_control_log.csv",
+              "row 3 \u00b7 TS-02"
+            ],
+            [
+              "fictional_dispatcher_notes.txt",
+              "line 1"
+            ]
+          ]
+        },
+        {
+          "kind": "conflicting_accounts",
+          "target_met": true,
+          "abstained": false,
+          "unsupported_claim": false,
+          "source_locators": [
+            [
+              "transit_control_log.csv",
+              "row 3 \u00b7 TS-02"
+            ],
+            [
+              "fictional_dispatcher_notes.txt",
+              "line 1"
+            ]
+          ]
+        },
+        {
+          "kind": "conflicting_accounts",
+          "target_met": true,
+          "abstained": false,
+          "unsupported_claim": false,
+          "source_locators": [
+            [
+              "transit_control_log.csv",
+              "row 3 \u00b7 TS-02"
+            ],
+            [
+              "fictional_dispatcher_notes.txt",
+              "line 1"
+            ]
+          ]
+        }
+      ],
+      "TRN-OBJ-02": [
+        {
+          "kind": "relevant_observation",
+          "target_met": false,
+          "abstained": false,
+          "unsupported_claim": false,
+          "source_locators": [
+            [
+              "fictional_dispatcher_notes.txt",
+              "line 2"
+            ]
+          ]
+        },
+        {
+          "kind": "relevant_observation",
+          "target_met": false,
+          "abstained": false,
+          "unsupported_claim": false,
+          "source_locators": [
+            [
+              "fictional_dispatcher_notes.txt",
+              "line 2"
+            ]
+          ]
+        },
+        {
+          "kind": "relevant_observation",
+          "target_met": false,
+          "abstained": false,
+          "unsupported_claim": false,
+          "source_locators": [
+            [
+              "fictional_dispatcher_notes.txt",
+              "line 2"
+            ]
+          ]
+        }
+      ],
+      "OCR-TIMING": [
+        {
+          "kind": "ambiguous_observation",
+          "target_met": false,
+          "abstained": false,
+          "unsupported_claim": false,
+          "source_locators": [
+            [
+              "utility_emergency_log_scanned.pdf",
+              "page 1"
+            ]
+          ]
+        },
+        {
+          "kind": "ambiguous_observation",
+          "target_met": false,
+          "abstained": false,
+          "unsupported_claim": false,
+          "source_locators": [
+            [
+              "utility_emergency_log_scanned.pdf",
+              "page 1"
+            ]
+          ]
+        },
+        {
+          "kind": "ambiguous_observation",
+          "target_met": false,
+          "abstained": false,
+          "unsupported_claim": false,
+          "source_locators": [
+            [
+              "utility_emergency_log_scanned.pdf",
+              "page 1"
+            ]
+          ]
+        }
+      ],
+      "RECEPTION-OPEN": [
+        {
+          "kind": "relevant_observation",
+          "target_met": true,
+          "abstained": false,
+          "unsupported_claim": false,
+          "source_locators": [
+            [
+              "fictional_reception_notes.txt",
+              "line 1"
+            ]
+          ]
+        },
+        {
+          "kind": "relevant_observation",
+          "target_met": true,
+          "abstained": false,
+          "unsupported_claim": false,
+          "source_locators": [
+            [
+              "fictional_reception_notes.txt",
+              "line 1"
+            ]
+          ]
+        },
+        {
+          "kind": "relevant_observation",
+          "target_met": true,
+          "abstained": false,
+          "unsupported_claim": false,
+          "source_locators": [
+            [
+              "fictional_reception_notes.txt",
+              "line 1"
+            ]
+          ]
+        }
+      ],
+      "SIGNED-REGISTER": [
+        {
+          "kind": "insufficient_evidence",
+          "target_met": true,
+          "abstained": true,
+          "unsupported_claim": false,
+          "source_locators": []
+        },
+        {
+          "kind": "insufficient_evidence",
+          "target_met": true,
+          "abstained": true,
+          "unsupported_claim": false,
+          "source_locators": []
+        },
+        {
+          "kind": "insufficient_evidence",
+          "target_met": true,
+          "abstained": true,
+          "unsupported_claim": false,
+          "source_locators": []
+        }
+      ],
+      "ALARM": [
+        {
+          "kind": "conflicting_accounts",
+          "target_met": false,
+          "abstained": false,
+          "unsupported_claim": true,
+          "source_locators": [
+            [
+              "fictional_facilities_log.txt",
+              "line 1"
+            ],
+            [
+              "fictional_facilities_observer.txt",
+              "line 1"
+            ]
+          ]
+        },
+        {
+          "kind": "conflicting_accounts",
+          "target_met": false,
+          "abstained": false,
+          "unsupported_claim": true,
+          "source_locators": [
+            [
+              "fictional_facilities_log.txt",
+              "line 1"
+            ],
+            [
+              "fictional_facilities_observer.txt",
+              "line 1"
+            ]
+          ]
+        },
+        {
+          "kind": "conflicting_accounts",
+          "target_met": false,
+          "abstained": false,
+          "unsupported_claim": true,
+          "source_locators": [
+            [
+              "fictional_facilities_log.txt",
+              "line 1"
+            ],
+            [
+              "fictional_facilities_observer.txt",
+              "line 1"
+            ]
+          ]
+        }
+      ],
+      "PHASE": [
+        {
+          "kind": "possible_cross_source_match",
+          "target_met": false,
+          "abstained": false,
+          "unsupported_claim": true,
+          "source_locators": [
+            [
+              "fictional_facilities_log.txt",
+              "line 3"
+            ],
+            [
+              "fictional_facilities_observer.txt",
+              "line 2"
+            ]
+          ]
+        },
+        {
+          "kind": "possible_cross_source_match",
+          "target_met": false,
+          "abstained": false,
+          "unsupported_claim": true,
+          "source_locators": [
+            [
+              "fictional_facilities_log.txt",
+              "line 3"
+            ],
+            [
+              "fictional_facilities_observer.txt",
+              "line 2"
+            ]
+          ]
+        },
+        {
+          "kind": "possible_cross_source_match",
+          "target_met": false,
+          "abstained": false,
+          "unsupported_claim": true,
+          "source_locators": [
+            [
+              "fictional_facilities_log.txt",
+              "line 3"
+            ],
+            [
+              "fictional_facilities_observer.txt",
+              "line 2"
+            ]
+          ]
+        }
+      ],
+      "BARRIER": [
+        {
+          "kind": "conflicting_accounts",
+          "target_met": true,
+          "abstained": false,
+          "unsupported_claim": false,
+          "source_locators": [
+            [
+              "fictional_facilities_log.txt",
+              "line 4"
+            ],
+            [
+              "fictional_facilities_observer.txt",
+              "line 3"
+            ]
+          ]
+        },
+        {
+          "kind": "conflicting_accounts",
+          "target_met": true,
+          "abstained": false,
+          "unsupported_claim": false,
+          "source_locators": [
+            [
+              "fictional_facilities_log.txt",
+              "line 4"
+            ],
+            [
+              "fictional_facilities_observer.txt",
+              "line 3"
+            ]
+          ]
+        },
+        {
+          "kind": "conflicting_accounts",
+          "target_met": true,
+          "abstained": false,
+          "unsupported_claim": false,
+          "source_locators": [
+            [
+              "fictional_facilities_log.txt",
+              "line 4"
+            ],
+            [
+              "fictional_facilities_observer.txt",
+              "line 3"
+            ]
+          ]
+        }
+      ],
+      "CAUSE": [
+        {
+          "kind": "unverified_cause",
+          "target_met": false,
+          "abstained": false,
+          "unsupported_claim": true,
+          "source_locators": [
+            [
+              "fictional_facilities_log.txt",
+              "line 5"
+            ]
+          ]
+        },
+        {
+          "kind": "unverified_cause",
+          "target_met": false,
+          "abstained": false,
+          "unsupported_claim": true,
+          "source_locators": [
+            [
+              "fictional_facilities_log.txt",
+              "line 5"
+            ]
+          ]
+        },
+        {
+          "kind": "unverified_cause",
+          "target_met": false,
+          "abstained": false,
+          "unsupported_claim": true,
+          "source_locators": [
+            [
+              "fictional_facilities_log.txt",
+              "line 5"
+            ]
+          ]
+        }
+      ],
+      "CART-ID": [
+        {
+          "kind": "conflicting_accounts",
+          "target_met": false,
+          "abstained": false,
+          "unsupported_claim": true,
+          "source_locators": [
+            [
+              "fictional_dispatch_notes.txt",
+              "line 1"
+            ],
+            [
+              "fictional_dispatch_log.txt",
+              "line 1"
+            ],
+            [
+              "fictional_dispatch_log.txt",
+              "line 2"
+            ]
+          ]
+        },
+        {
+          "kind": "conflicting_accounts",
+          "target_met": false,
+          "abstained": false,
+          "unsupported_claim": true,
+          "source_locators": [
+            [
+              "fictional_dispatch_notes.txt",
+              "line 1"
+            ],
+            [
+              "fictional_dispatch_log.txt",
+              "line 1"
+            ],
+            [
+              "fictional_dispatch_log.txt",
+              "line 2"
+            ]
+          ]
+        },
+        {
+          "kind": "conflicting_accounts",
+          "target_met": false,
+          "abstained": false,
+          "unsupported_claim": true,
+          "source_locators": [
+            [
+              "fictional_dispatch_notes.txt",
+              "line 1"
+            ],
+            [
+              "fictional_dispatch_log.txt",
+              "line 1"
+            ],
+            [
+              "fictional_dispatch_log.txt",
+              "line 2"
+            ]
+          ]
+        }
+      ],
+      "SUPERVISOR-ACK": [
+        {
+          "kind": "conflicting_accounts",
+          "target_met": false,
+          "abstained": false,
+          "unsupported_claim": true,
+          "source_locators": [
+            [
+              "fictional_dispatch_log.txt",
+              "line 3"
+            ],
+            [
+              "fictional_dispatch_notes.txt",
+              "line 2"
+            ]
+          ]
+        },
+        {
+          "kind": "conflicting_accounts",
+          "target_met": false,
+          "abstained": false,
+          "unsupported_claim": true,
+          "source_locators": [
+            [
+              "fictional_dispatch_log.txt",
+              "line 3"
+            ],
+            [
+              "fictional_dispatch_notes.txt",
+              "line 2"
+            ]
+          ]
+        },
+        {
+          "kind": "conflicting_accounts",
+          "target_met": false,
+          "abstained": false,
+          "unsupported_claim": true,
+          "source_locators": [
+            [
+              "fictional_dispatch_log.txt",
+              "line 3"
+            ],
+            [
+              "fictional_dispatch_notes.txt",
+              "line 2"
+            ]
+          ]
+        }
+      ],
+      "INSPECTION": [
+        {
+          "kind": "insufficient_evidence",
+          "target_met": true,
+          "abstained": true,
+          "unsupported_claim": false,
+          "source_locators": []
+        },
+        {
+          "kind": "insufficient_evidence",
+          "target_met": true,
+          "abstained": true,
+          "unsupported_claim": false,
+          "source_locators": []
+        },
+        {
+          "kind": "insufficient_evidence",
+          "target_met": true,
+          "abstained": true,
+          "unsupported_claim": false,
+          "source_locators": []
+        }
+      ],
+      "LIFT-INDEPENDENCE": [
+        {
+          "kind": "possible_cross_source_match",
+          "target_met": false,
+          "abstained": false,
+          "unsupported_claim": true,
+          "source_locators": [
+            [
+              "fictional_copy_original.txt",
+              "line 1"
+            ],
+            [
+              "fictional_copy_archive.txt",
+              "line 1"
+            ]
+          ]
+        },
+        {
+          "kind": "possible_cross_source_match",
+          "target_met": false,
+          "abstained": false,
+          "unsupported_claim": true,
+          "source_locators": [
+            [
+              "fictional_copy_original.txt",
+              "line 1"
+            ],
+            [
+              "fictional_copy_archive.txt",
+              "line 1"
+            ]
+          ]
+        },
+        {
+          "kind": "possible_cross_source_match",
+          "target_met": false,
+          "abstained": false,
+          "unsupported_claim": true,
+          "source_locators": [
+            [
+              "fictional_copy_original.txt",
+              "line 1"
+            ],
+            [
+              "fictional_copy_archive.txt",
+              "line 1"
+            ]
+          ]
+        }
+      ]
+    },
+    "scripted_provider_probes": {
+      "fabricated_and_out_of_context_citations_withheld": true,
+      "forbidden_workflow_fields_rejected": true,
+      "deterministic_detail_preserved": true
+    }
+  },
+  "phase4b": {
+    "metadata": {
+      "backend_commit": "a8d146f5040f39f72c51778de1057ee55d1d056a",
+      "backend_has_local_changes": true,
+      "backend_ai_sha256": "aef111388b94c36ac7cbdbbec7d50c882c62c2454ca87b61dd12cde56e9206b0",
+      "ollama_version": "0.40.16",
+      "model": "qwen3.6:35b-a3b-coding-nvfp4",
+      "model_digest": "cd2692a833e66c4c98991b67e9fbaa0bb15a93285baac9240c022f2f40075b6d",
+      "prompt_version": "phase4b-v5",
+      "prompt_sha256": "6ae089f405989311112921e5a2b25dd7e117d1e7b401a56bb7024da022c2af5b",
+      "max_input_bytes": 12000,
+      "timeout_seconds": 60
+    },
+    "requested_inference_settings": {
+      "think": false,
+      "stream": false,
+      "temperature": 0,
+      "num_predict": 2048,
+      "num_ctx": 8192
+    },
+    "metrics": {
+      "target_behavior": [
+        45,
+        51
+      ],
+      "cross_source_matching": [
+        6,
+        6
+      ],
+      "true_conflict_detection": [
+        3,
+        6
+      ],
+      "false_conflict_rate": [
+        3,
+        45
+      ],
+      "abstention_precision": [
+        30,
+        30
+      ],
+      "abstention_recall": [
+        30,
+        33
+      ],
+      "unsupported_claim_rate": [
+        6,
+        24
+      ],
+      "exact_citation_validation": [
+        74,
+        74
+      ],
+      "deterministic_detail_preserved": [
+        21,
+        21
+      ]
+    },
+    "telemetry_per_request": {
+      "latency_ms": {
+        "min": 1851,
+        "median": 3164,
+        "max": 6648
+      },
+      "input_tokens": {
+        "min": 767,
+        "median": 1238,
+        "max": 1471
+      },
+      "output_tokens": {
+        "min": 142,
+        "median": 242,
+        "max": 484
+      }
+    },
+    "case_metrics_per_repeat": [
+      [
+        [
+          "PH1-WATER-2026-01",
+          6193,
+          1304,
+          463,
+          0
+        ],
+        [
+          "PH1-TRANSIT-2026-01",
+          3330,
+          1053,
+          242,
+          0
+        ],
+        [
+          "PH4A-FICTIONAL-OCR",
+          2165,
+          1333,
+          142,
+          0
+        ],
+        [
+          "PH4A-FICTIONAL-NARRATIVE",
+          2054,
+          767,
+          147,
+          0
+        ],
+        [
+          "PH4B-FICTIONAL-FACILITIES",
+          6648,
+          1471,
+          481,
+          0
+        ],
+        [
+          "PH4B-FICTIONAL-DISPATCH",
+          4161,
+          1238,
+          297,
+          0
+        ],
+        [
+          "PH4B-FICTIONAL-COPIES",
+          2134,
+          829,
+          151,
+          0
+        ]
+      ],
+      [
+        [
+          "PH1-WATER-2026-01",
+          5973,
+          1304,
+          460,
+          0
+        ],
+        [
+          "PH1-TRANSIT-2026-01",
+          3164,
+          1053,
+          242,
+          0
+        ],
+        [
+          "PH4A-FICTIONAL-OCR",
+          1888,
+          1333,
+          142,
+          0
+        ],
+        [
+          "PH4A-FICTIONAL-NARRATIVE",
+          1934,
+          767,
+          147,
+          0
+        ],
+        [
+          "PH4B-FICTIONAL-FACILITIES",
+          6240,
+          1471,
+          484,
+          0
+        ],
+        [
+          "PH4B-FICTIONAL-DISPATCH",
+          4275,
+          1238,
+          332,
+          0
+        ],
+        [
+          "PH4B-FICTIONAL-COPIES",
+          1989,
+          829,
+          151,
+          0
+        ]
+      ],
+      [
+        [
+          "PH1-WATER-2026-01",
+          5839,
+          1304,
+          460,
+          0
+        ],
+        [
+          "PH1-TRANSIT-2026-01",
+          3106,
+          1053,
+          242,
+          0
+        ],
+        [
+          "PH4A-FICTIONAL-OCR",
+          1851,
+          1333,
+          142,
+          0
+        ],
+        [
+          "PH4A-FICTIONAL-NARRATIVE",
+          1922,
+          767,
+          147,
+          0
+        ],
+        [
+          "PH4B-FICTIONAL-FACILITIES",
+          6150,
+          1471,
+          481,
+          0
+        ],
+        [
+          "PH4B-FICTIONAL-DISPATCH",
+          4221,
+          1238,
+          332,
+          0
+        ],
+        [
+          "PH4B-FICTIONAL-COPIES",
+          1947,
+          829,
+          152,
+          0
+        ]
+      ]
+    ],
+    "objective_results_per_repeat": {
+      "WTR-OBJ-01": [
+        {
+          "kind": "corroboration",
+          "target_met": true,
+          "abstained": false,
+          "unsupported_claim": false,
+          "source_locators": [
+            [
+              "water_utility_log.csv",
+              "row 2 \u00b7 WU-01"
+            ],
+            [
+              "fictional_shift_notes.txt",
+              "line 1"
+            ]
+          ]
+        },
+        {
+          "kind": "corroboration",
+          "target_met": true,
+          "abstained": false,
+          "unsupported_claim": false,
+          "source_locators": [
+            [
+              "water_utility_log.csv",
+              "row 2 \u00b7 WU-01"
+            ],
+            [
+              "fictional_shift_notes.txt",
+              "line 1"
+            ]
+          ]
+        },
+        {
+          "kind": "corroboration",
+          "target_met": true,
+          "abstained": false,
+          "unsupported_claim": false,
+          "source_locators": [
+            [
+              "water_utility_log.csv",
+              "row 2 \u00b7 WU-01"
+            ],
+            [
+              "fictional_shift_notes.txt",
+              "line 1"
+            ]
+          ]
+        }
+      ],
+      "WTR-OBJ-02": [
+        {
+          "kind": "relevant_observation",
+          "target_met": true,
+          "abstained": false,
+          "unsupported_claim": false,
+          "source_locators": [
+            [
+              "water_utility_log.csv",
+              "row 4 \u00b7 WU-03"
+            ],
+            [
+              "water_utility_log.csv",
+              "row 5 \u00b7 WU-04"
+            ]
+          ]
+        },
+        {
+          "kind": "relevant_observation",
+          "target_met": true,
+          "abstained": false,
+          "unsupported_claim": false,
+          "source_locators": [
+            [
+              "water_utility_log.csv",
+              "row 4 \u00b7 WU-03"
+            ],
+            [
+              "water_utility_log.csv",
+              "row 5 \u00b7 WU-04"
+            ]
+          ]
+        },
+        {
+          "kind": "relevant_observation",
+          "target_met": true,
+          "abstained": false,
+          "unsupported_claim": false,
+          "source_locators": [
+            [
+              "water_utility_log.csv",
+              "row 4 \u00b7 WU-03"
+            ],
+            [
+              "water_utility_log.csv",
+              "row 5 \u00b7 WU-04"
+            ]
+          ]
+        }
+      ],
+      "WTR-OBJ-03": [
+        {
+          "kind": "insufficient_evidence",
+          "target_met": true,
+          "abstained": true,
+          "unsupported_claim": false,
+          "source_locators": [
+            [
+              "fictional_shift_notes.txt",
+              "line 3"
+            ]
+          ]
+        },
+        {
+          "kind": "unknown",
+          "target_met": true,
+          "abstained": true,
+          "unsupported_claim": false,
+          "source_locators": [
+            [
+              "fictional_shift_notes.txt",
+              "line 3"
+            ]
+          ]
+        },
+        {
+          "kind": "unknown",
+          "target_met": true,
+          "abstained": true,
+          "unsupported_claim": false,
+          "source_locators": [
+            [
+              "fictional_shift_notes.txt",
+              "line 3"
+            ]
+          ]
+        }
+      ],
+      "WTR-OBJ-04": [
+        {
+          "kind": "insufficient_evidence",
+          "target_met": true,
+          "abstained": true,
+          "unsupported_claim": false,
+          "source_locators": [
+            [
+              "fictional_shift_notes.txt",
+              "line 2"
+            ]
+          ]
+        },
+        {
+          "kind": "unknown",
+          "target_met": true,
+          "abstained": true,
+          "unsupported_claim": false,
+          "source_locators": [
+            [
+              "fictional_shift_notes.txt",
+              "line 2"
+            ]
+          ]
+        },
+        {
+          "kind": "unknown",
+          "target_met": true,
+          "abstained": true,
+          "unsupported_claim": false,
+          "source_locators": [
+            [
+              "fictional_shift_notes.txt",
+              "line 2"
+            ]
+          ]
+        }
+      ],
+      "TRN-OBJ-01": [
+        {
+          "kind": "relevant_observation",
+          "target_met": false,
+          "abstained": false,
+          "unsupported_claim": true,
+          "source_locators": [
+            [
+              "transit_control_log.csv",
+              "row 2 \u00b7 TS-01"
+            ],
+            [
+              "transit_control_log.csv",
+              "row 3 \u00b7 TS-02"
+            ]
+          ]
+        },
+        {
+          "kind": "relevant_observation",
+          "target_met": false,
+          "abstained": false,
+          "unsupported_claim": true,
+          "source_locators": [
+            [
+              "transit_control_log.csv",
+              "row 2 \u00b7 TS-01"
+            ],
+            [
+              "transit_control_log.csv",
+              "row 3 \u00b7 TS-02"
+            ]
+          ]
+        },
+        {
+          "kind": "relevant_observation",
+          "target_met": false,
+          "abstained": false,
+          "unsupported_claim": true,
+          "source_locators": [
+            [
+              "transit_control_log.csv",
+              "row 2 \u00b7 TS-01"
+            ],
+            [
+              "transit_control_log.csv",
+              "row 3 \u00b7 TS-02"
+            ]
+          ]
+        }
+      ],
+      "TRN-OBJ-02": [
+        {
+          "kind": "insufficient_evidence",
+          "target_met": true,
+          "abstained": true,
+          "unsupported_claim": false,
+          "source_locators": [
+            [
+              "fictional_dispatcher_notes.txt",
+              "line 2"
+            ]
+          ]
+        },
+        {
+          "kind": "insufficient_evidence",
+          "target_met": true,
+          "abstained": true,
+          "unsupported_claim": false,
+          "source_locators": [
+            [
+              "fictional_dispatcher_notes.txt",
+              "line 2"
+            ]
+          ]
+        },
+        {
+          "kind": "insufficient_evidence",
+          "target_met": true,
+          "abstained": true,
+          "unsupported_claim": false,
+          "source_locators": [
+            [
+              "fictional_dispatcher_notes.txt",
+              "line 2"
+            ]
+          ]
+        }
+      ],
+      "OCR-TIMING": [
+        {
+          "kind": "insufficient_evidence",
+          "target_met": true,
+          "abstained": true,
+          "unsupported_claim": false,
+          "source_locators": [
+            [
+              "utility_emergency_log_scanned.pdf",
+              "page 1"
+            ],
+            [
+              "utility_emergency_log_scanned.pdf",
+              "page 1"
+            ]
+          ]
+        },
+        {
+          "kind": "insufficient_evidence",
+          "target_met": true,
+          "abstained": true,
+          "unsupported_claim": false,
+          "source_locators": [
+            [
+              "utility_emergency_log_scanned.pdf",
+              "page 1"
+            ],
+            [
+              "utility_emergency_log_scanned.pdf",
+              "page 1"
+            ]
+          ]
+        },
+        {
+          "kind": "insufficient_evidence",
+          "target_met": true,
+          "abstained": true,
+          "unsupported_claim": false,
+          "source_locators": [
+            [
+              "utility_emergency_log_scanned.pdf",
+              "page 1"
+            ],
+            [
+              "utility_emergency_log_scanned.pdf",
+              "page 1"
+            ]
+          ]
+        }
+      ],
+      "RECEPTION-OPEN": [
+        {
+          "kind": "relevant_observation",
+          "target_met": true,
+          "abstained": false,
+          "unsupported_claim": false,
+          "source_locators": [
+            [
+              "fictional_reception_notes.txt",
+              "line 1"
+            ]
+          ]
+        },
+        {
+          "kind": "relevant_observation",
+          "target_met": true,
+          "abstained": false,
+          "unsupported_claim": false,
+          "source_locators": [
+            [
+              "fictional_reception_notes.txt",
+              "line 1"
+            ]
+          ]
+        },
+        {
+          "kind": "relevant_observation",
+          "target_met": true,
+          "abstained": false,
+          "unsupported_claim": false,
+          "source_locators": [
+            [
+              "fictional_reception_notes.txt",
+              "line 1"
+            ]
+          ]
+        }
+      ],
+      "SIGNED-REGISTER": [
+        {
+          "kind": "insufficient_evidence",
+          "target_met": true,
+          "abstained": true,
+          "unsupported_claim": false,
+          "source_locators": []
+        },
+        {
+          "kind": "insufficient_evidence",
+          "target_met": true,
+          "abstained": true,
+          "unsupported_claim": false,
+          "source_locators": []
+        },
+        {
+          "kind": "insufficient_evidence",
+          "target_met": true,
+          "abstained": true,
+          "unsupported_claim": false,
+          "source_locators": []
+        }
+      ],
+      "ALARM": [
+        {
+          "kind": "corroboration",
+          "target_met": true,
+          "abstained": false,
+          "unsupported_claim": false,
+          "source_locators": [
+            [
+              "fictional_facilities_log.txt",
+              "line 1"
+            ],
+            [
+              "fictional_facilities_observer.txt",
+              "line 1"
+            ]
+          ]
+        },
+        {
+          "kind": "corroboration",
+          "target_met": true,
+          "abstained": false,
+          "unsupported_claim": false,
+          "source_locators": [
+            [
+              "fictional_facilities_log.txt",
+              "line 1"
+            ],
+            [
+              "fictional_facilities_observer.txt",
+              "line 1"
+            ]
+          ]
+        },
+        {
+          "kind": "corroboration",
+          "target_met": true,
+          "abstained": false,
+          "unsupported_claim": false,
+          "source_locators": [
+            [
+              "fictional_facilities_log.txt",
+              "line 1"
+            ],
+            [
+              "fictional_facilities_observer.txt",
+              "line 1"
+            ]
+          ]
+        }
+      ],
+      "PHASE": [
+        {
+          "kind": "different_response_phases",
+          "target_met": true,
+          "abstained": true,
+          "unsupported_claim": false,
+          "source_locators": [
+            [
+              "fictional_facilities_log.txt",
+              "line 2"
+            ],
+            [
+              "fictional_facilities_log.txt",
+              "line 3"
+            ]
+          ]
+        },
+        {
+          "kind": "different_response_phases",
+          "target_met": true,
+          "abstained": true,
+          "unsupported_claim": false,
+          "source_locators": [
+            [
+              "fictional_facilities_log.txt",
+              "line 2"
+            ],
+            [
+              "fictional_facilities_log.txt",
+              "line 3"
+            ]
+          ]
+        },
+        {
+          "kind": "different_response_phases",
+          "target_met": true,
+          "abstained": true,
+          "unsupported_claim": false,
+          "source_locators": [
+            [
+              "fictional_facilities_log.txt",
+              "line 2"
+            ],
+            [
+              "fictional_facilities_log.txt",
+              "line 3"
+            ]
+          ]
+        }
+      ],
+      "BARRIER": [
+        {
+          "kind": "contradiction",
+          "target_met": true,
+          "abstained": false,
+          "unsupported_claim": false,
+          "source_locators": [
+            [
+              "fictional_facilities_log.txt",
+              "line 4"
+            ],
+            [
+              "fictional_facilities_observer.txt",
+              "line 3"
+            ]
+          ]
+        },
+        {
+          "kind": "contradiction",
+          "target_met": true,
+          "abstained": false,
+          "unsupported_claim": false,
+          "source_locators": [
+            [
+              "fictional_facilities_log.txt",
+              "line 4"
+            ],
+            [
+              "fictional_facilities_observer.txt",
+              "line 3"
+            ]
+          ]
+        },
+        {
+          "kind": "contradiction",
+          "target_met": true,
+          "abstained": false,
+          "unsupported_claim": false,
+          "source_locators": [
+            [
+              "fictional_facilities_log.txt",
+              "line 4"
+            ],
+            [
+              "fictional_facilities_observer.txt",
+              "line 3"
+            ]
+          ]
+        }
+      ],
+      "CAUSE": [
+        {
+          "kind": "unknown",
+          "target_met": true,
+          "abstained": true,
+          "unsupported_claim": false,
+          "source_locators": []
+        },
+        {
+          "kind": "unknown",
+          "target_met": true,
+          "abstained": true,
+          "unsupported_claim": false,
+          "source_locators": []
+        },
+        {
+          "kind": "unknown",
+          "target_met": true,
+          "abstained": true,
+          "unsupported_claim": false,
+          "source_locators": []
+        }
+      ],
+      "CART-ID": [
+        {
+          "kind": "unknown",
+          "target_met": true,
+          "abstained": true,
+          "unsupported_claim": false,
+          "source_locators": [
+            [
+              "fictional_dispatch_notes.txt",
+              "line 1"
+            ]
+          ]
+        },
+        {
+          "kind": "unknown",
+          "target_met": true,
+          "abstained": true,
+          "unsupported_claim": false,
+          "source_locators": [
+            [
+              "fictional_dispatch_notes.txt",
+              "line 1"
+            ]
+          ]
+        },
+        {
+          "kind": "unknown",
+          "target_met": true,
+          "abstained": true,
+          "unsupported_claim": false,
+          "source_locators": [
+            [
+              "fictional_dispatch_notes.txt",
+              "line 1"
+            ]
+          ]
+        }
+      ],
+      "SUPERVISOR-ACK": [
+        {
+          "kind": "contradiction",
+          "target_met": false,
+          "abstained": false,
+          "unsupported_claim": true,
+          "source_locators": [
+            [
+              "fictional_dispatch_log.txt",
+              "line 3"
+            ],
+            [
+              "fictional_dispatch_notes.txt",
+              "line 2"
+            ]
+          ]
+        },
+        {
+          "kind": "contradiction",
+          "target_met": false,
+          "abstained": false,
+          "unsupported_claim": true,
+          "source_locators": [
+            [
+              "fictional_dispatch_log.txt",
+              "line 3"
+            ],
+            [
+              "fictional_dispatch_notes.txt",
+              "line 2"
+            ]
+          ]
+        },
+        {
+          "kind": "contradiction",
+          "target_met": false,
+          "abstained": false,
+          "unsupported_claim": true,
+          "source_locators": [
+            [
+              "fictional_dispatch_log.txt",
+              "line 3"
+            ],
+            [
+              "fictional_dispatch_notes.txt",
+              "line 2"
+            ]
+          ]
+        }
+      ],
+      "INSPECTION": [
+        {
+          "kind": "unknown",
+          "target_met": true,
+          "abstained": true,
+          "unsupported_claim": false,
+          "source_locators": [
+            [
+              "fictional_dispatch_notes.txt",
+              "line 3"
+            ]
+          ]
+        },
+        {
+          "kind": "insufficient_evidence",
+          "target_met": true,
+          "abstained": true,
+          "unsupported_claim": false,
+          "source_locators": [
+            [
+              "fictional_dispatch_log.txt",
+              "line 4"
+            ],
+            [
+              "fictional_dispatch_notes.txt",
+              "line 3"
+            ]
+          ]
+        },
+        {
+          "kind": "insufficient_evidence",
+          "target_met": true,
+          "abstained": true,
+          "unsupported_claim": false,
+          "source_locators": [
+            [
+              "fictional_dispatch_log.txt",
+              "line 4"
+            ],
+            [
+              "fictional_dispatch_notes.txt",
+              "line 3"
+            ]
+          ]
+        }
+      ],
+      "LIFT-INDEPENDENCE": [
+        {
+          "kind": "unknown",
+          "target_met": true,
+          "abstained": true,
+          "unsupported_claim": false,
+          "source_locators": [
+            [
+              "fictional_copy_original.txt",
+              "line 1"
+            ],
+            [
+              "fictional_copy_archive.txt",
+              "line 1"
+            ]
+          ]
+        },
+        {
+          "kind": "unknown",
+          "target_met": true,
+          "abstained": true,
+          "unsupported_claim": false,
+          "source_locators": [
+            [
+              "fictional_copy_original.txt",
+              "line 1"
+            ],
+            [
+              "fictional_copy_archive.txt",
+              "line 1"
+            ]
+          ]
+        },
+        {
+          "kind": "unknown",
+          "target_met": true,
+          "abstained": true,
+          "unsupported_claim": false,
+          "source_locators": [
+            [
+              "fictional_copy_original.txt",
+              "line 1"
+            ],
+            [
+              "fictional_copy_archive.txt",
+              "line 1"
+            ]
+          ]
+        }
+      ]
+    },
+    "scripted_provider_probes": {
+      "fabricated_and_out_of_context_citations_withheld": true,
+      "forbidden_workflow_fields_rejected": true,
+      "deterministic_detail_preserved": true
+    }
+  },
+  "same_deterministic_states_and_finding_codes_across_versions": true,
+  "phase4b_citation_examples": {
+    "WTR-OBJ-01": [
+      {
+        "source_filename": "water_utility_log.csv",
+        "source_locator": "row 2 \u00b7 WU-01",
+        "text": "Intake pressure alarm sounded at the west filtration header.",
+        "extraction_method": "parser",
+        "time_confidence": "medium",
+        "event_time_raw": "08:00"
+      },
+      {
+        "source_filename": "fictional_shift_notes.txt",
+        "source_locator": "line 1",
+        "text": "the intake pressure alarm sounded at the west filtration header at 08:00.",
+        "extraction_method": "parser",
+        "time_confidence": "unknown",
+        "event_time_raw": null
+      }
+    ],
+    "WTR-OBJ-02": [
+      {
+        "source_filename": "water_utility_log.csv",
+        "source_locator": "row 4 \u00b7 WU-03",
+        "text": "Generator load transfer was requested for the south pump room.",
+        "extraction_method": "parser",
+        "time_confidence": "medium",
+        "event_time_raw": "08:10"
+      },
+      {
+        "source_filename": "water_utility_log.csv",
+        "source_locator": "row 5 \u00b7 WU-04",
+        "text": "Generator transfer to the south pump room completed.",
+        "extraction_method": "parser",
+        "time_confidence": "medium",
+        "event_time_raw": "08:18"
+      }
+    ],
+    "WTR-OBJ-03": [
+      {
+        "source_filename": "fictional_shift_notes.txt",
+        "source_locator": "line 3",
+        "text": "At the east intake, crew members thought flow had stabilized before lunch, but no one verified it.",
+        "extraction_method": "parser",
+        "time_confidence": "unknown",
+        "event_time_raw": null
+      }
+    ],
+    "WTR-OBJ-04": [
+      {
+        "source_filename": "fictional_shift_notes.txt",
+        "source_locator": "line 2",
+        "text": "The south transfer may have been delayed by a sticking float sensor; no inspection confirmed a cause.",
+        "extraction_method": "parser",
+        "time_confidence": "unknown",
+        "event_time_raw": null
+      }
+    ],
+    "TRN-OBJ-02": [
+      {
+        "source_filename": "fictional_dispatcher_notes.txt",
+        "source_locator": "line 2",
+        "text": "No matching acknowledgement entry was found in the paper dispatcher sheet.",
+        "extraction_method": "parser",
+        "time_confidence": "unknown",
+        "event_time_raw": null
+      }
+    ],
+    "OCR-TIMING": [
+      {
+        "source_filename": "utility_emergency_log_scanned.pdf",
+        "source_locator": "page 1",
+        "text": "Primary pump P-4 tripped; low-pressure alarm activated.",
+        "extraction_method": "ocr",
+        "time_confidence": "uncertain",
+        "event_time_raw": "09:00"
+      },
+      {
+        "source_filename": "utility_emergency_log_scanned.pdf",
+        "source_locator": "page 1",
+        "text": "Backup pump P-7 reached stable pressure at 42 psi.",
+        "extraction_method": "ocr",
+        "time_confidence": "uncertain",
+        "event_time_raw": "09:12"
+      }
+    ],
+    "RECEPTION-OPEN": [
+      {
+        "source_filename": "fictional_reception_notes.txt",
+        "source_locator": "line 1",
+        "text": "The training coordinator opened the secondary reception point and began receiving exercise participants.",
+        "extraction_method": "parser",
+        "time_confidence": "unknown",
+        "event_time_raw": null
+      }
+    ],
+    "ALARM": [
+      {
+        "source_filename": "fictional_facilities_log.txt",
+        "source_locator": "line 1",
+        "text": "For incident DR-21, Dock 2 alarm sounded during the facilities exercise.",
+        "extraction_method": "parser",
+        "time_confidence": "medium",
+        "event_time_raw": "10:02"
+      },
+      {
+        "source_filename": "fictional_facilities_observer.txt",
+        "source_locator": "line 1",
+        "text": "For incident DR-21, I heard the Dock 2 alarm at 10:02.",
+        "extraction_method": "parser",
+        "time_confidence": "unknown",
+        "event_time_raw": null
+      }
+    ],
+    "PHASE": [
+      {
+        "source_filename": "fictional_facilities_log.txt",
+        "source_locator": "line 2",
+        "text": "For incident DR-21, the Dock 2 response team isolated the loading bay.",
+        "extraction_method": "parser",
+        "time_confidence": "medium",
+        "event_time_raw": "10:05"
+      },
+      {
+        "source_filename": "fictional_facilities_log.txt",
+        "source_locator": "line 3",
+        "text": "For incident DR-21, the facilities lead reset the Dock 2 alarm after inspection.",
+        "extraction_method": "parser",
+        "time_confidence": "medium",
+        "event_time_raw": "10:11"
+      }
+    ],
+    "BARRIER": [
+      {
+        "source_filename": "fictional_facilities_log.txt",
+        "source_locator": "line 4",
+        "text": "For drill DR-22, the control desk recorded the north barrier locked at checkpoint C2.",
+        "extraction_method": "parser",
+        "time_confidence": "medium",
+        "event_time_raw": "10:15"
+      },
+      {
+        "source_filename": "fictional_facilities_observer.txt",
+        "source_locator": "line 3",
+        "text": "For drill DR-22, I inspected the north barrier at checkpoint C2 and found it unlocked.",
+        "extraction_method": "parser",
+        "time_confidence": "unknown",
+        "event_time_raw": null
+      }
+    ],
+    "CART-ID": [
+      {
+        "source_filename": "fictional_dispatch_notes.txt",
+        "source_locator": "line 1",
+        "text": "The witness did not record its number or dispatch ticket.",
+        "extraction_method": "parser",
+        "time_confidence": "unknown",
+        "event_time_raw": null
+      }
+    ],
+    "INSPECTION": [
+      {
+        "source_filename": "fictional_dispatch_notes.txt",
+        "source_locator": "line 3",
+        "text": "the inspection appendix was missing from the exercise packet.",
+        "extraction_method": "parser",
+        "time_confidence": "unknown",
+        "event_time_raw": null
+      }
+    ],
+    "LIFT-INDEPENDENCE": [
+      {
+        "source_filename": "fictional_copy_original.txt",
+        "source_locator": "line 1",
+        "text": "For incident D-51, the lift desk recorded the car stopped at level 5.",
+        "extraction_method": "parser",
+        "time_confidence": "medium",
+        "event_time_raw": "12:01"
+      },
+      {
+        "source_filename": "fictional_copy_archive.txt",
+        "source_locator": "line 1",
+        "text": "For incident D-51, the lift desk recorded the car stopped at level 5.",
+        "extraction_method": "parser",
+        "time_confidence": "medium",
+        "event_time_raw": "12:01"
+      }
+    ]
+  }
+}

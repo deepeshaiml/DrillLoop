@@ -1,0 +1,3180 @@
+{
+  "fictional": true,
+  "comparison_design": {
+    "historical_complete_suite_repeats_per_version": 3,
+    "new_interleaved_repeats_per_version": 2,
+    "total_complete_suite_repeats_per_version": 5,
+    "new_interleaving": "Baseline/candidate order alternated per case and repeat; each pair used the same Ollama daemon, model digest, prompt, settings, dataset, and source ordering. Disposable evaluation runs generated fresh opaque source IDs.",
+    "ollama_version": "0.40.16",
+    "model": "qwen3.6:35b-a3b-coding-nvfp4",
+    "model_digest": "cd2692a833e66c4c98991b67e9fbaa0bb15a93285baac9240c022f2f40075b6d",
+    "prompt_version": "phase4b-v5",
+    "prompt_sha256": "6ae089f405989311112921e5a2b25dd7e117d1e7b401a56bb7024da022c2af5b",
+    "temperature": 0,
+    "context_tokens": 8192,
+    "max_output_tokens": 2048,
+    "thinking": false,
+    "max_input_bytes": 12000,
+    "cloud_disabled": true,
+    "raw_trace_location": "/tmp/drillloop-4b2-final.kjqLyV",
+    "raw_trace_permissions": "0700 directory; raw traces excluded from repository"
+  },
+  "metrics": {
+    "baseline": {
+      "target_behavior": [
+        40,
+        45
+      ],
+      "true_conflict_detection": [
+        10,
+        10
+      ],
+      "false_conflict_rate": [
+        0,
+        35
+      ],
+      "cross_source_matching": [
+        5,
+        5
+      ],
+      "abstention_precision": [
+        25,
+        25
+      ],
+      "abstention_recall": [
+        25,
+        30
+      ],
+      "unsupported_claim_rate": [
+        5,
+        25
+      ],
+      "exact_citation_validation": [
+        77,
+        77
+      ],
+      "ocr_uncertainty_preserved": [
+        5,
+        5
+      ],
+      "deterministic_detail_preserved": [
+        40,
+        40
+      ]
+    },
+    "candidate": {
+      "target_behavior": [
+        36,
+        45
+      ],
+      "true_conflict_detection": [
+        10,
+        10
+      ],
+      "false_conflict_rate": [
+        0,
+        35
+      ],
+      "cross_source_matching": [
+        5,
+        5
+      ],
+      "abstention_precision": [
+        21,
+        21
+      ],
+      "abstention_recall": [
+        21,
+        30
+      ],
+      "unsupported_claim_rate": [
+        5,
+        25
+      ],
+      "exact_citation_validation": [
+        73,
+        81
+      ],
+      "ocr_uncertainty_preserved": [
+        1,
+        5
+      ],
+      "deterministic_detail_preserved": [
+        40,
+        40
+      ]
+    }
+  },
+  "per_objective": {
+    "baseline": {
+      "HATCH-TIME": {
+        "passed": 5,
+        "total": 5,
+        "kinds": {
+          "contradiction": 5
+        },
+        "ocr_passed": 0
+      },
+      "RADIO-TIME": {
+        "passed": 5,
+        "total": 5,
+        "kinds": {
+          "corroboration": 5
+        },
+        "ocr_passed": 0
+      },
+      "COOLING-STAGES": {
+        "passed": 5,
+        "total": 5,
+        "kinds": {
+          "different_response_phases": 5
+        },
+        "ocr_passed": 0
+      },
+      "FORM-ACK": {
+        "passed": 5,
+        "total": 5,
+        "kinds": {
+          "insufficient_evidence": 5
+        },
+        "ocr_passed": 0
+      },
+      "DENIAL-ACK": {
+        "passed": 5,
+        "total": 5,
+        "kinds": {
+          "contradiction": 5
+        },
+        "ocr_passed": 0
+      },
+      "ROOM-ID": {
+        "passed": 0,
+        "total": 5,
+        "kinds": {
+          "relevant_observation": 5
+        },
+        "ocr_passed": 0
+      },
+      "SCAN-TIME": {
+        "passed": 5,
+        "total": 5,
+        "kinds": {
+          "insufficient_evidence": 5
+        },
+        "ocr_passed": 5
+      },
+      "LIFT-CAUSE": {
+        "passed": 5,
+        "total": 5,
+        "kinds": {
+          "insufficient_evidence": 5
+        },
+        "ocr_passed": 0
+      },
+      "LIFT-RESULT": {
+        "passed": 5,
+        "total": 5,
+        "kinds": {
+          "insufficient_evidence": 5
+        },
+        "ocr_passed": 0
+      }
+    },
+    "candidate": {
+      "HATCH-TIME": {
+        "passed": 5,
+        "total": 5,
+        "kinds": {
+          "contradiction": 5
+        },
+        "ocr_passed": 0
+      },
+      "RADIO-TIME": {
+        "passed": 5,
+        "total": 5,
+        "kinds": {
+          "corroboration": 5
+        },
+        "ocr_passed": 0
+      },
+      "COOLING-STAGES": {
+        "passed": 5,
+        "total": 5,
+        "kinds": {
+          "different_response_phases": 5
+        },
+        "ocr_passed": 0
+      },
+      "FORM-ACK": {
+        "passed": 5,
+        "total": 5,
+        "kinds": {
+          "insufficient_evidence": 5
+        },
+        "ocr_passed": 0
+      },
+      "DENIAL-ACK": {
+        "passed": 5,
+        "total": 5,
+        "kinds": {
+          "contradiction": 5
+        },
+        "ocr_passed": 0
+      },
+      "ROOM-ID": {
+        "passed": 0,
+        "total": 5,
+        "kinds": {
+          "relevant_observation": 5
+        },
+        "ocr_passed": 0
+      },
+      "SCAN-TIME": {
+        "passed": 1,
+        "total": 5,
+        "kinds": {
+          "None": 4,
+          "insufficient_evidence": 1
+        },
+        "ocr_passed": 1
+      },
+      "LIFT-CAUSE": {
+        "passed": 5,
+        "total": 5,
+        "kinds": {
+          "insufficient_evidence": 5
+        },
+        "ocr_passed": 0
+      },
+      "LIFT-RESULT": {
+        "passed": 5,
+        "total": 5,
+        "kinds": {
+          "insufficient_evidence": 5
+        },
+        "ocr_passed": 0
+      }
+    }
+  },
+  "additional_interleaved_per_case": [
+    {
+      "file": "baseline-r4-PH4B1-FICTIONAL-COOLING.json",
+      "version": "baseline",
+      "repeat": 4,
+      "exercise_id": "PH4B1-FICTIONAL-COOLING",
+      "objective_outcomes": [
+        {
+          "objective_id": "COOLING-STAGES",
+          "challenge": "different_phases",
+          "kind": "different_response_phases",
+          "target_met": true,
+          "expected_abstention": true,
+          "abstained": true,
+          "cross_source_target": false,
+          "expected_conflict": false,
+          "ocr_expected": false,
+          "ocr_preserved": true,
+          "classified_conflict": false,
+          "unsupported_claim": false,
+          "advisory_returned": true,
+          "citation_examples": [
+            {
+              "observation_id": "98b54625-6cde-4259-a98c-c94c687b0c8c",
+              "source_id": "21c68cfa-7a06-4cbd-8c85-31ad13ac7740",
+              "source_filename": "fictional_cooling_control.txt",
+              "source_locator": "line 1",
+              "text": "In session CP-8 maintenance stopped coolant flow to inspect the loop.",
+              "extraction_method": "parser",
+              "time_confidence": "medium",
+              "event_time_raw": "15:10"
+            },
+            {
+              "observation_id": "66e21b74-51e1-4707-931a-3d8cec7c048d",
+              "source_id": "b9a70eb3-2fef-47f1-bd66-62c172990691",
+              "source_filename": "fictional_cooling_observer.txt",
+              "source_locator": "line 1",
+              "text": "In session CP-8 maintenance restored coolant flow after replacing the filter.",
+              "extraction_method": "parser",
+              "time_confidence": "medium",
+              "event_time_raw": "15:25"
+            }
+          ],
+          "unknowns": []
+        }
+      ],
+      "model_citations_all_exact": true,
+      "citation_attempts": [
+        {
+          "record": 1,
+          "exact_substring": true
+        },
+        {
+          "record": 2,
+          "exact_substring": true
+        }
+      ],
+      "validator_matched": 2,
+      "validator_attempted": 2,
+      "state_unchanged": true
+    },
+    {
+      "file": "baseline-r4-PH4B1-FICTIONAL-DENIAL.json",
+      "version": "baseline",
+      "repeat": 4,
+      "exercise_id": "PH4B1-FICTIONAL-DENIAL",
+      "objective_outcomes": [
+        {
+          "objective_id": "DENIAL-ACK",
+          "challenge": "explicit_denial",
+          "kind": "contradiction",
+          "target_met": true,
+          "expected_abstention": false,
+          "abstained": false,
+          "cross_source_target": false,
+          "expected_conflict": true,
+          "ocr_expected": false,
+          "ocr_preserved": true,
+          "classified_conflict": true,
+          "unsupported_claim": false,
+          "advisory_returned": true,
+          "citation_examples": [
+            {
+              "observation_id": "90f5f1d3-589f-4d2f-9986-e09625edf2e4",
+              "source_id": "fb362359-7a05-46ef-b72c-9b43a1aafe0c",
+              "source_filename": "fictional_receipt_affirmation.txt",
+              "source_locator": "line 1",
+              "text": "the field desk reported that Transport acknowledged the bulletin over radio.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            },
+            {
+              "observation_id": "f5db4bba-416a-4c20-887b-dc60865725d7",
+              "source_id": "31cd8276-1b55-4700-8f8b-cf3b912926e3",
+              "source_filename": "fictional_receipt_denial.txt",
+              "source_locator": "line 1",
+              "text": "We never acknowledged that bulletin over radio.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            }
+          ],
+          "unknowns": [
+            "Confirmation of which event the wording refers to."
+          ]
+        }
+      ],
+      "model_citations_all_exact": true,
+      "citation_attempts": [
+        {
+          "record": 1,
+          "exact_substring": true
+        },
+        {
+          "record": 2,
+          "exact_substring": true
+        }
+      ],
+      "validator_matched": 2,
+      "validator_attempted": 2,
+      "state_unchanged": true
+    },
+    {
+      "file": "baseline-r4-PH4B1-FICTIONAL-FORM.json",
+      "version": "baseline",
+      "repeat": 4,
+      "exercise_id": "PH4B1-FICTIONAL-FORM",
+      "objective_outcomes": [
+        {
+          "objective_id": "FORM-ACK",
+          "challenge": "missing_acknowledgement",
+          "kind": "insufficient_evidence",
+          "target_met": true,
+          "expected_abstention": true,
+          "abstained": true,
+          "cross_source_target": false,
+          "expected_conflict": false,
+          "ocr_expected": false,
+          "ocr_preserved": true,
+          "classified_conflict": false,
+          "unsupported_claim": false,
+          "advisory_returned": false,
+          "citation_examples": [
+            {
+              "observation_id": "810dcb3b-0eb4-44ec-8a31-2a13b3a2f6fc",
+              "source_id": "6c095a16-2705-43a8-98f8-5ff15c588adf",
+              "source_filename": "fictional_receipt_control.txt",
+              "source_locator": "line 1",
+              "text": "the scene lead asked Logistics to acknowledge receipt of the staging plan.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            },
+            {
+              "observation_id": "951b8201-842a-407b-8af6-6aa95270b24a",
+              "source_id": "ecdb4fb3-81ac-4468-bfff-c09f7e341425",
+              "source_filename": "fictional_receipt_review.txt",
+              "source_locator": "line 1",
+              "text": "The exercise file for U-14 contains no acknowledgement entry for the staging plan.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            }
+          ],
+          "unknowns": [
+            "Confirmation of which event the wording refers to.",
+            "A record that confirms the expected outcome occurred."
+          ]
+        }
+      ],
+      "model_citations_all_exact": true,
+      "citation_attempts": [
+        {
+          "record": 1,
+          "exact_substring": true
+        },
+        {
+          "record": 2,
+          "exact_substring": true
+        }
+      ],
+      "validator_matched": 2,
+      "validator_attempted": 2,
+      "state_unchanged": true
+    },
+    {
+      "file": "baseline-r4-PH4B1-FICTIONAL-HATCH.json",
+      "version": "baseline",
+      "repeat": 4,
+      "exercise_id": "PH4B1-FICTIONAL-HATCH",
+      "objective_outcomes": [
+        {
+          "objective_id": "HATCH-TIME",
+          "challenge": "attributed_timing_disagreement",
+          "kind": "contradiction",
+          "target_met": true,
+          "expected_abstention": false,
+          "abstained": false,
+          "cross_source_target": false,
+          "expected_conflict": true,
+          "ocr_expected": false,
+          "ocr_preserved": true,
+          "classified_conflict": true,
+          "unsupported_claim": false,
+          "advisory_returned": true,
+          "citation_examples": [
+            {
+              "observation_id": "5485f5c5-f377-4591-9e44-5388a61f4523",
+              "source_id": "59240999-3d3f-4939-b937-ea1e997c3cbe",
+              "source_filename": "fictional_hatch_control.csv",
+              "source_locator": "row 2 \u00b7 HX-8",
+              "text": "Hatch K finished closing in cycle HX-8.",
+              "extraction_method": "parser",
+              "time_confidence": "medium",
+              "event_time_raw": "14:16"
+            },
+            {
+              "observation_id": "cf629292-d5a5-4138-bbb2-c1820ec2c16d",
+              "source_id": "105bbff2-d958-4896-9f30-c445f32f956b",
+              "source_filename": "fictional_hatch_witness.txt",
+              "source_locator": "line 1",
+              "text": "For HX-8 I saw Hatch K finish closing at 14:23. The desk later reported 14:16 for the same closure.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            }
+          ],
+          "unknowns": [
+            "Confirmation of which event the wording refers to."
+          ]
+        }
+      ],
+      "model_citations_all_exact": true,
+      "citation_attempts": [
+        {
+          "record": 1,
+          "exact_substring": true
+        },
+        {
+          "record": 2,
+          "exact_substring": true
+        }
+      ],
+      "validator_matched": 2,
+      "validator_attempted": 2,
+      "state_unchanged": true
+    },
+    {
+      "file": "baseline-r4-PH4B1-FICTIONAL-LIFT.json",
+      "version": "baseline",
+      "repeat": 4,
+      "exercise_id": "PH4B1-FICTIONAL-LIFT",
+      "objective_outcomes": [
+        {
+          "objective_id": "LIFT-CAUSE",
+          "challenge": "unsupported_causal_hypothesis",
+          "kind": "insufficient_evidence",
+          "target_met": true,
+          "expected_abstention": true,
+          "abstained": true,
+          "cross_source_target": false,
+          "expected_conflict": false,
+          "ocr_expected": false,
+          "ocr_preserved": true,
+          "classified_conflict": false,
+          "unsupported_claim": false,
+          "advisory_returned": false,
+          "citation_examples": [
+            {
+              "observation_id": "b45d6458-81c2-4b3a-97bc-a78e61d12802",
+              "source_id": "c42030e3-42f5-44ca-8e74-3d451cbe67ba",
+              "source_filename": "fictional_lift_log.txt",
+              "source_locator": "line 1",
+              "text": "In exercise AP-17, the lift queue stalled after a handheld battery alert.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            },
+            {
+              "observation_id": "60bb9f6a-0551-4bc4-81c6-175905154b80",
+              "source_id": "f9f69cc8-45c9-4c92-8e36-0daa0cf8f735",
+              "source_filename": "fictional_lift_notes.txt",
+              "source_locator": "line 1",
+              "text": "For AP-17 the floor lead suspected the handheld battery caused the stalled queue but did not test that explanation.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            }
+          ],
+          "unknowns": [
+            "Evidence that establishes what caused the reported outcome."
+          ]
+        },
+        {
+          "objective_id": "LIFT-RESULT",
+          "challenge": "incomplete_outcome",
+          "kind": "insufficient_evidence",
+          "target_met": true,
+          "expected_abstention": true,
+          "abstained": true,
+          "cross_source_target": false,
+          "expected_conflict": false,
+          "ocr_expected": false,
+          "ocr_preserved": true,
+          "classified_conflict": false,
+          "unsupported_claim": false,
+          "advisory_returned": false,
+          "citation_examples": [
+            {
+              "observation_id": "3be16cee-96f8-4c4f-9fcf-4bf35aa07c5e",
+              "source_id": "f9f69cc8-45c9-4c92-8e36-0daa0cf8f735",
+              "source_filename": "fictional_lift_notes.txt",
+              "source_locator": "line 2",
+              "text": "For AP-18 the final door sensor result was never entered on the form.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            }
+          ],
+          "unknowns": [
+            "A record that confirms the expected outcome occurred."
+          ]
+        }
+      ],
+      "model_citations_all_exact": true,
+      "citation_attempts": [
+        {
+          "record": 1,
+          "exact_substring": true
+        },
+        {
+          "record": 3,
+          "exact_substring": true
+        },
+        {
+          "record": 4,
+          "exact_substring": true
+        }
+      ],
+      "validator_matched": 3,
+      "validator_attempted": 3,
+      "state_unchanged": true
+    },
+    {
+      "file": "baseline-r4-PH4B1-FICTIONAL-RADIO.json",
+      "version": "baseline",
+      "repeat": 4,
+      "exercise_id": "PH4B1-FICTIONAL-RADIO",
+      "objective_outcomes": [
+        {
+          "objective_id": "RADIO-TIME",
+          "challenge": "compatible_paraphrased_accounts",
+          "kind": "corroboration",
+          "target_met": true,
+          "expected_abstention": false,
+          "abstained": false,
+          "cross_source_target": true,
+          "expected_conflict": false,
+          "ocr_expected": false,
+          "ocr_preserved": true,
+          "classified_conflict": false,
+          "unsupported_claim": false,
+          "advisory_returned": true,
+          "citation_examples": [
+            {
+              "observation_id": "c2755a37-01b0-4e10-b0fd-a9818c46195a",
+              "source_id": "2f8e8d6a-d3f6-4f77-ade0-d4b0bd75e2a2",
+              "source_filename": "fictional_radio_ledger.txt",
+              "source_locator": "line 1",
+              "text": "During run RC-9 the communications desk enabled repeater 4.",
+              "extraction_method": "parser",
+              "time_confidence": "medium",
+              "event_time_raw": "07:31"
+            },
+            {
+              "observation_id": "c80aabff-cb87-4727-918a-94a307bad376",
+              "source_id": "50396d6b-6c5a-46e8-ab5f-aa0dc03abc50",
+              "source_filename": "fictional_radio_observer.txt",
+              "source_locator": "line 1",
+              "text": "In exercise run RC-9 I watched the operator bring repeater 4 online at 07:31.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            }
+          ],
+          "unknowns": [
+            "Confirmation of which event the wording refers to."
+          ]
+        }
+      ],
+      "model_citations_all_exact": true,
+      "citation_attempts": [
+        {
+          "record": 1,
+          "exact_substring": true
+        },
+        {
+          "record": 2,
+          "exact_substring": true
+        }
+      ],
+      "validator_matched": 2,
+      "validator_attempted": 2,
+      "state_unchanged": true
+    },
+    {
+      "file": "baseline-r4-PH4B1-FICTIONAL-ROOM.json",
+      "version": "baseline",
+      "repeat": 4,
+      "exercise_id": "PH4B1-FICTIONAL-ROOM",
+      "objective_outcomes": [
+        {
+          "objective_id": "ROOM-ID",
+          "challenge": "same_location_multiple_incidents",
+          "kind": "relevant_observation",
+          "target_met": false,
+          "expected_abstention": true,
+          "abstained": false,
+          "cross_source_target": false,
+          "expected_conflict": false,
+          "ocr_expected": false,
+          "ocr_preserved": true,
+          "classified_conflict": false,
+          "unsupported_claim": true,
+          "advisory_returned": true,
+          "citation_examples": [
+            {
+              "observation_id": "489ab12c-42f5-483b-a574-1b7a1f45cf67",
+              "source_id": "6cdfad01-1ec0-425c-8e77-da52cf85962b",
+              "source_filename": "fictional_room_ledger.txt",
+              "source_locator": "line 1",
+              "text": "Event L-21: Studio C was released to Logistics after the first check.",
+              "extraction_method": "parser",
+              "time_confidence": "medium",
+              "event_time_raw": "16:02"
+            },
+            {
+              "observation_id": "df8cee7b-ade5-4b52-802c-3a3631eaadb2",
+              "source_id": "6cdfad01-1ec0-425c-8e77-da52cf85962b",
+              "source_filename": "fictional_room_ledger.txt",
+              "source_locator": "line 2",
+              "text": "Event L-22: Studio C was released to Facilities after the second check.",
+              "extraction_method": "parser",
+              "time_confidence": "medium",
+              "event_time_raw": "16:09"
+            }
+          ],
+          "unknowns": [
+            "Independent confirmation of the reported observation."
+          ]
+        }
+      ],
+      "model_citations_all_exact": true,
+      "citation_attempts": [
+        {
+          "record": 1,
+          "exact_substring": true
+        },
+        {
+          "record": 2,
+          "exact_substring": true
+        }
+      ],
+      "validator_matched": 2,
+      "validator_attempted": 2,
+      "state_unchanged": true
+    },
+    {
+      "file": "baseline-r4-PH4B1-FICTIONAL-SCAN.json",
+      "version": "baseline",
+      "repeat": 4,
+      "exercise_id": "PH4B1-FICTIONAL-SCAN",
+      "objective_outcomes": [
+        {
+          "objective_id": "SCAN-TIME",
+          "challenge": "uncertain_ocr_timestamp",
+          "kind": "insufficient_evidence",
+          "target_met": true,
+          "expected_abstention": true,
+          "abstained": true,
+          "cross_source_target": false,
+          "expected_conflict": false,
+          "ocr_expected": true,
+          "ocr_preserved": true,
+          "classified_conflict": false,
+          "unsupported_claim": false,
+          "advisory_returned": false,
+          "citation_examples": [
+            {
+              "observation_id": "e883ecd2-3e2a-4e19-81b0-f6e9d2075424",
+              "source_id": "1c76b156-f383-48d0-a015-6f90d846bee9",
+              "source_filename": "fictional_trolley_scan.pdf",
+              "source_locator": "page 1",
+              "text": "Trolley M-3 reached marker F in drill TR-9.",
+              "extraction_method": "ocr",
+              "time_confidence": "uncertain",
+              "event_time_raw": "13:18"
+            },
+            {
+              "observation_id": "14a9055a-84e7-4d30-8962-6836ce8f2138",
+              "source_id": "2112727d-38aa-4f71-a284-23922bb286da",
+              "source_filename": "fictional_trolley_desk.txt",
+              "source_locator": "line 1",
+              "text": "For drill TR-9 the desk recorded Trolley M-3 reaching marker F.",
+              "extraction_method": "parser",
+              "time_confidence": "medium",
+              "event_time_raw": "13:13"
+            }
+          ],
+          "unknowns": [
+            "A reliable record of when the event occurred."
+          ]
+        }
+      ],
+      "model_citations_all_exact": true,
+      "citation_attempts": [
+        {
+          "record": 2,
+          "exact_substring": true
+        },
+        {
+          "record": 3,
+          "exact_substring": true
+        }
+      ],
+      "validator_matched": 2,
+      "validator_attempted": 2,
+      "state_unchanged": true
+    },
+    {
+      "file": "baseline-r5-PH4B1-FICTIONAL-COOLING.json",
+      "version": "baseline",
+      "repeat": 5,
+      "exercise_id": "PH4B1-FICTIONAL-COOLING",
+      "objective_outcomes": [
+        {
+          "objective_id": "COOLING-STAGES",
+          "challenge": "different_phases",
+          "kind": "different_response_phases",
+          "target_met": true,
+          "expected_abstention": true,
+          "abstained": true,
+          "cross_source_target": false,
+          "expected_conflict": false,
+          "ocr_expected": false,
+          "ocr_preserved": true,
+          "classified_conflict": false,
+          "unsupported_claim": false,
+          "advisory_returned": true,
+          "citation_examples": [
+            {
+              "observation_id": "60a09beb-dd77-4667-80a3-47aaa67a804f",
+              "source_id": "5838e6a9-58dd-4391-b6ea-6474cb077eac",
+              "source_filename": "fictional_cooling_control.txt",
+              "source_locator": "line 1",
+              "text": "In session CP-8 maintenance stopped coolant flow to inspect the loop.",
+              "extraction_method": "parser",
+              "time_confidence": "medium",
+              "event_time_raw": "15:10"
+            },
+            {
+              "observation_id": "a66a5696-eb63-4410-88e6-5bf6fa19a215",
+              "source_id": "04bb22e1-9e9a-41b5-bddf-b72e9621922c",
+              "source_filename": "fictional_cooling_observer.txt",
+              "source_locator": "line 1",
+              "text": "In session CP-8 maintenance restored coolant flow after replacing the filter.",
+              "extraction_method": "parser",
+              "time_confidence": "medium",
+              "event_time_raw": "15:25"
+            }
+          ],
+          "unknowns": [
+            "Confirmation of which event the wording refers to."
+          ]
+        }
+      ],
+      "model_citations_all_exact": true,
+      "citation_attempts": [
+        {
+          "record": 1,
+          "exact_substring": true
+        },
+        {
+          "record": 2,
+          "exact_substring": true
+        }
+      ],
+      "validator_matched": 2,
+      "validator_attempted": 2,
+      "state_unchanged": true
+    },
+    {
+      "file": "baseline-r5-PH4B1-FICTIONAL-DENIAL.json",
+      "version": "baseline",
+      "repeat": 5,
+      "exercise_id": "PH4B1-FICTIONAL-DENIAL",
+      "objective_outcomes": [
+        {
+          "objective_id": "DENIAL-ACK",
+          "challenge": "explicit_denial",
+          "kind": "contradiction",
+          "target_met": true,
+          "expected_abstention": false,
+          "abstained": false,
+          "cross_source_target": false,
+          "expected_conflict": true,
+          "ocr_expected": false,
+          "ocr_preserved": true,
+          "classified_conflict": true,
+          "unsupported_claim": false,
+          "advisory_returned": true,
+          "citation_examples": [
+            {
+              "observation_id": "3e573759-477d-42cc-8841-4812905304aa",
+              "source_id": "481c6168-938f-429b-8099-0327cf2ca075",
+              "source_filename": "fictional_receipt_affirmation.txt",
+              "source_locator": "line 1",
+              "text": "the field desk reported that Transport acknowledged the bulletin over radio.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            },
+            {
+              "observation_id": "d50f9748-7de8-417a-9325-be0004a9b303",
+              "source_id": "7912ebe4-5048-4ee9-9ff9-26a8dd9641a4",
+              "source_filename": "fictional_receipt_denial.txt",
+              "source_locator": "line 1",
+              "text": "We never acknowledged that bulletin over radio.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            }
+          ],
+          "unknowns": [
+            "Confirmation of which event the wording refers to."
+          ]
+        }
+      ],
+      "model_citations_all_exact": true,
+      "citation_attempts": [
+        {
+          "record": 1,
+          "exact_substring": true
+        },
+        {
+          "record": 2,
+          "exact_substring": true
+        }
+      ],
+      "validator_matched": 2,
+      "validator_attempted": 2,
+      "state_unchanged": true
+    },
+    {
+      "file": "baseline-r5-PH4B1-FICTIONAL-FORM.json",
+      "version": "baseline",
+      "repeat": 5,
+      "exercise_id": "PH4B1-FICTIONAL-FORM",
+      "objective_outcomes": [
+        {
+          "objective_id": "FORM-ACK",
+          "challenge": "missing_acknowledgement",
+          "kind": "insufficient_evidence",
+          "target_met": true,
+          "expected_abstention": true,
+          "abstained": true,
+          "cross_source_target": false,
+          "expected_conflict": false,
+          "ocr_expected": false,
+          "ocr_preserved": true,
+          "classified_conflict": false,
+          "unsupported_claim": false,
+          "advisory_returned": false,
+          "citation_examples": [
+            {
+              "observation_id": "7085f6cf-d3e9-482b-ba65-0b663e07676d",
+              "source_id": "2673c0d6-3b6d-4bc8-82b8-01af5143c1da",
+              "source_filename": "fictional_receipt_control.txt",
+              "source_locator": "line 1",
+              "text": "the scene lead asked Logistics to acknowledge receipt of the staging plan.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            },
+            {
+              "observation_id": "636c7f26-7be3-4881-8d48-a45e292cbd31",
+              "source_id": "6540aac9-b959-4a92-b1f2-85a6af0a85fe",
+              "source_filename": "fictional_receipt_review.txt",
+              "source_locator": "line 1",
+              "text": "The exercise file for U-14 contains no acknowledgement entry for the staging plan.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            }
+          ],
+          "unknowns": [
+            "Confirmation of which event the wording refers to.",
+            "A record that confirms the expected outcome occurred."
+          ]
+        }
+      ],
+      "model_citations_all_exact": true,
+      "citation_attempts": [
+        {
+          "record": 1,
+          "exact_substring": true
+        },
+        {
+          "record": 2,
+          "exact_substring": true
+        }
+      ],
+      "validator_matched": 2,
+      "validator_attempted": 2,
+      "state_unchanged": true
+    },
+    {
+      "file": "baseline-r5-PH4B1-FICTIONAL-HATCH.json",
+      "version": "baseline",
+      "repeat": 5,
+      "exercise_id": "PH4B1-FICTIONAL-HATCH",
+      "objective_outcomes": [
+        {
+          "objective_id": "HATCH-TIME",
+          "challenge": "attributed_timing_disagreement",
+          "kind": "contradiction",
+          "target_met": true,
+          "expected_abstention": false,
+          "abstained": false,
+          "cross_source_target": false,
+          "expected_conflict": true,
+          "ocr_expected": false,
+          "ocr_preserved": true,
+          "classified_conflict": true,
+          "unsupported_claim": false,
+          "advisory_returned": true,
+          "citation_examples": [
+            {
+              "observation_id": "c9b30068-625c-45c8-ae1d-6b6368a7ebfd",
+              "source_id": "8c070d74-a8c3-4908-97ea-23044fa8c2b0",
+              "source_filename": "fictional_hatch_control.csv",
+              "source_locator": "row 2 \u00b7 HX-8",
+              "text": "Hatch K finished closing in cycle HX-8.",
+              "extraction_method": "parser",
+              "time_confidence": "medium",
+              "event_time_raw": "14:16"
+            },
+            {
+              "observation_id": "4291d644-fc23-4e2a-a030-0ba80678d9e5",
+              "source_id": "6518e6aa-9b6e-4292-82e8-d61322b62fe9",
+              "source_filename": "fictional_hatch_witness.txt",
+              "source_locator": "line 1",
+              "text": "For HX-8 I saw Hatch K finish closing at 14:23. The desk later reported 14:16 for the same closure.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            }
+          ],
+          "unknowns": [
+            "Confirmation of which event the wording refers to."
+          ]
+        }
+      ],
+      "model_citations_all_exact": true,
+      "citation_attempts": [
+        {
+          "record": 1,
+          "exact_substring": true
+        },
+        {
+          "record": 2,
+          "exact_substring": true
+        }
+      ],
+      "validator_matched": 2,
+      "validator_attempted": 2,
+      "state_unchanged": true
+    },
+    {
+      "file": "baseline-r5-PH4B1-FICTIONAL-LIFT.json",
+      "version": "baseline",
+      "repeat": 5,
+      "exercise_id": "PH4B1-FICTIONAL-LIFT",
+      "objective_outcomes": [
+        {
+          "objective_id": "LIFT-CAUSE",
+          "challenge": "unsupported_causal_hypothesis",
+          "kind": "insufficient_evidence",
+          "target_met": true,
+          "expected_abstention": true,
+          "abstained": true,
+          "cross_source_target": false,
+          "expected_conflict": false,
+          "ocr_expected": false,
+          "ocr_preserved": true,
+          "classified_conflict": false,
+          "unsupported_claim": false,
+          "advisory_returned": false,
+          "citation_examples": [
+            {
+              "observation_id": "443fd6d2-6055-45df-836f-531ac3d87259",
+              "source_id": "31e98ca6-4f0e-4b61-868c-d10a4ccc42f4",
+              "source_filename": "fictional_lift_notes.txt",
+              "source_locator": "line 1",
+              "text": "For AP-17 the floor lead suspected the handheld battery caused the stalled queue but did not test that explanation.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            }
+          ],
+          "unknowns": [
+            "Confirmation of which event the wording refers to."
+          ]
+        },
+        {
+          "objective_id": "LIFT-RESULT",
+          "challenge": "incomplete_outcome",
+          "kind": "insufficient_evidence",
+          "target_met": true,
+          "expected_abstention": true,
+          "abstained": true,
+          "cross_source_target": false,
+          "expected_conflict": false,
+          "ocr_expected": false,
+          "ocr_preserved": true,
+          "classified_conflict": false,
+          "unsupported_claim": false,
+          "advisory_returned": false,
+          "citation_examples": [
+            {
+              "observation_id": "145a8a2e-6f7b-4d1d-8a56-4765797a0923",
+              "source_id": "31e98ca6-4f0e-4b61-868c-d10a4ccc42f4",
+              "source_filename": "fictional_lift_notes.txt",
+              "source_locator": "line 2",
+              "text": "For AP-18 the final door sensor result was never entered on the form.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            }
+          ],
+          "unknowns": [
+            "Confirmation of which event the wording refers to.",
+            "A record that confirms the expected outcome occurred."
+          ]
+        }
+      ],
+      "model_citations_all_exact": true,
+      "citation_attempts": [
+        {
+          "record": 3,
+          "exact_substring": true
+        },
+        {
+          "record": 4,
+          "exact_substring": true
+        }
+      ],
+      "validator_matched": 2,
+      "validator_attempted": 2,
+      "state_unchanged": true
+    },
+    {
+      "file": "baseline-r5-PH4B1-FICTIONAL-RADIO.json",
+      "version": "baseline",
+      "repeat": 5,
+      "exercise_id": "PH4B1-FICTIONAL-RADIO",
+      "objective_outcomes": [
+        {
+          "objective_id": "RADIO-TIME",
+          "challenge": "compatible_paraphrased_accounts",
+          "kind": "corroboration",
+          "target_met": true,
+          "expected_abstention": false,
+          "abstained": false,
+          "cross_source_target": true,
+          "expected_conflict": false,
+          "ocr_expected": false,
+          "ocr_preserved": true,
+          "classified_conflict": false,
+          "unsupported_claim": false,
+          "advisory_returned": true,
+          "citation_examples": [
+            {
+              "observation_id": "76bcd4ea-cd61-4725-854d-931ed9ddf04e",
+              "source_id": "6d5c3715-a56f-40ec-84e2-1b215282f710",
+              "source_filename": "fictional_radio_ledger.txt",
+              "source_locator": "line 1",
+              "text": "During run RC-9 the communications desk enabled repeater 4.",
+              "extraction_method": "parser",
+              "time_confidence": "medium",
+              "event_time_raw": "07:31"
+            },
+            {
+              "observation_id": "11b8bd5d-d7e2-4984-aea7-2f65e2d09d70",
+              "source_id": "5c69d0a4-7014-438d-8264-2535aab6f34b",
+              "source_filename": "fictional_radio_observer.txt",
+              "source_locator": "line 1",
+              "text": "In exercise run RC-9 I watched the operator bring repeater 4 online at 07:31.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            }
+          ],
+          "unknowns": [
+            "Confirmation of which event the wording refers to."
+          ]
+        }
+      ],
+      "model_citations_all_exact": true,
+      "citation_attempts": [
+        {
+          "record": 1,
+          "exact_substring": true
+        },
+        {
+          "record": 2,
+          "exact_substring": true
+        }
+      ],
+      "validator_matched": 2,
+      "validator_attempted": 2,
+      "state_unchanged": true
+    },
+    {
+      "file": "baseline-r5-PH4B1-FICTIONAL-ROOM.json",
+      "version": "baseline",
+      "repeat": 5,
+      "exercise_id": "PH4B1-FICTIONAL-ROOM",
+      "objective_outcomes": [
+        {
+          "objective_id": "ROOM-ID",
+          "challenge": "same_location_multiple_incidents",
+          "kind": "relevant_observation",
+          "target_met": false,
+          "expected_abstention": true,
+          "abstained": false,
+          "cross_source_target": false,
+          "expected_conflict": false,
+          "ocr_expected": false,
+          "ocr_preserved": true,
+          "classified_conflict": false,
+          "unsupported_claim": true,
+          "advisory_returned": true,
+          "citation_examples": [
+            {
+              "observation_id": "64e2025b-d99e-490f-a2a7-715188ca6839",
+              "source_id": "e87a6d84-1029-4bd8-8257-aff78ed983cb",
+              "source_filename": "fictional_room_ledger.txt",
+              "source_locator": "line 1",
+              "text": "Event L-21: Studio C was released to Logistics after the first check.",
+              "extraction_method": "parser",
+              "time_confidence": "medium",
+              "event_time_raw": "16:02"
+            },
+            {
+              "observation_id": "97aa7cfd-0124-45b3-83fe-685d37c3834a",
+              "source_id": "e87a6d84-1029-4bd8-8257-aff78ed983cb",
+              "source_filename": "fictional_room_ledger.txt",
+              "source_locator": "line 2",
+              "text": "Event L-22: Studio C was released to Facilities after the second check.",
+              "extraction_method": "parser",
+              "time_confidence": "medium",
+              "event_time_raw": "16:09"
+            }
+          ],
+          "unknowns": [
+            "Confirmation of which event the wording refers to.",
+            "Independent confirmation of the reported observation."
+          ]
+        }
+      ],
+      "model_citations_all_exact": true,
+      "citation_attempts": [
+        {
+          "record": 1,
+          "exact_substring": true
+        },
+        {
+          "record": 2,
+          "exact_substring": true
+        }
+      ],
+      "validator_matched": 2,
+      "validator_attempted": 2,
+      "state_unchanged": true
+    },
+    {
+      "file": "baseline-r5-PH4B1-FICTIONAL-SCAN.json",
+      "version": "baseline",
+      "repeat": 5,
+      "exercise_id": "PH4B1-FICTIONAL-SCAN",
+      "objective_outcomes": [
+        {
+          "objective_id": "SCAN-TIME",
+          "challenge": "uncertain_ocr_timestamp",
+          "kind": "insufficient_evidence",
+          "target_met": true,
+          "expected_abstention": true,
+          "abstained": true,
+          "cross_source_target": false,
+          "expected_conflict": false,
+          "ocr_expected": true,
+          "ocr_preserved": true,
+          "classified_conflict": false,
+          "unsupported_claim": false,
+          "advisory_returned": false,
+          "citation_examples": [
+            {
+              "observation_id": "e4fe501d-7303-4b0b-842d-b6360ff7b990",
+              "source_id": "ccb4ecd3-24dd-4afd-9dc9-d349c35df7fd",
+              "source_filename": "fictional_trolley_scan.pdf",
+              "source_locator": "page 1",
+              "text": "Trolley M-3 reached marker F in drill TR-9.",
+              "extraction_method": "ocr",
+              "time_confidence": "uncertain",
+              "event_time_raw": "13:18"
+            },
+            {
+              "observation_id": "f7259df5-a2e3-4488-ade2-fc3b2cfeca56",
+              "source_id": "0dc38c05-265e-4b0d-92d3-7961b2f11afa",
+              "source_filename": "fictional_trolley_desk.txt",
+              "source_locator": "line 1",
+              "text": "For drill TR-9 the desk recorded Trolley M-3 reaching marker F.",
+              "extraction_method": "parser",
+              "time_confidence": "medium",
+              "event_time_raw": "13:13"
+            }
+          ],
+          "unknowns": [
+            "A reliable record of when the event occurred."
+          ]
+        }
+      ],
+      "model_citations_all_exact": true,
+      "citation_attempts": [
+        {
+          "record": 2,
+          "exact_substring": true
+        },
+        {
+          "record": 3,
+          "exact_substring": true
+        }
+      ],
+      "validator_matched": 2,
+      "validator_attempted": 2,
+      "state_unchanged": true
+    },
+    {
+      "file": "candidate-r4-PH4B1-FICTIONAL-COOLING.json",
+      "version": "candidate",
+      "repeat": 4,
+      "exercise_id": "PH4B1-FICTIONAL-COOLING",
+      "objective_outcomes": [
+        {
+          "objective_id": "COOLING-STAGES",
+          "challenge": "different_phases",
+          "kind": "different_response_phases",
+          "target_met": true,
+          "expected_abstention": true,
+          "abstained": true,
+          "cross_source_target": false,
+          "expected_conflict": false,
+          "ocr_expected": false,
+          "ocr_preserved": true,
+          "classified_conflict": false,
+          "unsupported_claim": false,
+          "advisory_returned": true,
+          "citation_examples": [
+            {
+              "observation_id": "714a2040-8da3-41aa-bfed-3a527d922ddd",
+              "source_id": "d6ff95c1-6983-4859-9432-2a0a2ef597f2",
+              "source_filename": "fictional_cooling_control.txt",
+              "source_locator": "line 1",
+              "text": "In session CP-8 maintenance stopped coolant flow to inspect the loop.",
+              "extraction_method": "parser",
+              "time_confidence": "medium",
+              "event_time_raw": "15:10"
+            },
+            {
+              "observation_id": "f4e56ea8-19fb-430e-8ec1-38274d07779e",
+              "source_id": "67441948-3f4a-4165-b23b-61e522e7e3c9",
+              "source_filename": "fictional_cooling_observer.txt",
+              "source_locator": "line 1",
+              "text": "In session CP-8 maintenance restored coolant flow after replacing the filter.",
+              "extraction_method": "parser",
+              "time_confidence": "medium",
+              "event_time_raw": "15:25"
+            }
+          ],
+          "unknowns": [
+            "Confirmation of which event the wording refers to."
+          ]
+        }
+      ],
+      "model_citations_all_exact": true,
+      "citation_attempts": [
+        {
+          "record": 1,
+          "exact_substring": true
+        },
+        {
+          "record": 2,
+          "exact_substring": true
+        }
+      ],
+      "validator_matched": 2,
+      "validator_attempted": 2,
+      "state_unchanged": true
+    },
+    {
+      "file": "candidate-r4-PH4B1-FICTIONAL-DENIAL.json",
+      "version": "candidate",
+      "repeat": 4,
+      "exercise_id": "PH4B1-FICTIONAL-DENIAL",
+      "objective_outcomes": [
+        {
+          "objective_id": "DENIAL-ACK",
+          "challenge": "explicit_denial",
+          "kind": "contradiction",
+          "target_met": true,
+          "expected_abstention": false,
+          "abstained": false,
+          "cross_source_target": false,
+          "expected_conflict": true,
+          "ocr_expected": false,
+          "ocr_preserved": true,
+          "classified_conflict": true,
+          "unsupported_claim": false,
+          "advisory_returned": true,
+          "citation_examples": [
+            {
+              "observation_id": "97170a11-80c7-4d90-b45a-5c1c80a78a83",
+              "source_id": "0949a410-8dd0-4bef-b8a1-f1e3f5c06ccb",
+              "source_filename": "fictional_receipt_affirmation.txt",
+              "source_locator": "line 1",
+              "text": "For bulletin H-6, the field desk reported that Transport acknowledged the bulletin over radio.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            },
+            {
+              "observation_id": "ea242df7-c0c8-42a8-bdf0-cda3780286bb",
+              "source_id": "149a37f5-dc6a-4658-a56a-d787f0cf9eef",
+              "source_filename": "fictional_receipt_denial.txt",
+              "source_locator": "line 1",
+              "text": "I was the Transport lead for H-6. We never acknowledged that bulletin over radio.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            }
+          ],
+          "unknowns": [
+            "Confirmation of which event the wording refers to."
+          ]
+        }
+      ],
+      "model_citations_all_exact": true,
+      "citation_attempts": [
+        {
+          "record": 1,
+          "exact_substring": true
+        },
+        {
+          "record": 2,
+          "exact_substring": true
+        }
+      ],
+      "validator_matched": 2,
+      "validator_attempted": 2,
+      "state_unchanged": true
+    },
+    {
+      "file": "candidate-r4-PH4B1-FICTIONAL-FORM.json",
+      "version": "candidate",
+      "repeat": 4,
+      "exercise_id": "PH4B1-FICTIONAL-FORM",
+      "objective_outcomes": [
+        {
+          "objective_id": "FORM-ACK",
+          "challenge": "missing_acknowledgement",
+          "kind": "insufficient_evidence",
+          "target_met": true,
+          "expected_abstention": true,
+          "abstained": true,
+          "cross_source_target": false,
+          "expected_conflict": false,
+          "ocr_expected": false,
+          "ocr_preserved": true,
+          "classified_conflict": false,
+          "unsupported_claim": false,
+          "advisory_returned": false,
+          "citation_examples": [
+            {
+              "observation_id": "83148f30-4b3c-45da-bf5c-7417eb19a419",
+              "source_id": "acbbaa5f-31ec-40c8-9ecd-a2dfd9018165",
+              "source_filename": "fictional_receipt_control.txt",
+              "source_locator": "line 1",
+              "text": "For dispatch U-14, the scene lead asked Logistics to acknowledge receipt of the staging plan.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            },
+            {
+              "observation_id": "1447f475-fd8e-4e0e-a499-ab51b786a646",
+              "source_id": "956c2fb6-3fc3-4b7a-b7bd-5bfaf4256cd2",
+              "source_filename": "fictional_receipt_review.txt",
+              "source_locator": "line 1",
+              "text": "The exercise file for U-14 contains no acknowledgement entry for the staging plan.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            }
+          ],
+          "unknowns": [
+            "Confirmation of which event the wording refers to.",
+            "A record that confirms the expected outcome occurred."
+          ]
+        }
+      ],
+      "model_citations_all_exact": true,
+      "citation_attempts": [
+        {
+          "record": 1,
+          "exact_substring": true
+        },
+        {
+          "record": 2,
+          "exact_substring": true
+        }
+      ],
+      "validator_matched": 2,
+      "validator_attempted": 2,
+      "state_unchanged": true
+    },
+    {
+      "file": "candidate-r4-PH4B1-FICTIONAL-HATCH.json",
+      "version": "candidate",
+      "repeat": 4,
+      "exercise_id": "PH4B1-FICTIONAL-HATCH",
+      "objective_outcomes": [
+        {
+          "objective_id": "HATCH-TIME",
+          "challenge": "attributed_timing_disagreement",
+          "kind": "contradiction",
+          "target_met": true,
+          "expected_abstention": false,
+          "abstained": false,
+          "cross_source_target": false,
+          "expected_conflict": true,
+          "ocr_expected": false,
+          "ocr_preserved": true,
+          "classified_conflict": true,
+          "unsupported_claim": false,
+          "advisory_returned": true,
+          "citation_examples": [
+            {
+              "observation_id": "b67f8aad-d1a2-4487-aca9-bd7d40d738aa",
+              "source_id": "7b211ef9-4ccd-4037-9df9-30b8aaabe029",
+              "source_filename": "fictional_hatch_control.csv",
+              "source_locator": "row 2 \u00b7 HX-8",
+              "text": "Hatch K finished closing in cycle HX-8.",
+              "extraction_method": "parser",
+              "time_confidence": "medium",
+              "event_time_raw": "14:16"
+            },
+            {
+              "observation_id": "9626f3ed-7a51-4231-8247-23a34a77743c",
+              "source_id": "92cba91f-82b8-4577-9e7f-8edbf15563c6",
+              "source_filename": "fictional_hatch_witness.txt",
+              "source_locator": "line 1",
+              "text": "For HX-8 I saw Hatch K finish closing at 14:23. The desk later reported 14:16 for the same closure.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            }
+          ],
+          "unknowns": [
+            "Confirmation of which event the wording refers to."
+          ]
+        }
+      ],
+      "model_citations_all_exact": true,
+      "citation_attempts": [
+        {
+          "record": 1,
+          "exact_substring": true
+        },
+        {
+          "record": 2,
+          "exact_substring": true
+        }
+      ],
+      "validator_matched": 2,
+      "validator_attempted": 2,
+      "state_unchanged": true
+    },
+    {
+      "file": "candidate-r4-PH4B1-FICTIONAL-LIFT.json",
+      "version": "candidate",
+      "repeat": 4,
+      "exercise_id": "PH4B1-FICTIONAL-LIFT",
+      "objective_outcomes": [
+        {
+          "objective_id": "LIFT-CAUSE",
+          "challenge": "unsupported_causal_hypothesis",
+          "kind": "insufficient_evidence",
+          "target_met": true,
+          "expected_abstention": true,
+          "abstained": true,
+          "cross_source_target": false,
+          "expected_conflict": false,
+          "ocr_expected": false,
+          "ocr_preserved": true,
+          "classified_conflict": false,
+          "unsupported_claim": false,
+          "advisory_returned": false,
+          "citation_examples": [
+            {
+              "observation_id": "da076d0d-e2a6-47be-ac42-a7cf518e1470",
+              "source_id": "54042d0b-dec9-4ac8-94c0-50c101af49b1",
+              "source_filename": "fictional_lift_notes.txt",
+              "source_locator": "line 1",
+              "text": "For AP-17 the floor lead suspected the handheld battery caused the stalled queue but did not test that explanation.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            }
+          ],
+          "unknowns": [
+            "A reliable record of when the event occurred."
+          ]
+        },
+        {
+          "objective_id": "LIFT-RESULT",
+          "challenge": "incomplete_outcome",
+          "kind": "insufficient_evidence",
+          "target_met": true,
+          "expected_abstention": true,
+          "abstained": true,
+          "cross_source_target": false,
+          "expected_conflict": false,
+          "ocr_expected": false,
+          "ocr_preserved": true,
+          "classified_conflict": false,
+          "unsupported_claim": false,
+          "advisory_returned": false,
+          "citation_examples": [
+            {
+              "observation_id": "9d6d35a4-759d-43d5-9c2c-c5ed93f2c75b",
+              "source_id": "54042d0b-dec9-4ac8-94c0-50c101af49b1",
+              "source_filename": "fictional_lift_notes.txt",
+              "source_locator": "line 2",
+              "text": "For AP-18 the final door sensor result was never entered on the form.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            }
+          ],
+          "unknowns": [
+            "A reliable record of when the event occurred.",
+            "A record that confirms the expected outcome occurred."
+          ]
+        }
+      ],
+      "model_citations_all_exact": true,
+      "citation_attempts": [
+        {
+          "record": 3,
+          "exact_substring": true
+        },
+        {
+          "record": 4,
+          "exact_substring": true
+        }
+      ],
+      "validator_matched": 2,
+      "validator_attempted": 2,
+      "state_unchanged": true
+    },
+    {
+      "file": "candidate-r4-PH4B1-FICTIONAL-RADIO.json",
+      "version": "candidate",
+      "repeat": 4,
+      "exercise_id": "PH4B1-FICTIONAL-RADIO",
+      "objective_outcomes": [
+        {
+          "objective_id": "RADIO-TIME",
+          "challenge": "compatible_paraphrased_accounts",
+          "kind": "corroboration",
+          "target_met": true,
+          "expected_abstention": false,
+          "abstained": false,
+          "cross_source_target": true,
+          "expected_conflict": false,
+          "ocr_expected": false,
+          "ocr_preserved": true,
+          "classified_conflict": false,
+          "unsupported_claim": false,
+          "advisory_returned": true,
+          "citation_examples": [
+            {
+              "observation_id": "9fcfc397-0584-4b37-98c9-65f8b06ca64d",
+              "source_id": "1af23228-963b-47b4-9834-f4667a722309",
+              "source_filename": "fictional_radio_ledger.txt",
+              "source_locator": "line 1",
+              "text": "During run RC-9 the communications desk enabled repeater 4.",
+              "extraction_method": "parser",
+              "time_confidence": "medium",
+              "event_time_raw": "07:31"
+            },
+            {
+              "observation_id": "f7dc429e-5132-4b24-82d8-4c20b980e599",
+              "source_id": "22cbc5df-93e8-47af-ba3d-b8376dd2c329",
+              "source_filename": "fictional_radio_observer.txt",
+              "source_locator": "line 1",
+              "text": "In exercise run RC-9 I watched the operator bring repeater 4 online at 07:31.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            }
+          ],
+          "unknowns": [
+            "Confirmation of which event the wording refers to."
+          ]
+        }
+      ],
+      "model_citations_all_exact": true,
+      "citation_attempts": [
+        {
+          "record": 1,
+          "exact_substring": true
+        },
+        {
+          "record": 2,
+          "exact_substring": true
+        }
+      ],
+      "validator_matched": 2,
+      "validator_attempted": 2,
+      "state_unchanged": true
+    },
+    {
+      "file": "candidate-r4-PH4B1-FICTIONAL-ROOM.json",
+      "version": "candidate",
+      "repeat": 4,
+      "exercise_id": "PH4B1-FICTIONAL-ROOM",
+      "objective_outcomes": [
+        {
+          "objective_id": "ROOM-ID",
+          "challenge": "same_location_multiple_incidents",
+          "kind": "relevant_observation",
+          "target_met": false,
+          "expected_abstention": true,
+          "abstained": false,
+          "cross_source_target": false,
+          "expected_conflict": false,
+          "ocr_expected": false,
+          "ocr_preserved": true,
+          "classified_conflict": false,
+          "unsupported_claim": true,
+          "advisory_returned": true,
+          "citation_examples": [
+            {
+              "observation_id": "a61086f5-9768-4e93-9982-d99acdce791c",
+              "source_id": "fba0811d-4086-4ffd-b390-5a1810e6959f",
+              "source_filename": "fictional_room_ledger.txt",
+              "source_locator": "line 1",
+              "text": "Event L-21: Studio C was released to Logistics after the first check.",
+              "extraction_method": "parser",
+              "time_confidence": "medium",
+              "event_time_raw": "16:02"
+            },
+            {
+              "observation_id": "2e912b2f-1cec-4e1d-ba0f-6657620354d8",
+              "source_id": "fba0811d-4086-4ffd-b390-5a1810e6959f",
+              "source_filename": "fictional_room_ledger.txt",
+              "source_locator": "line 2",
+              "text": "Event L-22: Studio C was released to Facilities after the second check.",
+              "extraction_method": "parser",
+              "time_confidence": "medium",
+              "event_time_raw": "16:09"
+            }
+          ],
+          "unknowns": [
+            "Confirmation of which event the wording refers to.",
+            "Independent confirmation of the reported observation."
+          ]
+        }
+      ],
+      "model_citations_all_exact": true,
+      "citation_attempts": [
+        {
+          "record": 1,
+          "exact_substring": true
+        },
+        {
+          "record": 2,
+          "exact_substring": true
+        }
+      ],
+      "validator_matched": 2,
+      "validator_attempted": 2,
+      "state_unchanged": true
+    },
+    {
+      "file": "candidate-r4-PH4B1-FICTIONAL-SCAN.json",
+      "version": "candidate",
+      "repeat": 4,
+      "exercise_id": "PH4B1-FICTIONAL-SCAN",
+      "objective_outcomes": [
+        {
+          "objective_id": "SCAN-TIME",
+          "challenge": "uncertain_ocr_timestamp",
+          "kind": "insufficient_evidence",
+          "target_met": true,
+          "expected_abstention": true,
+          "abstained": true,
+          "cross_source_target": false,
+          "expected_conflict": false,
+          "ocr_expected": true,
+          "ocr_preserved": true,
+          "classified_conflict": false,
+          "unsupported_claim": false,
+          "advisory_returned": false,
+          "citation_examples": [
+            {
+              "observation_id": "0a89742a-6df4-4192-b0c5-15f8066a2538",
+              "source_id": "23e76038-7c5d-4adc-a469-f4acfc395d6f",
+              "source_filename": "fictional_trolley_scan.pdf",
+              "source_locator": "page 1",
+              "text": "Trolley M-3 reached marker F in drill TR-9.",
+              "extraction_method": "ocr",
+              "time_confidence": "uncertain",
+              "event_time_raw": "13:18"
+            },
+            {
+              "observation_id": "b55ab945-be87-4d95-97da-e9a753314aad",
+              "source_id": "f4a9d20b-e707-4bbf-accf-d00c231bef21",
+              "source_filename": "fictional_trolley_desk.txt",
+              "source_locator": "line 1",
+              "text": "For drill TR-9 the desk recorded Trolley M-3 reaching marker F.",
+              "extraction_method": "parser",
+              "time_confidence": "medium",
+              "event_time_raw": "13:13"
+            }
+          ],
+          "unknowns": [
+            "A reliable record of when the event occurred."
+          ]
+        }
+      ],
+      "model_citations_all_exact": true,
+      "citation_attempts": [
+        {
+          "record": 2,
+          "exact_substring": true
+        },
+        {
+          "record": 3,
+          "exact_substring": true
+        }
+      ],
+      "validator_matched": 2,
+      "validator_attempted": 2,
+      "state_unchanged": true
+    },
+    {
+      "file": "candidate-r5-PH4B1-FICTIONAL-COOLING.json",
+      "version": "candidate",
+      "repeat": 5,
+      "exercise_id": "PH4B1-FICTIONAL-COOLING",
+      "objective_outcomes": [
+        {
+          "objective_id": "COOLING-STAGES",
+          "challenge": "different_phases",
+          "kind": "different_response_phases",
+          "target_met": true,
+          "expected_abstention": true,
+          "abstained": true,
+          "cross_source_target": false,
+          "expected_conflict": false,
+          "ocr_expected": false,
+          "ocr_preserved": true,
+          "classified_conflict": false,
+          "unsupported_claim": false,
+          "advisory_returned": true,
+          "citation_examples": [
+            {
+              "observation_id": "991c2d64-6d60-4c50-823e-35115c166e2b",
+              "source_id": "d9bcebe7-84e3-40fd-bf20-2eecf826efeb",
+              "source_filename": "fictional_cooling_control.txt",
+              "source_locator": "line 1",
+              "text": "In session CP-8 maintenance stopped coolant flow to inspect the loop.",
+              "extraction_method": "parser",
+              "time_confidence": "medium",
+              "event_time_raw": "15:10"
+            },
+            {
+              "observation_id": "820b624c-dd37-4324-92b7-4e1855ebbfe1",
+              "source_id": "c30067c0-8846-4e41-a94e-bf7e16c359a5",
+              "source_filename": "fictional_cooling_observer.txt",
+              "source_locator": "line 1",
+              "text": "In session CP-8 maintenance restored coolant flow after replacing the filter.",
+              "extraction_method": "parser",
+              "time_confidence": "medium",
+              "event_time_raw": "15:25"
+            }
+          ],
+          "unknowns": [
+            "Confirmation of which event the wording refers to."
+          ]
+        }
+      ],
+      "model_citations_all_exact": true,
+      "citation_attempts": [
+        {
+          "record": 1,
+          "exact_substring": true
+        },
+        {
+          "record": 2,
+          "exact_substring": true
+        }
+      ],
+      "validator_matched": 2,
+      "validator_attempted": 2,
+      "state_unchanged": true
+    },
+    {
+      "file": "candidate-r5-PH4B1-FICTIONAL-DENIAL.json",
+      "version": "candidate",
+      "repeat": 5,
+      "exercise_id": "PH4B1-FICTIONAL-DENIAL",
+      "objective_outcomes": [
+        {
+          "objective_id": "DENIAL-ACK",
+          "challenge": "explicit_denial",
+          "kind": "contradiction",
+          "target_met": true,
+          "expected_abstention": false,
+          "abstained": false,
+          "cross_source_target": false,
+          "expected_conflict": true,
+          "ocr_expected": false,
+          "ocr_preserved": true,
+          "classified_conflict": true,
+          "unsupported_claim": false,
+          "advisory_returned": true,
+          "citation_examples": [
+            {
+              "observation_id": "694a5501-8908-461e-a070-f6181bc9c9c7",
+              "source_id": "eaefece5-3631-4718-9088-f28c587a8d31",
+              "source_filename": "fictional_receipt_affirmation.txt",
+              "source_locator": "line 1",
+              "text": "For bulletin H-6, the field desk reported that Transport acknowledged the bulletin over radio.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            },
+            {
+              "observation_id": "3599ab7d-8945-4f5b-a211-56d74e484fac",
+              "source_id": "a826ade2-f3c1-4e34-8f54-685853f586df",
+              "source_filename": "fictional_receipt_denial.txt",
+              "source_locator": "line 1",
+              "text": "I was the Transport lead for H-6. We never acknowledged that bulletin over radio.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            }
+          ],
+          "unknowns": [
+            "Confirmation of which event the wording refers to."
+          ]
+        }
+      ],
+      "model_citations_all_exact": true,
+      "citation_attempts": [
+        {
+          "record": 1,
+          "exact_substring": true
+        },
+        {
+          "record": 2,
+          "exact_substring": true
+        }
+      ],
+      "validator_matched": 2,
+      "validator_attempted": 2,
+      "state_unchanged": true
+    },
+    {
+      "file": "candidate-r5-PH4B1-FICTIONAL-FORM.json",
+      "version": "candidate",
+      "repeat": 5,
+      "exercise_id": "PH4B1-FICTIONAL-FORM",
+      "objective_outcomes": [
+        {
+          "objective_id": "FORM-ACK",
+          "challenge": "missing_acknowledgement",
+          "kind": "insufficient_evidence",
+          "target_met": true,
+          "expected_abstention": true,
+          "abstained": true,
+          "cross_source_target": false,
+          "expected_conflict": false,
+          "ocr_expected": false,
+          "ocr_preserved": true,
+          "classified_conflict": false,
+          "unsupported_claim": false,
+          "advisory_returned": false,
+          "citation_examples": [
+            {
+              "observation_id": "b9ebba74-a282-4089-8bbc-a3394ca264a4",
+              "source_id": "1d4aee17-0e44-43da-8ad4-a82f5b60c9a8",
+              "source_filename": "fictional_receipt_control.txt",
+              "source_locator": "line 1",
+              "text": "For dispatch U-14, the scene lead asked Logistics to acknowledge receipt of the staging plan.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            },
+            {
+              "observation_id": "4fc4f724-f568-4c4a-ba75-2d6906795ce0",
+              "source_id": "4f3ff243-c5d3-4b83-8e40-ce66973595e2",
+              "source_filename": "fictional_receipt_review.txt",
+              "source_locator": "line 1",
+              "text": "The exercise file for U-14 contains no acknowledgement entry for the staging plan.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            }
+          ],
+          "unknowns": [
+            "Confirmation of which event the wording refers to.",
+            "A record that confirms the expected outcome occurred."
+          ]
+        }
+      ],
+      "model_citations_all_exact": true,
+      "citation_attempts": [
+        {
+          "record": 1,
+          "exact_substring": true
+        },
+        {
+          "record": 2,
+          "exact_substring": true
+        }
+      ],
+      "validator_matched": 2,
+      "validator_attempted": 2,
+      "state_unchanged": true
+    },
+    {
+      "file": "candidate-r5-PH4B1-FICTIONAL-HATCH.json",
+      "version": "candidate",
+      "repeat": 5,
+      "exercise_id": "PH4B1-FICTIONAL-HATCH",
+      "objective_outcomes": [
+        {
+          "objective_id": "HATCH-TIME",
+          "challenge": "attributed_timing_disagreement",
+          "kind": "contradiction",
+          "target_met": true,
+          "expected_abstention": false,
+          "abstained": false,
+          "cross_source_target": false,
+          "expected_conflict": true,
+          "ocr_expected": false,
+          "ocr_preserved": true,
+          "classified_conflict": true,
+          "unsupported_claim": false,
+          "advisory_returned": true,
+          "citation_examples": [
+            {
+              "observation_id": "b8a2c21c-e556-42be-ae1b-ed529b05077e",
+              "source_id": "b8fbce57-97ee-46fb-b449-faca92b961ad",
+              "source_filename": "fictional_hatch_control.csv",
+              "source_locator": "row 2 \u00b7 HX-8",
+              "text": "Hatch K finished closing in cycle HX-8.",
+              "extraction_method": "parser",
+              "time_confidence": "medium",
+              "event_time_raw": "14:16"
+            },
+            {
+              "observation_id": "b68c024f-fe92-40a8-b7ca-42c23ba92ee0",
+              "source_id": "7a132ab9-9893-40e5-aab5-35094263b7ee",
+              "source_filename": "fictional_hatch_witness.txt",
+              "source_locator": "line 1",
+              "text": "For HX-8 I saw Hatch K finish closing at 14:23. The desk later reported 14:16 for the same closure.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            }
+          ],
+          "unknowns": []
+        }
+      ],
+      "model_citations_all_exact": true,
+      "citation_attempts": [
+        {
+          "record": 1,
+          "exact_substring": true
+        },
+        {
+          "record": 2,
+          "exact_substring": true
+        }
+      ],
+      "validator_matched": 2,
+      "validator_attempted": 2,
+      "state_unchanged": true
+    },
+    {
+      "file": "candidate-r5-PH4B1-FICTIONAL-LIFT.json",
+      "version": "candidate",
+      "repeat": 5,
+      "exercise_id": "PH4B1-FICTIONAL-LIFT",
+      "objective_outcomes": [
+        {
+          "objective_id": "LIFT-CAUSE",
+          "challenge": "unsupported_causal_hypothesis",
+          "kind": "insufficient_evidence",
+          "target_met": true,
+          "expected_abstention": true,
+          "abstained": true,
+          "cross_source_target": false,
+          "expected_conflict": false,
+          "ocr_expected": false,
+          "ocr_preserved": true,
+          "classified_conflict": false,
+          "unsupported_claim": false,
+          "advisory_returned": false,
+          "citation_examples": [
+            {
+              "observation_id": "a3d7d2b6-2e69-4918-b23d-71ed08b9c2cb",
+              "source_id": "edee4675-6f1e-4abb-9447-1e4e37d9a324",
+              "source_filename": "fictional_lift_log.txt",
+              "source_locator": "line 1",
+              "text": "In exercise AP-17, the lift queue stalled after a handheld battery alert.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            },
+            {
+              "observation_id": "18f2e15e-f7ea-4dae-a5bb-4419ab53e255",
+              "source_id": "a5fc5055-9f81-426f-a4b4-289b65f74386",
+              "source_filename": "fictional_lift_notes.txt",
+              "source_locator": "line 1",
+              "text": "For AP-17 the floor lead suspected the handheld battery caused the stalled queue but did not test that explanation.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            }
+          ],
+          "unknowns": [
+            "Evidence that establishes what caused the reported outcome."
+          ]
+        },
+        {
+          "objective_id": "LIFT-RESULT",
+          "challenge": "incomplete_outcome",
+          "kind": "insufficient_evidence",
+          "target_met": true,
+          "expected_abstention": true,
+          "abstained": true,
+          "cross_source_target": false,
+          "expected_conflict": false,
+          "ocr_expected": false,
+          "ocr_preserved": true,
+          "classified_conflict": false,
+          "unsupported_claim": false,
+          "advisory_returned": false,
+          "citation_examples": [
+            {
+              "observation_id": "205f4e41-080a-4625-b361-6cb8f9099ff9",
+              "source_id": "a5fc5055-9f81-426f-a4b4-289b65f74386",
+              "source_filename": "fictional_lift_notes.txt",
+              "source_locator": "line 2",
+              "text": "For AP-18 the final door sensor result was never entered on the form.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            }
+          ],
+          "unknowns": [
+            "A record that confirms the expected outcome occurred."
+          ]
+        }
+      ],
+      "model_citations_all_exact": true,
+      "citation_attempts": [
+        {
+          "record": 1,
+          "exact_substring": true
+        },
+        {
+          "record": 3,
+          "exact_substring": true
+        },
+        {
+          "record": 4,
+          "exact_substring": true
+        }
+      ],
+      "validator_matched": 3,
+      "validator_attempted": 3,
+      "state_unchanged": true
+    },
+    {
+      "file": "candidate-r5-PH4B1-FICTIONAL-RADIO.json",
+      "version": "candidate",
+      "repeat": 5,
+      "exercise_id": "PH4B1-FICTIONAL-RADIO",
+      "objective_outcomes": [
+        {
+          "objective_id": "RADIO-TIME",
+          "challenge": "compatible_paraphrased_accounts",
+          "kind": "corroboration",
+          "target_met": true,
+          "expected_abstention": false,
+          "abstained": false,
+          "cross_source_target": true,
+          "expected_conflict": false,
+          "ocr_expected": false,
+          "ocr_preserved": true,
+          "classified_conflict": false,
+          "unsupported_claim": false,
+          "advisory_returned": true,
+          "citation_examples": [
+            {
+              "observation_id": "0495fa1e-a57e-4b6f-9c59-cb60082da8cd",
+              "source_id": "d0635779-ee84-41e5-b6f2-ab4cdd577fb6",
+              "source_filename": "fictional_radio_ledger.txt",
+              "source_locator": "line 1",
+              "text": "During run RC-9 the communications desk enabled repeater 4.",
+              "extraction_method": "parser",
+              "time_confidence": "medium",
+              "event_time_raw": "07:31"
+            },
+            {
+              "observation_id": "2de68eee-b148-4817-a01d-e7e21a0b70b5",
+              "source_id": "caafdf86-6911-4ef9-9407-6dbb539a16d5",
+              "source_filename": "fictional_radio_observer.txt",
+              "source_locator": "line 1",
+              "text": "In exercise run RC-9 I watched the operator bring repeater 4 online at 07:31.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            }
+          ],
+          "unknowns": [
+            "Confirmation of which event the wording refers to."
+          ]
+        }
+      ],
+      "model_citations_all_exact": true,
+      "citation_attempts": [
+        {
+          "record": 1,
+          "exact_substring": true
+        },
+        {
+          "record": 2,
+          "exact_substring": true
+        }
+      ],
+      "validator_matched": 2,
+      "validator_attempted": 2,
+      "state_unchanged": true
+    },
+    {
+      "file": "candidate-r5-PH4B1-FICTIONAL-ROOM.json",
+      "version": "candidate",
+      "repeat": 5,
+      "exercise_id": "PH4B1-FICTIONAL-ROOM",
+      "objective_outcomes": [
+        {
+          "objective_id": "ROOM-ID",
+          "challenge": "same_location_multiple_incidents",
+          "kind": "relevant_observation",
+          "target_met": false,
+          "expected_abstention": true,
+          "abstained": false,
+          "cross_source_target": false,
+          "expected_conflict": false,
+          "ocr_expected": false,
+          "ocr_preserved": true,
+          "classified_conflict": false,
+          "unsupported_claim": true,
+          "advisory_returned": true,
+          "citation_examples": [
+            {
+              "observation_id": "6e5cdb8c-3d7f-43ca-bb99-efebc34305a0",
+              "source_id": "ece27bf4-8ce2-4ea7-8c38-a3c46581aae0",
+              "source_filename": "fictional_room_ledger.txt",
+              "source_locator": "line 1",
+              "text": "Event L-21: Studio C was released to Logistics after the first check.",
+              "extraction_method": "parser",
+              "time_confidence": "medium",
+              "event_time_raw": "16:02"
+            },
+            {
+              "observation_id": "aa480a11-9c87-43b3-ae92-66aba9801793",
+              "source_id": "ece27bf4-8ce2-4ea7-8c38-a3c46581aae0",
+              "source_filename": "fictional_room_ledger.txt",
+              "source_locator": "line 2",
+              "text": "Event L-22: Studio C was released to Facilities after the second check.",
+              "extraction_method": "parser",
+              "time_confidence": "medium",
+              "event_time_raw": "16:09"
+            }
+          ],
+          "unknowns": [
+            "Independent confirmation of the reported observation."
+          ]
+        }
+      ],
+      "model_citations_all_exact": true,
+      "citation_attempts": [
+        {
+          "record": 1,
+          "exact_substring": true
+        },
+        {
+          "record": 2,
+          "exact_substring": true
+        }
+      ],
+      "validator_matched": 2,
+      "validator_attempted": 2,
+      "state_unchanged": true
+    },
+    {
+      "file": "candidate-r5-PH4B1-FICTIONAL-SCAN.json",
+      "version": "candidate",
+      "repeat": 5,
+      "exercise_id": "PH4B1-FICTIONAL-SCAN",
+      "objective_outcomes": [
+        {
+          "objective_id": "SCAN-TIME",
+          "challenge": "uncertain_ocr_timestamp",
+          "kind": null,
+          "target_met": false,
+          "expected_abstention": true,
+          "abstained": false,
+          "cross_source_target": false,
+          "expected_conflict": false,
+          "ocr_expected": true,
+          "ocr_preserved": false,
+          "classified_conflict": false,
+          "unsupported_claim": false,
+          "advisory_returned": false,
+          "citation_examples": [],
+          "unknowns": []
+        }
+      ],
+      "model_citations_all_exact": false,
+      "citation_attempts": [
+        {
+          "record": 2,
+          "exact_substring": false
+        },
+        {
+          "record": 3,
+          "exact_substring": false
+        }
+      ],
+      "validator_matched": 0,
+      "validator_attempted": 2,
+      "state_unchanged": true
+    }
+  ],
+  "interpretation": "The original head scored 40/45 and the candidate 36/45 over five complete suite repeats. The four-point difference is confined to SCAN-TIME: baseline 5/5, candidate 1/5. Candidate-only non-exact quotations cite timestamp metadata instead of source wording; the same captured invalid replies are rejected by both validators. All exact captured scan citations are accepted by both. This supports model-output variability rather than a validator-caused regression. The five repeats share eight fictional scenarios and are correlated; these are descriptive results, not an accuracy estimate.",
+  "per_case": {
+    "baseline": [
+      {
+        "exercise_id": "PH4B1-FICTIONAL-COOLING",
+        "objective_ids": [
+          "COOLING-STAGES"
+        ],
+        "target_behavior": [
+          5,
+          5
+        ],
+        "model_citation_validation": [
+          10,
+          10
+        ],
+        "kind_counts": {
+          "different_response_phases": 5
+        },
+        "unassessed_counts": {},
+        "repeats": 5,
+        "infrastructure_failures": 0
+      },
+      {
+        "exercise_id": "PH4B1-FICTIONAL-DENIAL",
+        "objective_ids": [
+          "DENIAL-ACK"
+        ],
+        "target_behavior": [
+          5,
+          5
+        ],
+        "model_citation_validation": [
+          10,
+          10
+        ],
+        "kind_counts": {
+          "contradiction": 5
+        },
+        "unassessed_counts": {},
+        "repeats": 5,
+        "infrastructure_failures": 0
+      },
+      {
+        "exercise_id": "PH4B1-FICTIONAL-FORM",
+        "objective_ids": [
+          "FORM-ACK"
+        ],
+        "target_behavior": [
+          5,
+          5
+        ],
+        "model_citation_validation": [
+          6,
+          6
+        ],
+        "kind_counts": {
+          "insufficient_evidence": 5
+        },
+        "unassessed_counts": {},
+        "repeats": 5,
+        "infrastructure_failures": 0
+      },
+      {
+        "exercise_id": "PH4B1-FICTIONAL-HATCH",
+        "objective_ids": [
+          "HATCH-TIME"
+        ],
+        "target_behavior": [
+          5,
+          5
+        ],
+        "model_citation_validation": [
+          10,
+          10
+        ],
+        "kind_counts": {
+          "contradiction": 5
+        },
+        "unassessed_counts": {},
+        "repeats": 5,
+        "infrastructure_failures": 0
+      },
+      {
+        "exercise_id": "PH4B1-FICTIONAL-LIFT",
+        "objective_ids": [
+          "LIFT-CAUSE",
+          "LIFT-RESULT"
+        ],
+        "target_behavior": [
+          10,
+          10
+        ],
+        "model_citation_validation": [
+          11,
+          11
+        ],
+        "kind_counts": {
+          "insufficient_evidence": 10
+        },
+        "unassessed_counts": {},
+        "repeats": 5,
+        "infrastructure_failures": 0
+      },
+      {
+        "exercise_id": "PH4B1-FICTIONAL-RADIO",
+        "objective_ids": [
+          "RADIO-TIME"
+        ],
+        "target_behavior": [
+          5,
+          5
+        ],
+        "model_citation_validation": [
+          10,
+          10
+        ],
+        "kind_counts": {
+          "corroboration": 5
+        },
+        "unassessed_counts": {},
+        "repeats": 5,
+        "infrastructure_failures": 0
+      },
+      {
+        "exercise_id": "PH4B1-FICTIONAL-ROOM",
+        "objective_ids": [
+          "ROOM-ID"
+        ],
+        "target_behavior": [
+          0,
+          5
+        ],
+        "model_citation_validation": [
+          10,
+          10
+        ],
+        "kind_counts": {
+          "relevant_observation": 5
+        },
+        "unassessed_counts": {},
+        "repeats": 5,
+        "infrastructure_failures": 0
+      },
+      {
+        "exercise_id": "PH4B1-FICTIONAL-SCAN",
+        "objective_ids": [
+          "SCAN-TIME"
+        ],
+        "target_behavior": [
+          5,
+          5
+        ],
+        "model_citation_validation": [
+          10,
+          10
+        ],
+        "kind_counts": {
+          "insufficient_evidence": 5
+        },
+        "unassessed_counts": {},
+        "repeats": 5,
+        "infrastructure_failures": 0
+      }
+    ],
+    "candidate": [
+      {
+        "exercise_id": "PH4B1-FICTIONAL-COOLING",
+        "objective_ids": [
+          "COOLING-STAGES"
+        ],
+        "target_behavior": [
+          5,
+          5
+        ],
+        "model_citation_validation": [
+          10,
+          10
+        ],
+        "kind_counts": {
+          "different_response_phases": 5
+        },
+        "unassessed_counts": {},
+        "repeats": 5,
+        "infrastructure_failures": 0
+      },
+      {
+        "exercise_id": "PH4B1-FICTIONAL-DENIAL",
+        "objective_ids": [
+          "DENIAL-ACK"
+        ],
+        "target_behavior": [
+          5,
+          5
+        ],
+        "model_citation_validation": [
+          10,
+          10
+        ],
+        "kind_counts": {
+          "contradiction": 5
+        },
+        "unassessed_counts": {},
+        "repeats": 5,
+        "infrastructure_failures": 0
+      },
+      {
+        "exercise_id": "PH4B1-FICTIONAL-FORM",
+        "objective_ids": [
+          "FORM-ACK"
+        ],
+        "target_behavior": [
+          5,
+          5
+        ],
+        "model_citation_validation": [
+          10,
+          10
+        ],
+        "kind_counts": {
+          "insufficient_evidence": 5
+        },
+        "unassessed_counts": {},
+        "repeats": 5,
+        "infrastructure_failures": 0
+      },
+      {
+        "exercise_id": "PH4B1-FICTIONAL-HATCH",
+        "objective_ids": [
+          "HATCH-TIME"
+        ],
+        "target_behavior": [
+          5,
+          5
+        ],
+        "model_citation_validation": [
+          10,
+          10
+        ],
+        "kind_counts": {
+          "contradiction": 5
+        },
+        "unassessed_counts": {},
+        "repeats": 5,
+        "infrastructure_failures": 0
+      },
+      {
+        "exercise_id": "PH4B1-FICTIONAL-LIFT",
+        "objective_ids": [
+          "LIFT-CAUSE",
+          "LIFT-RESULT"
+        ],
+        "target_behavior": [
+          10,
+          10
+        ],
+        "model_citation_validation": [
+          11,
+          11
+        ],
+        "kind_counts": {
+          "insufficient_evidence": 10
+        },
+        "unassessed_counts": {},
+        "repeats": 5,
+        "infrastructure_failures": 0
+      },
+      {
+        "exercise_id": "PH4B1-FICTIONAL-RADIO",
+        "objective_ids": [
+          "RADIO-TIME"
+        ],
+        "target_behavior": [
+          5,
+          5
+        ],
+        "model_citation_validation": [
+          10,
+          10
+        ],
+        "kind_counts": {
+          "corroboration": 5
+        },
+        "unassessed_counts": {},
+        "repeats": 5,
+        "infrastructure_failures": 0
+      },
+      {
+        "exercise_id": "PH4B1-FICTIONAL-ROOM",
+        "objective_ids": [
+          "ROOM-ID"
+        ],
+        "target_behavior": [
+          0,
+          5
+        ],
+        "model_citation_validation": [
+          10,
+          10
+        ],
+        "kind_counts": {
+          "relevant_observation": 5
+        },
+        "unassessed_counts": {},
+        "repeats": 5,
+        "infrastructure_failures": 0
+      },
+      {
+        "exercise_id": "PH4B1-FICTIONAL-SCAN",
+        "objective_ids": [
+          "SCAN-TIME"
+        ],
+        "target_behavior": [
+          1,
+          5
+        ],
+        "model_citation_validation": [
+          2,
+          10
+        ],
+        "kind_counts": {
+          "None": 4,
+          "insufficient_evidence": 1
+        },
+        "unassessed_counts": {
+          "SCAN-TIME": 4
+        },
+        "repeats": 5,
+        "infrastructure_failures": 0
+      }
+    ]
+  },
+  "interleaved_run_metadata": [
+    {
+      "file": "baseline-r4-PH4B1-FICTIONAL-COOLING.json",
+      "backend_commit": "00d680eae0f0676b5e26821eff81c131737904ca",
+      "backend_ai_sha256": "733a8531802cc14e09caa77f1816a1d23ec6a10dafa31847310118cd600c28f8",
+      "model_digest": "cd2692a833e66c4c98991b67e9fbaa0bb15a93285baac9240c022f2f40075b6d",
+      "prompt_sha256": "6ae089f405989311112921e5a2b25dd7e117d1e7b401a56bb7024da022c2af5b",
+      "request_options": [
+        {
+          "think": false,
+          "stream": false,
+          "temperature": 0,
+          "num_predict": 2048,
+          "num_ctx": 8192
+        }
+      ]
+    },
+    {
+      "file": "baseline-r4-PH4B1-FICTIONAL-DENIAL.json",
+      "backend_commit": "00d680eae0f0676b5e26821eff81c131737904ca",
+      "backend_ai_sha256": "733a8531802cc14e09caa77f1816a1d23ec6a10dafa31847310118cd600c28f8",
+      "model_digest": "cd2692a833e66c4c98991b67e9fbaa0bb15a93285baac9240c022f2f40075b6d",
+      "prompt_sha256": "6ae089f405989311112921e5a2b25dd7e117d1e7b401a56bb7024da022c2af5b",
+      "request_options": [
+        {
+          "think": false,
+          "stream": false,
+          "temperature": 0,
+          "num_predict": 2048,
+          "num_ctx": 8192
+        }
+      ]
+    },
+    {
+      "file": "baseline-r4-PH4B1-FICTIONAL-FORM.json",
+      "backend_commit": "00d680eae0f0676b5e26821eff81c131737904ca",
+      "backend_ai_sha256": "733a8531802cc14e09caa77f1816a1d23ec6a10dafa31847310118cd600c28f8",
+      "model_digest": "cd2692a833e66c4c98991b67e9fbaa0bb15a93285baac9240c022f2f40075b6d",
+      "prompt_sha256": "6ae089f405989311112921e5a2b25dd7e117d1e7b401a56bb7024da022c2af5b",
+      "request_options": [
+        {
+          "think": false,
+          "stream": false,
+          "temperature": 0,
+          "num_predict": 2048,
+          "num_ctx": 8192
+        }
+      ]
+    },
+    {
+      "file": "baseline-r4-PH4B1-FICTIONAL-HATCH.json",
+      "backend_commit": "00d680eae0f0676b5e26821eff81c131737904ca",
+      "backend_ai_sha256": "733a8531802cc14e09caa77f1816a1d23ec6a10dafa31847310118cd600c28f8",
+      "model_digest": "cd2692a833e66c4c98991b67e9fbaa0bb15a93285baac9240c022f2f40075b6d",
+      "prompt_sha256": "6ae089f405989311112921e5a2b25dd7e117d1e7b401a56bb7024da022c2af5b",
+      "request_options": [
+        {
+          "think": false,
+          "stream": false,
+          "temperature": 0,
+          "num_predict": 2048,
+          "num_ctx": 8192
+        }
+      ]
+    },
+    {
+      "file": "baseline-r4-PH4B1-FICTIONAL-LIFT.json",
+      "backend_commit": "00d680eae0f0676b5e26821eff81c131737904ca",
+      "backend_ai_sha256": "733a8531802cc14e09caa77f1816a1d23ec6a10dafa31847310118cd600c28f8",
+      "model_digest": "cd2692a833e66c4c98991b67e9fbaa0bb15a93285baac9240c022f2f40075b6d",
+      "prompt_sha256": "6ae089f405989311112921e5a2b25dd7e117d1e7b401a56bb7024da022c2af5b",
+      "request_options": [
+        {
+          "think": false,
+          "stream": false,
+          "temperature": 0,
+          "num_predict": 2048,
+          "num_ctx": 8192
+        }
+      ]
+    },
+    {
+      "file": "baseline-r4-PH4B1-FICTIONAL-RADIO.json",
+      "backend_commit": "00d680eae0f0676b5e26821eff81c131737904ca",
+      "backend_ai_sha256": "733a8531802cc14e09caa77f1816a1d23ec6a10dafa31847310118cd600c28f8",
+      "model_digest": "cd2692a833e66c4c98991b67e9fbaa0bb15a93285baac9240c022f2f40075b6d",
+      "prompt_sha256": "6ae089f405989311112921e5a2b25dd7e117d1e7b401a56bb7024da022c2af5b",
+      "request_options": [
+        {
+          "think": false,
+          "stream": false,
+          "temperature": 0,
+          "num_predict": 2048,
+          "num_ctx": 8192
+        }
+      ]
+    },
+    {
+      "file": "baseline-r4-PH4B1-FICTIONAL-ROOM.json",
+      "backend_commit": "00d680eae0f0676b5e26821eff81c131737904ca",
+      "backend_ai_sha256": "733a8531802cc14e09caa77f1816a1d23ec6a10dafa31847310118cd600c28f8",
+      "model_digest": "cd2692a833e66c4c98991b67e9fbaa0bb15a93285baac9240c022f2f40075b6d",
+      "prompt_sha256": "6ae089f405989311112921e5a2b25dd7e117d1e7b401a56bb7024da022c2af5b",
+      "request_options": [
+        {
+          "think": false,
+          "stream": false,
+          "temperature": 0,
+          "num_predict": 2048,
+          "num_ctx": 8192
+        }
+      ]
+    },
+    {
+      "file": "baseline-r4-PH4B1-FICTIONAL-SCAN.json",
+      "backend_commit": "00d680eae0f0676b5e26821eff81c131737904ca",
+      "backend_ai_sha256": "733a8531802cc14e09caa77f1816a1d23ec6a10dafa31847310118cd600c28f8",
+      "model_digest": "cd2692a833e66c4c98991b67e9fbaa0bb15a93285baac9240c022f2f40075b6d",
+      "prompt_sha256": "6ae089f405989311112921e5a2b25dd7e117d1e7b401a56bb7024da022c2af5b",
+      "request_options": [
+        {
+          "think": false,
+          "stream": false,
+          "temperature": 0,
+          "num_predict": 2048,
+          "num_ctx": 8192
+        }
+      ]
+    },
+    {
+      "file": "baseline-r5-PH4B1-FICTIONAL-COOLING.json",
+      "backend_commit": "00d680eae0f0676b5e26821eff81c131737904ca",
+      "backend_ai_sha256": "733a8531802cc14e09caa77f1816a1d23ec6a10dafa31847310118cd600c28f8",
+      "model_digest": "cd2692a833e66c4c98991b67e9fbaa0bb15a93285baac9240c022f2f40075b6d",
+      "prompt_sha256": "6ae089f405989311112921e5a2b25dd7e117d1e7b401a56bb7024da022c2af5b",
+      "request_options": [
+        {
+          "think": false,
+          "stream": false,
+          "temperature": 0,
+          "num_predict": 2048,
+          "num_ctx": 8192
+        }
+      ]
+    },
+    {
+      "file": "baseline-r5-PH4B1-FICTIONAL-DENIAL.json",
+      "backend_commit": "00d680eae0f0676b5e26821eff81c131737904ca",
+      "backend_ai_sha256": "733a8531802cc14e09caa77f1816a1d23ec6a10dafa31847310118cd600c28f8",
+      "model_digest": "cd2692a833e66c4c98991b67e9fbaa0bb15a93285baac9240c022f2f40075b6d",
+      "prompt_sha256": "6ae089f405989311112921e5a2b25dd7e117d1e7b401a56bb7024da022c2af5b",
+      "request_options": [
+        {
+          "think": false,
+          "stream": false,
+          "temperature": 0,
+          "num_predict": 2048,
+          "num_ctx": 8192
+        }
+      ]
+    },
+    {
+      "file": "baseline-r5-PH4B1-FICTIONAL-FORM.json",
+      "backend_commit": "00d680eae0f0676b5e26821eff81c131737904ca",
+      "backend_ai_sha256": "733a8531802cc14e09caa77f1816a1d23ec6a10dafa31847310118cd600c28f8",
+      "model_digest": "cd2692a833e66c4c98991b67e9fbaa0bb15a93285baac9240c022f2f40075b6d",
+      "prompt_sha256": "6ae089f405989311112921e5a2b25dd7e117d1e7b401a56bb7024da022c2af5b",
+      "request_options": [
+        {
+          "think": false,
+          "stream": false,
+          "temperature": 0,
+          "num_predict": 2048,
+          "num_ctx": 8192
+        }
+      ]
+    },
+    {
+      "file": "baseline-r5-PH4B1-FICTIONAL-HATCH.json",
+      "backend_commit": "00d680eae0f0676b5e26821eff81c131737904ca",
+      "backend_ai_sha256": "733a8531802cc14e09caa77f1816a1d23ec6a10dafa31847310118cd600c28f8",
+      "model_digest": "cd2692a833e66c4c98991b67e9fbaa0bb15a93285baac9240c022f2f40075b6d",
+      "prompt_sha256": "6ae089f405989311112921e5a2b25dd7e117d1e7b401a56bb7024da022c2af5b",
+      "request_options": [
+        {
+          "think": false,
+          "stream": false,
+          "temperature": 0,
+          "num_predict": 2048,
+          "num_ctx": 8192
+        }
+      ]
+    },
+    {
+      "file": "baseline-r5-PH4B1-FICTIONAL-LIFT.json",
+      "backend_commit": "00d680eae0f0676b5e26821eff81c131737904ca",
+      "backend_ai_sha256": "733a8531802cc14e09caa77f1816a1d23ec6a10dafa31847310118cd600c28f8",
+      "model_digest": "cd2692a833e66c4c98991b67e9fbaa0bb15a93285baac9240c022f2f40075b6d",
+      "prompt_sha256": "6ae089f405989311112921e5a2b25dd7e117d1e7b401a56bb7024da022c2af5b",
+      "request_options": [
+        {
+          "think": false,
+          "stream": false,
+          "temperature": 0,
+          "num_predict": 2048,
+          "num_ctx": 8192
+        }
+      ]
+    },
+    {
+      "file": "baseline-r5-PH4B1-FICTIONAL-RADIO.json",
+      "backend_commit": "00d680eae0f0676b5e26821eff81c131737904ca",
+      "backend_ai_sha256": "733a8531802cc14e09caa77f1816a1d23ec6a10dafa31847310118cd600c28f8",
+      "model_digest": "cd2692a833e66c4c98991b67e9fbaa0bb15a93285baac9240c022f2f40075b6d",
+      "prompt_sha256": "6ae089f405989311112921e5a2b25dd7e117d1e7b401a56bb7024da022c2af5b",
+      "request_options": [
+        {
+          "think": false,
+          "stream": false,
+          "temperature": 0,
+          "num_predict": 2048,
+          "num_ctx": 8192
+        }
+      ]
+    },
+    {
+      "file": "baseline-r5-PH4B1-FICTIONAL-ROOM.json",
+      "backend_commit": "00d680eae0f0676b5e26821eff81c131737904ca",
+      "backend_ai_sha256": "733a8531802cc14e09caa77f1816a1d23ec6a10dafa31847310118cd600c28f8",
+      "model_digest": "cd2692a833e66c4c98991b67e9fbaa0bb15a93285baac9240c022f2f40075b6d",
+      "prompt_sha256": "6ae089f405989311112921e5a2b25dd7e117d1e7b401a56bb7024da022c2af5b",
+      "request_options": [
+        {
+          "think": false,
+          "stream": false,
+          "temperature": 0,
+          "num_predict": 2048,
+          "num_ctx": 8192
+        }
+      ]
+    },
+    {
+      "file": "baseline-r5-PH4B1-FICTIONAL-SCAN.json",
+      "backend_commit": "00d680eae0f0676b5e26821eff81c131737904ca",
+      "backend_ai_sha256": "733a8531802cc14e09caa77f1816a1d23ec6a10dafa31847310118cd600c28f8",
+      "model_digest": "cd2692a833e66c4c98991b67e9fbaa0bb15a93285baac9240c022f2f40075b6d",
+      "prompt_sha256": "6ae089f405989311112921e5a2b25dd7e117d1e7b401a56bb7024da022c2af5b",
+      "request_options": [
+        {
+          "think": false,
+          "stream": false,
+          "temperature": 0,
+          "num_predict": 2048,
+          "num_ctx": 8192
+        }
+      ]
+    },
+    {
+      "file": "candidate-r4-PH4B1-FICTIONAL-COOLING.json",
+      "backend_commit": "00d680eae0f0676b5e26821eff81c131737904ca",
+      "backend_ai_sha256": "017d2227115a18e81c5eb324fd456d0a4c3d67ad01361fe75fabb77c46ade0be",
+      "model_digest": "cd2692a833e66c4c98991b67e9fbaa0bb15a93285baac9240c022f2f40075b6d",
+      "prompt_sha256": "6ae089f405989311112921e5a2b25dd7e117d1e7b401a56bb7024da022c2af5b",
+      "request_options": [
+        {
+          "think": false,
+          "stream": false,
+          "temperature": 0,
+          "num_predict": 2048,
+          "num_ctx": 8192
+        }
+      ]
+    },
+    {
+      "file": "candidate-r4-PH4B1-FICTIONAL-DENIAL.json",
+      "backend_commit": "00d680eae0f0676b5e26821eff81c131737904ca",
+      "backend_ai_sha256": "017d2227115a18e81c5eb324fd456d0a4c3d67ad01361fe75fabb77c46ade0be",
+      "model_digest": "cd2692a833e66c4c98991b67e9fbaa0bb15a93285baac9240c022f2f40075b6d",
+      "prompt_sha256": "6ae089f405989311112921e5a2b25dd7e117d1e7b401a56bb7024da022c2af5b",
+      "request_options": [
+        {
+          "think": false,
+          "stream": false,
+          "temperature": 0,
+          "num_predict": 2048,
+          "num_ctx": 8192
+        }
+      ]
+    },
+    {
+      "file": "candidate-r4-PH4B1-FICTIONAL-FORM.json",
+      "backend_commit": "00d680eae0f0676b5e26821eff81c131737904ca",
+      "backend_ai_sha256": "017d2227115a18e81c5eb324fd456d0a4c3d67ad01361fe75fabb77c46ade0be",
+      "model_digest": "cd2692a833e66c4c98991b67e9fbaa0bb15a93285baac9240c022f2f40075b6d",
+      "prompt_sha256": "6ae089f405989311112921e5a2b25dd7e117d1e7b401a56bb7024da022c2af5b",
+      "request_options": [
+        {
+          "think": false,
+          "stream": false,
+          "temperature": 0,
+          "num_predict": 2048,
+          "num_ctx": 8192
+        }
+      ]
+    },
+    {
+      "file": "candidate-r4-PH4B1-FICTIONAL-HATCH.json",
+      "backend_commit": "00d680eae0f0676b5e26821eff81c131737904ca",
+      "backend_ai_sha256": "017d2227115a18e81c5eb324fd456d0a4c3d67ad01361fe75fabb77c46ade0be",
+      "model_digest": "cd2692a833e66c4c98991b67e9fbaa0bb15a93285baac9240c022f2f40075b6d",
+      "prompt_sha256": "6ae089f405989311112921e5a2b25dd7e117d1e7b401a56bb7024da022c2af5b",
+      "request_options": [
+        {
+          "think": false,
+          "stream": false,
+          "temperature": 0,
+          "num_predict": 2048,
+          "num_ctx": 8192
+        }
+      ]
+    },
+    {
+      "file": "candidate-r4-PH4B1-FICTIONAL-LIFT.json",
+      "backend_commit": "00d680eae0f0676b5e26821eff81c131737904ca",
+      "backend_ai_sha256": "017d2227115a18e81c5eb324fd456d0a4c3d67ad01361fe75fabb77c46ade0be",
+      "model_digest": "cd2692a833e66c4c98991b67e9fbaa0bb15a93285baac9240c022f2f40075b6d",
+      "prompt_sha256": "6ae089f405989311112921e5a2b25dd7e117d1e7b401a56bb7024da022c2af5b",
+      "request_options": [
+        {
+          "think": false,
+          "stream": false,
+          "temperature": 0,
+          "num_predict": 2048,
+          "num_ctx": 8192
+        }
+      ]
+    },
+    {
+      "file": "candidate-r4-PH4B1-FICTIONAL-RADIO.json",
+      "backend_commit": "00d680eae0f0676b5e26821eff81c131737904ca",
+      "backend_ai_sha256": "017d2227115a18e81c5eb324fd456d0a4c3d67ad01361fe75fabb77c46ade0be",
+      "model_digest": "cd2692a833e66c4c98991b67e9fbaa0bb15a93285baac9240c022f2f40075b6d",
+      "prompt_sha256": "6ae089f405989311112921e5a2b25dd7e117d1e7b401a56bb7024da022c2af5b",
+      "request_options": [
+        {
+          "think": false,
+          "stream": false,
+          "temperature": 0,
+          "num_predict": 2048,
+          "num_ctx": 8192
+        }
+      ]
+    },
+    {
+      "file": "candidate-r4-PH4B1-FICTIONAL-ROOM.json",
+      "backend_commit": "00d680eae0f0676b5e26821eff81c131737904ca",
+      "backend_ai_sha256": "017d2227115a18e81c5eb324fd456d0a4c3d67ad01361fe75fabb77c46ade0be",
+      "model_digest": "cd2692a833e66c4c98991b67e9fbaa0bb15a93285baac9240c022f2f40075b6d",
+      "prompt_sha256": "6ae089f405989311112921e5a2b25dd7e117d1e7b401a56bb7024da022c2af5b",
+      "request_options": [
+        {
+          "think": false,
+          "stream": false,
+          "temperature": 0,
+          "num_predict": 2048,
+          "num_ctx": 8192
+        }
+      ]
+    },
+    {
+      "file": "candidate-r4-PH4B1-FICTIONAL-SCAN.json",
+      "backend_commit": "00d680eae0f0676b5e26821eff81c131737904ca",
+      "backend_ai_sha256": "017d2227115a18e81c5eb324fd456d0a4c3d67ad01361fe75fabb77c46ade0be",
+      "model_digest": "cd2692a833e66c4c98991b67e9fbaa0bb15a93285baac9240c022f2f40075b6d",
+      "prompt_sha256": "6ae089f405989311112921e5a2b25dd7e117d1e7b401a56bb7024da022c2af5b",
+      "request_options": [
+        {
+          "think": false,
+          "stream": false,
+          "temperature": 0,
+          "num_predict": 2048,
+          "num_ctx": 8192
+        }
+      ]
+    },
+    {
+      "file": "candidate-r5-PH4B1-FICTIONAL-COOLING.json",
+      "backend_commit": "00d680eae0f0676b5e26821eff81c131737904ca",
+      "backend_ai_sha256": "017d2227115a18e81c5eb324fd456d0a4c3d67ad01361fe75fabb77c46ade0be",
+      "model_digest": "cd2692a833e66c4c98991b67e9fbaa0bb15a93285baac9240c022f2f40075b6d",
+      "prompt_sha256": "6ae089f405989311112921e5a2b25dd7e117d1e7b401a56bb7024da022c2af5b",
+      "request_options": [
+        {
+          "think": false,
+          "stream": false,
+          "temperature": 0,
+          "num_predict": 2048,
+          "num_ctx": 8192
+        }
+      ]
+    },
+    {
+      "file": "candidate-r5-PH4B1-FICTIONAL-DENIAL.json",
+      "backend_commit": "00d680eae0f0676b5e26821eff81c131737904ca",
+      "backend_ai_sha256": "017d2227115a18e81c5eb324fd456d0a4c3d67ad01361fe75fabb77c46ade0be",
+      "model_digest": "cd2692a833e66c4c98991b67e9fbaa0bb15a93285baac9240c022f2f40075b6d",
+      "prompt_sha256": "6ae089f405989311112921e5a2b25dd7e117d1e7b401a56bb7024da022c2af5b",
+      "request_options": [
+        {
+          "think": false,
+          "stream": false,
+          "temperature": 0,
+          "num_predict": 2048,
+          "num_ctx": 8192
+        }
+      ]
+    },
+    {
+      "file": "candidate-r5-PH4B1-FICTIONAL-FORM.json",
+      "backend_commit": "00d680eae0f0676b5e26821eff81c131737904ca",
+      "backend_ai_sha256": "017d2227115a18e81c5eb324fd456d0a4c3d67ad01361fe75fabb77c46ade0be",
+      "model_digest": "cd2692a833e66c4c98991b67e9fbaa0bb15a93285baac9240c022f2f40075b6d",
+      "prompt_sha256": "6ae089f405989311112921e5a2b25dd7e117d1e7b401a56bb7024da022c2af5b",
+      "request_options": [
+        {
+          "think": false,
+          "stream": false,
+          "temperature": 0,
+          "num_predict": 2048,
+          "num_ctx": 8192
+        }
+      ]
+    },
+    {
+      "file": "candidate-r5-PH4B1-FICTIONAL-HATCH.json",
+      "backend_commit": "00d680eae0f0676b5e26821eff81c131737904ca",
+      "backend_ai_sha256": "017d2227115a18e81c5eb324fd456d0a4c3d67ad01361fe75fabb77c46ade0be",
+      "model_digest": "cd2692a833e66c4c98991b67e9fbaa0bb15a93285baac9240c022f2f40075b6d",
+      "prompt_sha256": "6ae089f405989311112921e5a2b25dd7e117d1e7b401a56bb7024da022c2af5b",
+      "request_options": [
+        {
+          "think": false,
+          "stream": false,
+          "temperature": 0,
+          "num_predict": 2048,
+          "num_ctx": 8192
+        }
+      ]
+    },
+    {
+      "file": "candidate-r5-PH4B1-FICTIONAL-LIFT.json",
+      "backend_commit": "00d680eae0f0676b5e26821eff81c131737904ca",
+      "backend_ai_sha256": "017d2227115a18e81c5eb324fd456d0a4c3d67ad01361fe75fabb77c46ade0be",
+      "model_digest": "cd2692a833e66c4c98991b67e9fbaa0bb15a93285baac9240c022f2f40075b6d",
+      "prompt_sha256": "6ae089f405989311112921e5a2b25dd7e117d1e7b401a56bb7024da022c2af5b",
+      "request_options": [
+        {
+          "think": false,
+          "stream": false,
+          "temperature": 0,
+          "num_predict": 2048,
+          "num_ctx": 8192
+        }
+      ]
+    },
+    {
+      "file": "candidate-r5-PH4B1-FICTIONAL-RADIO.json",
+      "backend_commit": "00d680eae0f0676b5e26821eff81c131737904ca",
+      "backend_ai_sha256": "017d2227115a18e81c5eb324fd456d0a4c3d67ad01361fe75fabb77c46ade0be",
+      "model_digest": "cd2692a833e66c4c98991b67e9fbaa0bb15a93285baac9240c022f2f40075b6d",
+      "prompt_sha256": "6ae089f405989311112921e5a2b25dd7e117d1e7b401a56bb7024da022c2af5b",
+      "request_options": [
+        {
+          "think": false,
+          "stream": false,
+          "temperature": 0,
+          "num_predict": 2048,
+          "num_ctx": 8192
+        }
+      ]
+    },
+    {
+      "file": "candidate-r5-PH4B1-FICTIONAL-ROOM.json",
+      "backend_commit": "00d680eae0f0676b5e26821eff81c131737904ca",
+      "backend_ai_sha256": "017d2227115a18e81c5eb324fd456d0a4c3d67ad01361fe75fabb77c46ade0be",
+      "model_digest": "cd2692a833e66c4c98991b67e9fbaa0bb15a93285baac9240c022f2f40075b6d",
+      "prompt_sha256": "6ae089f405989311112921e5a2b25dd7e117d1e7b401a56bb7024da022c2af5b",
+      "request_options": [
+        {
+          "think": false,
+          "stream": false,
+          "temperature": 0,
+          "num_predict": 2048,
+          "num_ctx": 8192
+        }
+      ]
+    },
+    {
+      "file": "candidate-r5-PH4B1-FICTIONAL-SCAN.json",
+      "backend_commit": "00d680eae0f0676b5e26821eff81c131737904ca",
+      "backend_ai_sha256": "017d2227115a18e81c5eb324fd456d0a4c3d67ad01361fe75fabb77c46ade0be",
+      "model_digest": "cd2692a833e66c4c98991b67e9fbaa0bb15a93285baac9240c022f2f40075b6d",
+      "prompt_sha256": "6ae089f405989311112921e5a2b25dd7e117d1e7b401a56bb7024da022c2af5b",
+      "request_options": [
+        {
+          "think": false,
+          "stream": false,
+          "temperature": 0,
+          "num_predict": 2048,
+          "num_ctx": 8192
+        }
+      ]
+    }
+  ]
+}
