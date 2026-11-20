@@ -1,0 +1,2 @@
+During message test WT-2, Security was asked to confirm receipt of the update.
+During message test WT-3, Central reported Security confirmed receipt over the intercom.

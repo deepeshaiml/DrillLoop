@@ -2,6 +2,12 @@
 
 Updated: 20 November 2026
 
+## V2 Phase 4B.1 — Conflict regression (20 November 2026)
+
+- Reproduced the missed transit timing pair and the dispatch documentation conflict against PR #5's original head. The old validator could discard a later exact contradiction for an already assessed objective. It also accepted documentation-only excerpts as counterevidence. The correction preserves the existing prompt and checks exact, rule-matched attributed clock pairs, documentary negation, speculative causes, and OCR uncertainty in the advisory validator.
+- On the unchanged Phase 4B regression suite the baseline rerun scored 42/51 and the correction scored 51/51. True conflicts rose from 4/6 to 6/6, false conflicts fell from 4/45 to 0/45, cross-source matches stayed at 6/6, and abstention recall rose from 29/33 to 33/33. Both named fixes held in all three repeats. An initial prompt candidate introduced errors on the first challenge set. Those results informed the return to the original prompt, and a fresh frozen confirmation improved from 18/27 to 21/27 with two pre-existing event-association errors remaining. All 60 final model requests preserved complete exercise detail. [Evaluation and per-case verification](evals/phase4b1/README.md)
+- The local hashed-lock environment passed 174 backend tests with one ClamAV integration skip. Ruff lint and formatting, production frontend build, dependency audits, and Git diff checks passed. Disposable Chromium runs passed both OCR workflows, the live review and PDF workflow, and the real Ollama workflow. The first attempt at the final AI browser run timed out waiting for the register abstention heading. A direct API retry returned the abstention and the fresh end-to-end rerun passed.
+
 ## V2 Phase 4B — AI evidence quality (20 November 2026)
 
 - The archived false conflict paired the alarm with the later stabilization at the west header. The old prompt placed conflicts first without requiring the same stage and attribute. Phase 4A also treated an absent acknowledgement entry as useful narrative evidence in some runs, and did not distinguish identical copies from independent sources. The original labels scored the historical rerun 8/9. It still missed the cross-source match, and the missing acknowledgement abstention varied across runs.

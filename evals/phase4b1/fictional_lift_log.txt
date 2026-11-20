@@ -1,0 +1,2 @@
+In exercise AP-17, the lift queue stalled after a handheld battery alert.
+For inspection AP-18 the technician started the door sensor test.

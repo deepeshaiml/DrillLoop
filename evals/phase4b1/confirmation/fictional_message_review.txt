@@ -1,0 +1,2 @@
+The reviewer found no receipt entry in the exercise log for WT-2.
+Security explicitly reported that nobody from their team confirmed receipt of WT-3 over the intercom.

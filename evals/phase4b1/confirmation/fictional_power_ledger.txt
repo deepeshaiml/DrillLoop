@@ -1,0 +1,2 @@
+[08:24] For test PB-3 the main breaker reclosed.
+[08:40] For test PB-4 the backup feeder was energized.

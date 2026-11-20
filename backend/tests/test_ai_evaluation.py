@@ -21,7 +21,14 @@ OCR_PATH = (
 )
 
 
-def create(client, identifier="fictional-ai", *, objectives=True, timing=False) -> str:
+def create(
+    client,
+    identifier="fictional-ai",
+    *,
+    objectives=True,
+    timing=False,
+    objective_text="Confirm stable pressure after switching pumps.",
+) -> str:
     reply = client.post(
         EXERCISES,
         json={
@@ -33,12 +40,16 @@ def create(client, identifier="fictional-ai", *, objectives=True, timing=False) 
             "objectives": [
                 {
                     "id": "PUMP",
-                    "text": "Confirm stable pressure after switching pumps.",
+                    "text": objective_text,
                     "evaluation_rule": {
                         "type": "elapsed_time",
                         "threshold_seconds": 600,
                         "start_terms": ["low-pressure alarm activated"],
-                        "completion_terms": ["backup pump reached stable pressure"],
+                        "completion_terms": [
+                            "backup pump reached stable pressure",
+                            "backup pump p-7 reached stable pressure",
+                        ],
+                        "completion_claim_terms": ["technician reported stable pressure"],
                     }
                     if timing
                     else {
@@ -234,6 +245,183 @@ def test_counterevidence_must_be_grounded_and_distinct(ai_client):
     assert item["kind"] == "contradiction" and item["assessment"] == "advisory"
     assert item["counterevidence"][0]["source_filename"] == "fictional-opposing.txt"
     assert "counterevidence" in item["uncertainty"]
+
+
+@pytest.mark.parametrize("valid_conflict", [True, False])
+def test_exact_contradiction_can_replace_preceding_relevance(ai_client, valid_conflict):
+    base = create(ai_client, timing=True)
+    upload(ai_client, base, b"[14:03] Backup pump reached stable pressure.", "control.txt")
+    note = "The technician reported stable pressure at 14:07."
+    upload(ai_client, base, note.encode(), "observer.txt")
+
+    def respond(data):
+        by_name = {data["sources"][row["source_id"]]["filename"]: row for row in data["records"]}
+        first, second = by_name["control.txt"], by_name["observer.txt"]
+        assert first["source_time"] == "14:03" and second["source_time"] is None
+        return {
+            "suggestions": [
+                suggestion(record=first["record"], excerpt=first["text"]),
+                suggestion(
+                    kind="contradiction",
+                    citations=[
+                        {"record": first["record"], "excerpt": first["text"]},
+                        {
+                            "record": second["record"],
+                            "excerpt": note if valid_conflict else "Fabricated value at 14:12.",
+                        },
+                    ],
+                ),
+            ]
+        }
+
+    fake(respond)
+    result = ai_client.post(AI).json()
+    assert result["rejected_suggestion_count"] == 1
+    assert len(result["suggestions"]) == 1
+    item = result["suggestions"][0]
+    if valid_conflict:
+        assert item["kind"] == "contradiction"
+        assert item["counterevidence"][0]["text"] == note
+        assert item["evidence"][0]["event_time_raw"] == "14:03"
+    else:
+        assert item["kind"] == "relevant_observation"
+        assert item["counterevidence"] == []
+
+
+@pytest.mark.parametrize(
+    ("original", "excerpt", "expected"),
+    [
+        (
+            "No matching handoff entry was found in the notebook.",
+            "handoff entry was found in the notebook.",
+            "insufficient_evidence",
+        ),
+        (
+            "The archive contains no handoff entry.",
+            "The archive contains no handoff entry.",
+            "insufficient_evidence",
+        ),
+        (
+            "No operator signaled completion according to the inspection record.",
+            "No operator signaled completion according to the inspection record.",
+            "contradiction",
+        ),
+    ],
+)
+def test_documentation_gap_differs_from_an_operational_denial(
+    ai_client, original, excerpt, expected
+):
+    base = create(ai_client)
+    upload(ai_client, base, b"The operator signaled completion.", "operations.txt")
+    upload(ai_client, base, original.encode(), "review.txt")
+
+    def respond(data):
+        citations = [
+            {
+                "record": row["record"],
+                "excerpt": excerpt if row["text"] == original else row["text"],
+            }
+            for row in data["records"]
+        ]
+        return {"suggestions": [suggestion(kind="contradiction", citations=citations)]}
+
+    fake(respond)
+    item = ai_client.post(AI).json()["suggestions"][0]
+    assert item["kind"] == expected
+    assert bool(item["counterevidence"]) == (expected == "contradiction")
+    if expected == "insufficient_evidence":
+        assert item["assessment"] == "abstained"
+        assert "A record that confirms the expected outcome occurred." in item["unknowns"]
+        assert item["evidence"][1]["text"] == original
+
+
+@pytest.mark.parametrize(
+    ("observer_time", "statement", "expected"),
+    [
+        ("14:07", "The completion time is disputed.", "contradiction"),
+        ("14:07", "The completion time was never disputed.", "relevant_observation"),
+        ("14:03", "The completion time is disputed.", "relevant_observation"),
+    ],
+)
+def test_explicit_timing_dispute_requires_distinct_attributed_clocks(
+    ai_client, observer_time, statement, expected
+):
+    base = create(ai_client, timing=True)
+    upload(ai_client, base, b"[14:03] Backup pump reached stable pressure.", "control.txt")
+    observer_claim = (
+        f"The observer recorded that the technician reported stable pressure at {observer_time}"
+    )
+    note = f"{observer_claim}; the desk log recorded that the technician reported stable pressure at 14:03. {statement}"
+    upload(ai_client, base, note.encode(), "observer.txt")
+
+    def respond(data):
+        first = next(row for row in data["records"] if row["source_time"] == "14:03")
+        return {"suggestions": [suggestion(record=first["record"], excerpt=first["text"])]}
+
+    fake(respond)
+    item = ai_client.post(AI).json()["suggestions"][0]
+    assert item["kind"] == expected
+    if expected == "contradiction":
+        assert item["evidence"][0]["event_time_raw"] == "14:03"
+        assert item["counterevidence"][0]["text"] == observer_claim
+        assert item["counterevidence"][0]["source_locator"] == "line 1"
+    else:
+        assert item["counterevidence"] == []
+
+
+@pytest.mark.parametrize(
+    ("observer_clock", "kind"), [("14:03", "corroboration"), ("14:05", "relevant_observation")]
+)
+def test_rule_matched_start_needs_agreeing_independent_clocks(ai_client, observer_clock, kind):
+    base = create(ai_client, timing=True)
+    upload(ai_client, base, b"[14:03] Low-pressure alarm activated.", "control.txt")
+    observer = f"Shift supervisor reports: the low-pressure alarm activated at {observer_clock}."
+    upload(ai_client, base, observer.encode(), "observer.txt")
+
+    def respond(data):
+        start = next(row for row in data["records"] if row["source_time"] == "14:03")
+        return {"suggestions": [suggestion(record=start["record"], excerpt=start["text"])]}
+
+    fake(respond)
+    item = ai_client.post(AI).json()["suggestions"][0]
+    assert item["kind"] == kind
+    if kind == "corroboration":
+        assert {cite["source_filename"] for cite in item["evidence"]} == {
+            "control.txt",
+            "observer.txt",
+        }
+        assert item["evidence"][1]["text"] == observer
+
+
+def test_speculative_mechanism_cannot_corroborate_an_assertion_about_cause(ai_client):
+    base = create(ai_client, objective_text="Determine what caused the cooling delay.")
+    upload(ai_client, base, b"The cooling cycle stalled after a console warning.", "control.txt")
+    report = "The floor lead suspected the console warning caused the cooling delay."
+    upload(ai_client, base, report.encode(), "observer.txt")
+
+    def respond(data):
+        return {
+            "suggestions": [
+                suggestion(
+                    kind="corroboration",
+                    citations=[
+                        {
+                            "record": row["record"],
+                            "excerpt": "the console warning caused the cooling delay."
+                            if row["text"] == report
+                            else row["text"],
+                        }
+                        for row in data["records"]
+                    ],
+                )
+            ]
+        }
+
+    fake(respond)
+    item = ai_client.post(AI).json()["suggestions"][0]
+    assert item["kind"] == "insufficient_evidence"
+    assert item["assessment"] == "abstained"
+    assert "Evidence that establishes what caused the reported outcome." in item["unknowns"]
 
 
 def test_disallows_cross_exercise_context_and_preserves_evaluator_review_boundary(ai_client):
@@ -435,12 +623,17 @@ def test_duplicate_source_or_repeated_observation_cannot_corroborate(ai_client, 
     ]
 
 
-@pytest.mark.parametrize("kind", ["relevant_observation", "contradiction"])
-def test_uncertain_ocr_timing_cannot_pass_as_a_conflict_or_timing_assessment(ai_client, kind):
-    base = create(ai_client, timing=True)
+@pytest.mark.parametrize(
+    ("kind", "configured_timing"),
+    [("relevant_observation", True), ("contradiction", True), ("corroboration", False)],
+)
+def test_uncertain_ocr_timing_cannot_pass_as_a_conflict_or_timing_assessment(
+    ai_client, kind, configured_timing
+):
+    base = create(ai_client, timing=configured_timing)
     upload(ai_client, base, OCR_PATH.read_bytes(), OCR_PATH.name, "application/pdf")
-    native = "Backup pump P-7 reached stable pressure at 09:14."
-    upload(ai_client, base, native.encode())
+    native = "Backup pump P-7 reached stable pressure."
+    upload(ai_client, base, f"[09:14] {native}".encode())
 
     def respond(data):
         ocr = next(
@@ -450,9 +643,11 @@ def test_uncertain_ocr_timing_cannot_pass_as_a_conflict_or_timing_assessment(ai_
         )
         other = next(row for row in data["records"] if row["text"] == native)
         opposing = (
-            [{"record": other["record"], "excerpt": native}] if kind == "contradiction" else []
+            [{"record": other["record"], "excerpt": native}]
+            if kind != "relevant_observation"
+            else []
         )
-        assert data["timing_objective_ids"] == ["PUMP"]
+        assert data["timing_objective_ids"] == (["PUMP"] if configured_timing else [])
         return {
             "suggestions": [
                 suggestion(
@@ -469,6 +664,32 @@ def test_uncertain_ocr_timing_cannot_pass_as_a_conflict_or_timing_assessment(ai_
     assert (
         item["evidence"][0]["event_time_raw"] == "09:12" and "original page" in item["uncertainty"]
     )
+
+
+def test_empty_timing_abstention_keeps_one_rule_matched_uncertain_ocr_citation(ai_client):
+    base = create(ai_client, timing=True)
+    upload(ai_client, base, OCR_PATH.read_bytes(), OCR_PATH.name, "application/pdf")
+    fake(
+        lambda _: {
+            "suggestions": [
+                suggestion(
+                    kind="insufficient_evidence",
+                    citations=[],
+                    missing_information=["verified_timing"],
+                )
+            ]
+        }
+    )
+
+    result = ai_client.post(AI).json()
+    item = result["suggestions"][0]
+    assert item["kind"] == "insufficient_evidence" and item["assessment"] == "abstained"
+    assert result["citations_attempted"] == 0
+    assert len(item["evidence"]) == 1
+    assert item["evidence"][0]["source_locator"] == "page 1"
+    assert item["evidence"][0]["event_time_raw"] == "09:12"
+    assert item["evidence"][0]["time_confidence"] == "uncertain"
+    assert "original page" in item["uncertainty"]
 
 
 def test_concurrent_requests_bounded_and_slot_recovers_on_timeout(ai_client):

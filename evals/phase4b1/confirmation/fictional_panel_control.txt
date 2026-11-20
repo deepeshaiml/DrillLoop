@@ -1,0 +1,3 @@
+In drill QC-7 the operator isolated Panel D for testing.
+In exercise run QC-8 Panel D was released to the electrical team.
+In exercise run QC-9 Panel D was released to the instrumentation team.

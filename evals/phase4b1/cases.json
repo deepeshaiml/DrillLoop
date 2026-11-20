@@ -1,0 +1,382 @@
+{
+  "fictional": true,
+  "labeling": {
+    "version": "phase4b1-heldout-v1",
+    "independent_reviewed": false,
+    "method": "Developer-authored from original fictional records before implementation tuning. No independent adjudication."
+  },
+  "cases": [
+    {
+      "exercise": {
+        "id": "PH4B1-FICTIONAL-HATCH",
+        "title": "Fictional tunnel hatch exercise",
+        "scenario": "Synthetic exercise evidence for an advisory evaluation.",
+        "exercise_date": "2026-11-20",
+        "duration_minutes": 60,
+        "objectives": [
+          {
+            "id": "HATCH-TIME",
+            "text": "Compare the closure time reported for Hatch K in cycle HX-8."
+          }
+        ]
+      },
+      "sources": [
+        "evals/phase4b1/fictional_hatch_control.csv",
+        "evals/phase4b1/fictional_hatch_witness.txt"
+      ],
+      "labels": {
+        "HATCH-TIME": {
+          "challenge": "attributed_timing_disagreement",
+          "kinds": [
+            "contradiction"
+          ],
+          "references": [
+            [
+              "fictional_hatch_control.csv",
+              "row 2"
+            ],
+            [
+              "fictional_hatch_witness.txt",
+              "line 1",
+              "14:23"
+            ]
+          ],
+          "required": [
+            [
+              0
+            ],
+            [
+              1
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "exercise": {
+        "id": "PH4B1-FICTIONAL-RADIO",
+        "title": "Fictional radio activation exercise",
+        "scenario": "Synthetic exercise evidence for an advisory evaluation.",
+        "exercise_date": "2026-11-20",
+        "duration_minutes": 60,
+        "objectives": [
+          {
+            "id": "RADIO-TIME",
+            "text": "Compare the activation accounts and recorded time for repeater 4 in RC-9."
+          }
+        ]
+      },
+      "sources": [
+        "evals/phase4b1/fictional_radio_ledger.txt",
+        "evals/phase4b1/fictional_radio_observer.txt"
+      ],
+      "labels": {
+        "RADIO-TIME": {
+          "challenge": "compatible_paraphrased_accounts",
+          "kinds": [
+            "corroboration"
+          ],
+          "references": [
+            [
+              "fictional_radio_ledger.txt",
+              "line 1"
+            ],
+            [
+              "fictional_radio_observer.txt",
+              "line 1"
+            ]
+          ],
+          "required": [
+            [
+              0
+            ],
+            [
+              1
+            ]
+          ],
+          "cross_source": true
+        }
+      }
+    },
+    {
+      "exercise": {
+        "id": "PH4B1-FICTIONAL-COOLING",
+        "title": "Fictional cooling response exercise",
+        "scenario": "Synthetic exercise evidence for an advisory evaluation.",
+        "exercise_date": "2026-11-20",
+        "duration_minutes": 60,
+        "objectives": [
+          {
+            "id": "COOLING-STAGES",
+            "text": "Explain how the stop and restore records for CP-8 relate to each other."
+          }
+        ]
+      },
+      "sources": [
+        "evals/phase4b1/fictional_cooling_control.txt",
+        "evals/phase4b1/fictional_cooling_observer.txt"
+      ],
+      "labels": {
+        "COOLING-STAGES": {
+          "challenge": "different_phases",
+          "kinds": [
+            "different_response_phases"
+          ],
+          "references": [
+            [
+              "fictional_cooling_control.txt",
+              "line 1"
+            ],
+            [
+              "fictional_cooling_observer.txt",
+              "line 1"
+            ]
+          ],
+          "required": [
+            [
+              0
+            ],
+            [
+              1
+            ]
+          ],
+          "abstain": true
+        }
+      }
+    },
+    {
+      "exercise": {
+        "id": "PH4B1-FICTIONAL-FORM",
+        "title": "Fictional receipt paperwork exercise",
+        "scenario": "Synthetic exercise evidence for an advisory evaluation.",
+        "exercise_date": "2026-11-20",
+        "duration_minutes": 60,
+        "objectives": [
+          {
+            "id": "FORM-ACK",
+            "text": "Assess whether Logistics acknowledged the staging plan for U-14."
+          }
+        ]
+      },
+      "sources": [
+        "evals/phase4b1/fictional_receipt_control.txt",
+        "evals/phase4b1/fictional_receipt_review.txt"
+      ],
+      "labels": {
+        "FORM-ACK": {
+          "challenge": "missing_acknowledgement",
+          "kinds": [
+            "unknown",
+            "insufficient_evidence"
+          ],
+          "references": [
+            [
+              "fictional_receipt_control.txt",
+              "line 1"
+            ],
+            [
+              "fictional_receipt_review.txt",
+              "line 1"
+            ]
+          ],
+          "abstain": true
+        }
+      }
+    },
+    {
+      "exercise": {
+        "id": "PH4B1-FICTIONAL-DENIAL",
+        "title": "Fictional conflicting radio receipts exercise",
+        "scenario": "Synthetic exercise evidence for an advisory evaluation.",
+        "exercise_date": "2026-11-20",
+        "duration_minutes": 60,
+        "objectives": [
+          {
+            "id": "DENIAL-ACK",
+            "text": "Compare the accounts of whether Transport acknowledged bulletin H-6 over radio."
+          }
+        ]
+      },
+      "sources": [
+        "evals/phase4b1/fictional_receipt_affirmation.txt",
+        "evals/phase4b1/fictional_receipt_denial.txt"
+      ],
+      "labels": {
+        "DENIAL-ACK": {
+          "challenge": "explicit_denial",
+          "kinds": [
+            "contradiction"
+          ],
+          "references": [
+            [
+              "fictional_receipt_affirmation.txt",
+              "line 1"
+            ],
+            [
+              "fictional_receipt_denial.txt",
+              "line 1"
+            ]
+          ],
+          "required": [
+            [
+              0
+            ],
+            [
+              1
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "exercise": {
+        "id": "PH4B1-FICTIONAL-ROOM",
+        "title": "Fictional repeated room releases exercise",
+        "scenario": "Synthetic exercise evidence for an advisory evaluation.",
+        "exercise_date": "2026-11-20",
+        "duration_minutes": 60,
+        "objectives": [
+          {
+            "id": "ROOM-ID",
+            "text": "Identify the event described in the unnumbered Studio C release report."
+          }
+        ]
+      },
+      "sources": [
+        "evals/phase4b1/fictional_room_ledger.txt",
+        "evals/phase4b1/fictional_room_witness.txt"
+      ],
+      "labels": {
+        "ROOM-ID": {
+          "challenge": "same_location_multiple_incidents",
+          "kinds": [
+            "unknown",
+            "insufficient_evidence"
+          ],
+          "references": [
+            [
+              "fictional_room_ledger.txt",
+              "line 1"
+            ],
+            [
+              "fictional_room_ledger.txt",
+              "line 2"
+            ],
+            [
+              "fictional_room_witness.txt",
+              "line 1"
+            ]
+          ],
+          "abstain": true
+        }
+      }
+    },
+    {
+      "exercise": {
+        "id": "PH4B1-FICTIONAL-SCAN",
+        "title": "Fictional trolley arrival exercise",
+        "scenario": "Synthetic exercise evidence for an advisory evaluation.",
+        "exercise_date": "2026-11-20",
+        "duration_minutes": 60,
+        "objectives": [
+          {
+            "id": "SCAN-TIME",
+            "text": "Verify the time that Trolley M-3 reached marker F in drill TR-9."
+          }
+        ]
+      },
+      "sources": [
+        "evals/phase4b1/fictional_trolley_scan.pdf",
+        "evals/phase4b1/fictional_trolley_desk.txt"
+      ],
+      "labels": {
+        "SCAN-TIME": {
+          "challenge": "uncertain_ocr_timestamp",
+          "kinds": [
+            "unknown",
+            "insufficient_evidence"
+          ],
+          "references": [
+            [
+              "fictional_trolley_scan.pdf",
+              "page 1",
+              "Trolley M-3 reached marker F"
+            ],
+            [
+              "fictional_trolley_desk.txt",
+              "line 1"
+            ]
+          ],
+          "abstain": true,
+          "required": [
+            [
+              0
+            ]
+          ],
+          "ocr": true
+        }
+      }
+    },
+    {
+      "exercise": {
+        "id": "PH4B1-FICTIONAL-LIFT",
+        "title": "Fictional lift delay and inspection exercise",
+        "scenario": "Synthetic exercise evidence for an advisory evaluation.",
+        "exercise_date": "2026-11-20",
+        "duration_minutes": 60,
+        "objectives": [
+          {
+            "id": "LIFT-CAUSE",
+            "text": "Establish what caused the AP-17 lift queue to stall."
+          },
+          {
+            "id": "LIFT-RESULT",
+            "text": "Establish whether the AP-18 door sensor passed its inspection."
+          }
+        ]
+      },
+      "sources": [
+        "evals/phase4b1/fictional_lift_log.txt",
+        "evals/phase4b1/fictional_lift_notes.txt"
+      ],
+      "labels": {
+        "LIFT-CAUSE": {
+          "challenge": "unsupported_causal_hypothesis",
+          "kinds": [
+            "unknown",
+            "insufficient_evidence"
+          ],
+          "references": [
+            [
+              "fictional_lift_log.txt",
+              "line 1"
+            ],
+            [
+              "fictional_lift_notes.txt",
+              "line 1"
+            ]
+          ],
+          "abstain": true
+        },
+        "LIFT-RESULT": {
+          "challenge": "incomplete_outcome",
+          "kinds": [
+            "unknown",
+            "insufficient_evidence"
+          ],
+          "references": [
+            [
+              "fictional_lift_log.txt",
+              "line 2"
+            ],
+            [
+              "fictional_lift_notes.txt",
+              "line 2"
+            ]
+          ],
+          "abstain": true
+        }
+      }
+    }
+  ]
+}

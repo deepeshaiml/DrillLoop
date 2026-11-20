@@ -1,0 +1,330 @@
+{
+  "fictional": true,
+  "labeling": {
+    "version": "phase4b1-confirmation-v1",
+    "independent_reviewed": false,
+    "method": "Developer-authored from original fictional sources and frozen before implementing the validator-only recovery."
+  },
+  "cases": [
+    {
+      "exercise": {
+        "id": "PH4B1-CONFIRMATION-POWER",
+        "title": "Fictional power checks exercise",
+        "scenario": "Synthetic exercise evidence for an advisory evaluation.",
+        "exercise_date": "2026-11-20",
+        "duration_minutes": 60,
+        "objectives": [
+          {
+            "id": "BREAKER",
+            "text": "Compare the times reported for the main breaker reclosure in PB-3."
+          },
+          {
+            "id": "FEEDER",
+            "text": "Compare the accounts of when the standby feed came online in PB-4."
+          }
+        ]
+      },
+      "sources": [
+        "evals/phase4b1/confirmation/fictional_power_ledger.txt",
+        "evals/phase4b1/confirmation/fictional_power_witness.txt"
+      ],
+      "labels": {
+        "BREAKER": {
+          "challenge": "incompatible_times",
+          "kinds": [
+            "contradiction"
+          ],
+          "references": [
+            [
+              "fictional_power_ledger.txt",
+              "line 1"
+            ],
+            [
+              "fictional_power_witness.txt",
+              "line 1"
+            ]
+          ],
+          "required": [
+            [
+              0
+            ],
+            [
+              1
+            ]
+          ]
+        },
+        "FEEDER": {
+          "challenge": "compatible_paraphrase",
+          "kinds": [
+            "corroboration"
+          ],
+          "references": [
+            [
+              "fictional_power_ledger.txt",
+              "line 2"
+            ],
+            [
+              "fictional_power_witness.txt",
+              "line 2"
+            ]
+          ],
+          "required": [
+            [
+              0
+            ],
+            [
+              1
+            ]
+          ],
+          "cross_source": true
+        }
+      }
+    },
+    {
+      "exercise": {
+        "id": "PH4B1-CONFIRMATION-PANEL",
+        "title": "Fictional panel handovers exercise",
+        "scenario": "Synthetic exercise evidence for an advisory evaluation.",
+        "exercise_date": "2026-11-20",
+        "duration_minutes": 60,
+        "objectives": [
+          {
+            "id": "PANEL-STAGES",
+            "text": "Describe how the isolation and return-to-service records for QC-7 relate."
+          },
+          {
+            "id": "PANEL-ID",
+            "text": "Identify the exercise run in the observer's unnumbered Panel D release."
+          }
+        ]
+      },
+      "sources": [
+        "evals/phase4b1/confirmation/fictional_panel_control.txt",
+        "evals/phase4b1/confirmation/fictional_panel_observer.txt"
+      ],
+      "labels": {
+        "PANEL-STAGES": {
+          "challenge": "different_phases",
+          "kinds": [
+            "different_response_phases"
+          ],
+          "references": [
+            [
+              "fictional_panel_control.txt",
+              "line 1"
+            ],
+            [
+              "fictional_panel_observer.txt",
+              "line 1"
+            ]
+          ],
+          "required": [
+            [
+              0
+            ],
+            [
+              1
+            ]
+          ],
+          "abstain": true
+        },
+        "PANEL-ID": {
+          "challenge": "shared_location",
+          "kinds": [
+            "unknown",
+            "insufficient_evidence"
+          ],
+          "references": [
+            [
+              "fictional_panel_control.txt",
+              "line 2"
+            ],
+            [
+              "fictional_panel_control.txt",
+              "line 3"
+            ],
+            [
+              "fictional_panel_observer.txt",
+              "line 2"
+            ]
+          ],
+          "abstain": true
+        }
+      }
+    },
+    {
+      "exercise": {
+        "id": "PH4B1-CONFIRMATION-MESSAGE",
+        "title": "Fictional message receipts exercise",
+        "scenario": "Synthetic exercise evidence for an advisory evaluation.",
+        "exercise_date": "2026-11-20",
+        "duration_minutes": 60,
+        "objectives": [
+          {
+            "id": "MESSAGE-MISSING",
+            "text": "Assess whether Security confirmed receipt in WT-2."
+          },
+          {
+            "id": "MESSAGE-DENIAL",
+            "text": "Compare the accounts of Security's response for WT-3."
+          }
+        ]
+      },
+      "sources": [
+        "evals/phase4b1/confirmation/fictional_message_desk.txt",
+        "evals/phase4b1/confirmation/fictional_message_review.txt"
+      ],
+      "labels": {
+        "MESSAGE-MISSING": {
+          "challenge": "missing_acknowledgement",
+          "kinds": [
+            "unknown",
+            "insufficient_evidence"
+          ],
+          "references": [
+            [
+              "fictional_message_desk.txt",
+              "line 1"
+            ],
+            [
+              "fictional_message_review.txt",
+              "line 1"
+            ]
+          ],
+          "abstain": true
+        },
+        "MESSAGE-DENIAL": {
+          "challenge": "explicit_denial",
+          "kinds": [
+            "contradiction"
+          ],
+          "references": [
+            [
+              "fictional_message_desk.txt",
+              "line 2"
+            ],
+            [
+              "fictional_message_review.txt",
+              "line 2"
+            ]
+          ],
+          "required": [
+            [
+              0
+            ],
+            [
+              1
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "exercise": {
+        "id": "PH4B1-CONFIRMATION-WEIR",
+        "title": "Fictional weir level exercise",
+        "scenario": "Synthetic exercise evidence for an advisory evaluation.",
+        "exercise_date": "2026-11-20",
+        "duration_minutes": 60,
+        "objectives": [
+          {
+            "id": "WEIR-TIME",
+            "text": "Verify when the weir fell below the warning line in VQ-6."
+          }
+        ]
+      },
+      "sources": [
+        "evals/phase4b1/confirmation/fictional_weir_scan.pdf",
+        "evals/phase4b1/confirmation/fictional_weir_typed.txt"
+      ],
+      "labels": {
+        "WEIR-TIME": {
+          "challenge": "scan_time",
+          "kinds": [
+            "unknown",
+            "insufficient_evidence"
+          ],
+          "references": [
+            [
+              "fictional_weir_scan.pdf",
+              "page 1",
+              "Weir level fell below the warning line"
+            ],
+            [
+              "fictional_weir_typed.txt",
+              "line 1"
+            ]
+          ],
+          "abstain": true,
+          "required": [
+            [
+              0
+            ]
+          ],
+          "ocr": true
+        }
+      }
+    },
+    {
+      "exercise": {
+        "id": "PH4B1-CONFIRMATION-FAN",
+        "title": "Fictional fan restart investigation exercise",
+        "scenario": "Synthetic exercise evidence for an advisory evaluation.",
+        "exercise_date": "2026-11-20",
+        "duration_minutes": 60,
+        "objectives": [
+          {
+            "id": "RESTART-CAUSE",
+            "text": "Determine what triggered the FR-7 fan recovery."
+          },
+          {
+            "id": "FAN-RESULT",
+            "text": "Determine whether FR-8 passed its readiness check."
+          }
+        ]
+      },
+      "sources": [
+        "evals/phase4b1/confirmation/fictional_fan_log.txt",
+        "evals/phase4b1/confirmation/fictional_fan_notes.txt"
+      ],
+      "labels": {
+        "RESTART-CAUSE": {
+          "challenge": "unverified_causality",
+          "kinds": [
+            "unknown",
+            "insufficient_evidence"
+          ],
+          "references": [
+            [
+              "fictional_fan_log.txt",
+              "line 1"
+            ],
+            [
+              "fictional_fan_notes.txt",
+              "line 1"
+            ]
+          ],
+          "abstain": true
+        },
+        "FAN-RESULT": {
+          "challenge": "incomplete_outcome",
+          "kinds": [
+            "unknown",
+            "insufficient_evidence"
+          ],
+          "references": [
+            [
+              "fictional_fan_log.txt",
+              "line 2"
+            ],
+            [
+              "fictional_fan_notes.txt",
+              "line 2"
+            ]
+          ],
+          "abstain": true
+        }
+      }
+    }
+  ]
+}

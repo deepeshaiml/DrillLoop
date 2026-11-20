@@ -18,10 +18,40 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 from starlette.concurrency import run_in_threadpool
 
+from app.evidence import TIME_RE
 from app.models import Exercise, Observation, Source
 
 MAX_RECORDS = 128
 MAX_REPLY_BYTES = 131_072
+_DOCUMENT_NOUN = r"(?:entr(?:y|ies)|records?|appendix|documentation)"
+_DOCUMENTATION_GAP = re.compile(
+    rf"\bno\s+(?:[\w-]+\s+){{0,7}}{_DOCUMENT_NOUN}\s+"
+    r"(?:(?:was|were|could be)\s+)?(?:found|available|located|filed|entered)\b"
+    rf"|\b(?:contains?|has|found|located|there (?:is|are))\s+no\s+(?:[\w-]+\s+){{0,7}}{_DOCUMENT_NOUN}\b"
+    rf"|\bno\s+{_DOCUMENT_NOUN}\s+of\b"
+    rf"|\b{_DOCUMENT_NOUN}\s+(?:(?:was|were|is|are)\s+)?"
+    r"(?:missing|unavailable|(?:not|never)\s+(?:found|located|entered|filed))\b"
+    r"|\b(?:not|never)\s+(?:entered|recorded|filed)\s+(?:in|on)\s+"
+    r"(?:an?\s+|the\s+)?(?:form|log|register|record)\b",
+    re.IGNORECASE,
+)
+_CLAUSE = re.compile(r"[^.!?;]+")
+_TIMING_DISPUTE = re.compile(
+    r"\b(?:time|timing|timestamps?)\s+(?:(?:is|are|was|were|remains?)\s+)?(?:still\s+)?"
+    r"(?:unresolved|disputed|in dispute|conflicts?)\b"
+    r"|\b(?:conflicting|disputed|incompatible)\s+(?:(?:reported|recorded)\s+)?(?:times?|timestamps?)\b",
+    re.IGNORECASE,
+)
+_ATTRIBUTION = re.compile(
+    r"\b(?:observed|recorded|records?|reported|reports?|logged|saw|states?|noted|notes?)\b"
+)
+
+_CAUSAL_OBJECTIVE = re.compile(r"\b(?:cause[ds]?|causal|why|trigger(?:ed|ing|s)?)\b", re.IGNORECASE)
+_SPECULATIVE_CAUSE = re.compile(
+    r"\b(?:suspect(?:s|ed)?|suggest(?:s|ed)?|hypothesi[sz](?:e[sd]?|ing)|may have|might have|possibly|unverified)\b",
+    re.IGNORECASE,
+)
+
 
 Interpretation = Literal[
     "relevant_observation",
@@ -308,11 +338,18 @@ def _token_count(value: object) -> int | None:
 
 
 @dataclass(frozen=True)
+class TimingRuleTerms:
+    start: list[str]
+    completion: list[str]
+    reported_completion: list[str]
+
+
+@dataclass(frozen=True)
 class AiContext:
     objectives: dict[str, str]
     records: list[Citation]
     source_hashes: dict[str, str]
-    timing_objective_ids: set[str]
+    timing_rules: dict[str, TimingRuleTerms]
     context_limited: bool = False
 
 
@@ -331,11 +368,16 @@ def read_context(db: Session, exercise: Exercise, max_input_bytes: int) -> AiCon
             "AI_OBJECTIVES_REQUIRED",
             "Add exercise objectives before requesting AI suggestions.",
         )
-    timing_objective_ids = {
-        item["id"]
+    timing_rules = {
+        item["id"]: TimingRuleTerms(
+            start=_rule_terms(item["evaluation_rule"], "start_terms"),
+            completion=_rule_terms(item["evaluation_rule"], "completion_terms"),
+            reported_completion=_rule_terms(item["evaluation_rule"], "completion_claim_terms"),
+        )
         for item in raw_objectives
         if isinstance(item, dict)
         and isinstance(item.get("id"), str)
+        and item["id"] in objectives
         and isinstance(item.get("evaluation_rule"), dict)
         and item["evaluation_rule"].get("type") == "elapsed_time"
     }
@@ -360,7 +402,7 @@ def read_context(db: Session, exercise: Exercise, max_input_bytes: int) -> AiCon
     source_hashes: dict[str, str] = {}
     for index, row in enumerate(rows):
         if index == MAX_RECORDS:
-            return AiContext(objectives, [], {}, timing_objective_ids, context_limited=True)
+            return AiContext(objectives, [], {}, {}, context_limited=True)
         observation_id, source_id, filename, locator, text, method, confidence, raw_time, digest = (
             row
         )
@@ -387,7 +429,16 @@ def read_context(db: Session, exercise: Exercise, max_input_bytes: int) -> AiCon
     records.sort(
         key=lambda cite: (source_order[cite.source_id], _locator_number(cite.source_locator))
     )
-    return AiContext(objectives, records, source_hashes, timing_objective_ids)
+    return AiContext(objectives, records, source_hashes, timing_rules)
+
+
+def _rule_terms(rule: dict, key: str) -> list[str]:
+    terms = rule.get(key)
+    return (
+        [term.strip().casefold() for term in terms if isinstance(term, str) and term.strip()]
+        if isinstance(terms, list)
+        else []
+    )
 
 
 def _locator_number(locator: str) -> int:
@@ -511,7 +562,7 @@ def _prompt(context: AiContext) -> str:
         {
             "objectives": context.objectives,
             "timing_objective_ids": [
-                key for key in context.objectives if key in context.timing_objective_ids
+                key for key in context.objectives if key in context.timing_rules
             ],
             "sources": sources,
             "records": records,
@@ -519,6 +570,174 @@ def _prompt(context: AiContext) -> str:
         ensure_ascii=False,
         separators=(",", ":"),
     )
+
+
+def _completion_comparisons(context: AiContext) -> dict[str, dict[str, list[int]]]:
+    comparisons = {}
+    for objective, terms in context.timing_rules.items():
+        if not terms.completion or not terms.reported_completion:
+            continue
+        recorded, reported = [], []
+        for index, record in enumerate(context.records, 1):
+            if record.time_confidence == "uncertain" or record.extraction_method == "ocr":
+                continue
+            text = record.text.casefold()
+            if (
+                record.event_time_raw
+                and record.time_confidence != "unknown"
+                and any(term in text for term in terms.completion)
+            ):
+                recorded.append(index)
+            if TIME_RE.search(text) and any(term in text for term in terms.reported_completion):
+                reported.append(index)
+        if recorded and reported:
+            comparisons[objective] = {
+                "recorded_completion": recorded,
+                "reported_completion": reported,
+            }
+    return comparisons
+
+
+def _clock_minute(value: str) -> tuple[int, int] | None:
+    if not TIME_RE.fullmatch(value):
+        return None
+    hour, minute, *second = map(int, value.split(":"))
+    return (hour, minute) if hour < 24 and minute < 60 and (not second or second[0] < 60) else None
+
+
+def _explicit_timing_dispute(
+    context: AiContext, objective: str, comparison: dict[str, list[int]]
+) -> list[Citation]:
+    """Surface an explicit source dispute for one rule-matched, independent completion pair."""
+    recorded = comparison["recorded_completion"]
+    reported = comparison["reported_completion"]
+    if len(recorded) != 1 or len(reported) != 1:
+        return []
+    control, report = (context.records[index - 1] for index in (recorded[0], reported[0]))
+    if (
+        control.source_id == report.source_id
+        or _duplicate_pair(context, control, report)
+        or not _TIMING_DISPUTE.search(report.text)
+        or not control.event_time_raw
+        or _documentation_excerpt(control.text, control.text)
+    ):
+        return []
+    control_time = _clock_minute(control.event_time_raw)
+    if control_time is None or len(control.text) > 360:
+        return []
+
+    # Each clock needs its own clause matching the rule's completion wording.
+    # Require the note to repeat the source clock and distinguish one other minute.
+    claim_terms = context.timing_rules[objective].reported_completion
+    claims: dict[tuple[int, int], tuple[str, str]] = {}
+    for match in _CLAUSE.finditer(report.text):
+        clause = match.group().strip()
+        folded = clause.casefold()
+        positions = [folded.index(term) for term in claim_terms if term in folded]
+        if not positions or _DOCUMENTATION_GAP.search(clause):
+            continue
+        event_position = min(positions)
+        reporting_prefix = folded[:event_position].strip(" ,-:")
+        clocks = TIME_RE.findall(clause[event_position:])
+        if len(clocks) == 1 and _ATTRIBUTION.search(reporting_prefix):
+            value = _clock_minute(clocks[0])
+            if value is not None:
+                if value in claims:
+                    return []
+                claims[value] = (clause, reporting_prefix)
+    if len(claims) != 2 or control_time not in claims:
+        return []
+    alternative, reporting_prefix = next(
+        claim for value, claim in claims.items() if value != control_time
+    )
+    if reporting_prefix == claims[control_time][1]:
+        return []
+    if len(alternative) > 360:
+        return []
+    return [control, report.model_copy(update={"text": alternative})]
+
+
+def _corroborated_start(
+    context: AiContext, objective: str, related: list[Citation]
+) -> list[Citation]:
+    """Link an independently reported, rule-matched start when both clocks agree exactly."""
+    rule = context.timing_rules.get(objective)
+    if rule is None:
+        return []
+    cited = {cite.observation_id for cite in related}
+    for term in rule.start:
+        candidates = [
+            record
+            for record in context.records
+            if term in record.text.casefold()
+            and record.extraction_method != "ocr"
+            and record.time_confidence != "uncertain"
+            and len(record.text) <= 360
+        ]
+        if len(candidates) != 2 or not any(record.observation_id in cited for record in candidates):
+            continue
+        columns = [record for record in candidates if record.event_time_raw]
+        if len(columns) != 1:
+            continue
+        recorded = columns[0]
+        reported = candidates[1] if recorded is candidates[0] else candidates[0]
+        if recorded.source_id == reported.source_id or _duplicate_pair(context, recorded, reported):
+            continue
+        position = reported.text.casefold().index(term)
+        if not _ATTRIBUTION.search(reported.text[:position].casefold()):
+            continue
+        timings = TIME_RE.findall(reported.text[position:])
+        clock = recorded.event_time_raw
+        if (
+            len(timings) == 1
+            and recorded.time_confidence != "unknown"
+            and _clock_minute(clock) is not None
+            and tuple(map(int, clock.split(":"))) == tuple(map(int, timings[0].split(":")))
+            and not any(_DOCUMENTATION_GAP.search(record.text) for record in candidates)
+        ):
+            return [recorded, reported]
+    return []
+
+
+def _different_reported_clock_minutes(citations: list[Citation]) -> bool:
+    clocks = {
+        clock
+        for cite in citations
+        if cite.event_time_raw and (clock := _clock_minute(cite.event_time_raw)) is not None
+    }
+    return len(clocks) > 1
+
+
+def _ocr_completion_evidence(context: AiContext, objective: str) -> list[Citation]:
+    rule = context.timing_rules.get(objective)
+    if rule is None:
+        return []
+    matches = [
+        record
+        for record in context.records
+        if record.extraction_method == "ocr"
+        and record.time_confidence == "uncertain"
+        and record.event_time_raw
+        and len(record.text) <= 360
+        and any(term in record.text.casefold() for term in rule.completion)
+    ]
+    return matches if len(matches) == 1 else []
+
+
+def _documentation_excerpt(text: str, excerpt: str) -> str | None:
+    # Inspect the original clause so a partial quote cannot hide the scope of a negation.
+    start = text.find(excerpt)
+    clauses = [
+        match
+        for match in _CLAUSE.finditer(text)
+        if match.start() < start + len(excerpt) and start < match.end()
+    ]
+    if not clauses or not all(_DOCUMENTATION_GAP.search(clause.group()) for clause in clauses):
+        return None
+    complete = text[clauses[0].start() : clauses[-1].end() + 1].strip()
+    if len(complete) <= 360:
+        return complete
+    return _DOCUMENTATION_GAP.search(clauses[0].group())[0]
 
 
 def _resolve_citations(context: AiContext, references: list[ModelCitation]) -> list[Citation]:
@@ -536,8 +755,7 @@ def _resolve_citations(context: AiContext, references: list[ModelCitation]) -> l
     return citations
 
 
-def _duplicate_pair(context: AiContext, records: list[ModelCitation]) -> bool:
-    first, second = (context.records[ref.record - 1] for ref in records)
+def _duplicate_pair(context: AiContext, first: Citation, second: Citation) -> bool:
     first_digest = context.source_hashes[first.source_id]
     same_file_copy = (
         first.source_id != second.source_id
@@ -554,25 +772,29 @@ def _duplicate_pair(context: AiContext, records: list[ModelCitation]) -> bool:
 def _validate_suggestions(
     context: AiContext, answer: ModelAnswer, reply: ProviderReply, model: str, elapsed_ms: int
 ) -> AiResult:
-    suggestions: list[Suggestion] = []
-    assessed: set[str] = set()
+    suggestions: dict[str, Suggestion] = {}
     attempted = matched = 0
+    comparisons = _completion_comparisons(context)
     for item in answer.suggestions:
         related = _resolve_citations(context, item.citations)
         attempted += len(item.citations)
         matched += len(related)
         if (
             item.objective_id not in context.objectives
-            or item.objective_id in assessed
             or len(related) != len(item.citations)
             or len({citation.observation_id for citation in related}) != len(related)
             or (item.kind not in ABSTENTIONS and not related)
-            or (item.kind in {"unknown", "insufficient_evidence"} and not item.missing_information)
             or (item.kind in {"contradiction", "different_response_phases"} and len(related) != 2)
         ):
             continue
         kind = item.kind
         unknowns = set(item.missing_information)
+        if (
+            not related
+            and kind in {"unknown", "insufficient_evidence"}
+            and "verified_timing" in unknowns
+        ):
+            related = _ocr_completion_evidence(context, item.objective_id)
         ocr_uncertain = any(
             cite.extraction_method == "ocr" and cite.time_confidence == "uncertain"
             for cite in related
@@ -580,7 +802,9 @@ def _validate_suggestions(
         if (
             kind in {"corroboration", "contradiction", "different_response_phases"}
             and len(related) == 2
-            and _duplicate_pair(context, item.citations)
+            and _duplicate_pair(
+                context, *(context.records[ref.record - 1] for ref in item.citations)
+            )
         ):
             kind = "unknown"
             unknowns.add("independent_confirmation")
@@ -593,11 +817,57 @@ def _validate_suggestions(
         if ocr_uncertain:
             unknowns.add("verified_timing")
             # Without verified time, even an apparent state conflict may be two stages.
-            if kind == "contradiction" or (
-                item.objective_id in context.timing_objective_ids
-                and kind in {"corroboration", "relevant_observation"}
+            if (
+                kind == "contradiction"
+                or (kind == "corroboration" and _different_reported_clock_minutes(related))
+                or (
+                    item.objective_id in context.timing_rules
+                    and kind in {"corroboration", "relevant_observation"}
+                )
             ):
                 kind = "insufficient_evidence"
+        if kind in {
+            "contradiction",
+            "different_response_phases",
+            "insufficient_evidence",
+            "unknown",
+        }:
+            for index, (ref, cite) in enumerate(zip(item.citations, related)):
+                gap = _documentation_excerpt(context.records[ref.record - 1].text, cite.text)
+                if gap:
+                    related[index] = cite.model_copy(update={"text": gap})
+                    kind = "insufficient_evidence"
+                    unknowns.add("completion_record")
+        if kind in {"unknown", "insufficient_evidence"} and not unknowns:
+            continue
+        if kind in {"relevant_observation", "corroboration"} and (
+            comparison := comparisons.get(item.objective_id)
+        ):
+            dispute = _explicit_timing_dispute(context, item.objective_id, comparison)
+            if dispute:
+                kind = "contradiction"
+                related = dispute
+                unknowns.add("verified_timing")
+        if (
+            kind == "corroboration"
+            and _CAUSAL_OBJECTIVE.search(context.objectives[item.objective_id])
+            and any(
+                _SPECULATIVE_CAUSE.search(context.records[ref.record - 1].text)
+                for ref in item.citations
+            )
+        ):
+            kind = "insufficient_evidence"
+            unknowns.add("cause_verification")
+        if kind == "relevant_observation":
+            matched_start = _corroborated_start(context, item.objective_id, related)
+            if matched_start:
+                kind = "corroboration"
+                related = matched_start
+        previous = suggestions.get(item.objective_id)
+        if previous is not None and not (
+            previous.kind == "relevant_observation" and kind == "contradiction"
+        ):
+            continue
         evidence, opposing = (
             (related[:1], related[1:]) if kind == "contradiction" else (related, [])
         )
@@ -606,25 +876,22 @@ def _validate_suggestions(
             uncertainty = "Review the cited counterevidence before drawing any conclusion."
         if any(citation.extraction_method == "ocr" for citation in related):
             uncertainty += " Verify OCR wording and any source times against the original page."
-        suggestions.append(
-            Suggestion(
-                evidence=evidence,
-                counterevidence=opposing,
-                objective_id=item.objective_id,
-                kind=kind,
-                assessment="abstained" if kind in ABSTENTIONS else "advisory",
-                interpretation=INTERPRETATIONS[kind],
-                unknowns=[wording for key, wording in UNKNOWNS.items() if key in unknowns],
-                uncertainty=uncertainty,
-                review_reason="An evaluator must check the original sources and decide how they relate to the objective.",
-            )
+        suggestions[item.objective_id] = Suggestion(
+            evidence=evidence,
+            counterevidence=opposing,
+            objective_id=item.objective_id,
+            kind=kind,
+            assessment="abstained" if kind in ABSTENTIONS else "advisory",
+            interpretation=INTERPRETATIONS[kind],
+            unknowns=[wording for key, wording in UNKNOWNS.items() if key in unknowns],
+            uncertainty=uncertainty,
+            review_reason="An evaluator must check the original sources and decide how they relate to the objective.",
         )
-        assessed.add(item.objective_id)
     return AiResult(
         provider="ollama",
         model=model,
-        suggestions=suggestions,
-        unassessed_objective_ids=[key for key in context.objectives if key not in assessed],
+        suggestions=list(suggestions.values()),
+        unassessed_objective_ids=[key for key in context.objectives if key not in suggestions],
         rejected_suggestion_count=len(answer.suggestions) - len(suggestions),
         citations_attempted=attempted,
         citations_matched=matched,

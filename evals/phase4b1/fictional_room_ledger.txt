@@ -1,0 +1,2 @@
+[16:02] Event L-21: Studio C was released to Logistics after the first check.
+[16:09] Event L-22: Studio C was released to Facilities after the second check.

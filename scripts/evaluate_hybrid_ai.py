@@ -22,7 +22,8 @@ MIME_TYPES = {".txt": "text/plain", ".csv": "text/csv", ".pdf": "application/pdf
 
 
 def load_cases(suite: str = "phase4a") -> tuple[dict, list[dict]]:
-    dataset = json.loads((ROOT / "evals" / suite / "cases.json").read_text())
+    directory = "phase4b1/confirmation" if suite == "phase4b1-confirmation" else suite
+    dataset = json.loads((ROOT / "evals" / directory / "cases.json").read_text())
     assert dataset["fictional"]
     historical = {}
     if suite == "phase4b":
@@ -283,6 +284,8 @@ def score_quality(labels: dict, suggestions: list[dict], context_limited: bool) 
                 "abstained": abstained,
                 "cross_source_target": label.get("cross_source", False),
                 "expected_conflict": "contradiction" in kinds,
+                "ocr_expected": bool(label.get("ocr")),
+                "ocr_preserved": ocr_preserved,
                 "classified_conflict": kind == "contradiction",
                 "unsupported_claim": claim and not supported_claim,
                 "advisory_returned": claim,
@@ -320,6 +323,10 @@ def score_metrics(outcomes: list[dict]) -> dict:
         "exact_citation_validation": [
             sum(item["citations_matched"] or 0 for item in hybrid),
             sum(item["citations_attempted"] or 0 for item in hybrid),
+        ],
+        "ocr_uncertainty_preserved": [
+            sum(item["ocr_expected"] and item["ocr_preserved"] for item in labels),
+            sum(item["ocr_expected"] for item in labels),
         ],
         "deterministic_detail_preserved": [
             sum(
@@ -385,7 +392,7 @@ def verify_fabricated_citations(client, exercise_id: str) -> dict:
     }
 
 
-def paired_metadata(client, backend_root: Path) -> dict:
+def paired_metadata(client, backend_root: Path, capture_model: bool) -> dict:
     import httpx
     from app import ai_evaluation as ai
 
@@ -399,13 +406,23 @@ def paired_metadata(client, backend_root: Path) -> dict:
     # from prompt size. Leave every other request and response on the real provider path.
     request = ai.OllamaProvider._request
     calls = []
+    traces = []
 
     async def fixed_context(http, method, path, **kwargs):
         if path == "/api/chat":
             body = kwargs["json"]
             body["options"]["num_ctx"] = 8192
             calls.append({"think": body["think"], "stream": body["stream"], **body["options"]})
-        return await request(http, method, path, **kwargs)
+        response = await request(http, method, path, **kwargs)
+        if capture_model and path == "/api/chat":
+            traces.append(
+                {
+                    "records": json.loads(body["messages"][-1]["content"]),
+                    "response": response.get("message", {}).get("content"),
+                    "done_reason": response.get("done_reason"),
+                }
+            )
+        return response
 
     ai.OllamaProvider._request = staticmethod(fixed_context)
     assert client.app.state.ai_evaluation.settings == settings
@@ -437,14 +454,25 @@ def paired_metadata(client, backend_root: Path) -> dict:
         "max_input_bytes": settings.max_input_bytes,
         "timeout_seconds": settings.timeout_seconds,
         "inference_calls": calls,
+        **({"fictional_model_traces": traces} if capture_model else {}),
     }
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path)
-    parser.add_argument("--suite", choices=("phase4a", "phase4b"), default="phase4a")
+    parser.add_argument(
+        "--suite",
+        choices=("phase4a", "phase4b", "phase4b1", "phase4b1-confirmation"),
+        default="phase4a",
+    )
     parser.add_argument("--repeat", type=int, default=1)
+    parser.add_argument("--case", action="append", help="Run only the named fictional exercise ID.")
+    parser.add_argument(
+        "--capture-model",
+        action="store_true",
+        help="Include raw fictional model traces in the output.",
+    )
     parser.add_argument("--backend-root", type=Path, default=ROOT)
     parser.add_argument(
         "--serve", action="store_true", help="Serve the synthetic exercises before upload."
@@ -454,8 +482,13 @@ def main() -> None:
     if args.output and args.output.exists():
         parser.error("Output must be a new file.")
     if args.repeat < 1 or (args.repeat != 1 and args.suite == "phase4a"):
-        parser.error("Repeats require Phase 4B and a positive count.")
+        parser.error("Repeats require a paired suite and a positive count.")
     labeling, cases = load_cases(args.suite)
+    if args.case:
+        cases = [case for case in cases if case["exercise"]["id"] in args.case]
+        if {case["exercise"]["id"] for case in cases} != set(args.case):
+            parser.error("An exercise ID does not belong to this fictional suite.")
+    paired = args.suite != "phase4a"
     backend_root = args.backend_root.resolve()
     configure(backend_root / "backend")
 
@@ -472,15 +505,22 @@ def main() -> None:
                 parser.error(
                     "Enable and configure the installed local model before running inference."
                 )
-            metadata = paired_metadata(client, backend_root) if args.suite == "phase4b" else {}
+            metadata = paired_metadata(client, backend_root, args.capture_model) if paired else {}
             prepared = [prepare_case(client, case) for case in cases]
             outcomes = [
                 evaluate_case(client, case, fixture, args.suite)
                 for _ in range(args.repeat)
                 for case, fixture in zip(cases, prepared, strict=True)
             ]
-            if args.suite == "phase4b":
-                probes = verify_fabricated_citations(client, "PH4A-FICTIONAL-NARRATIVE")
+            probes = (
+                (
+                    verify_fabricated_citations(client, "PH4A-FICTIONAL-NARRATIVE")
+                    if any(fixture[0] == "PH4A-FICTIONAL-NARRATIVE" for fixture in prepared)
+                    else None
+                )
+                if paired
+                else None
+            )
         else:
             for case in cases:
                 expect(client.post(BASE, json=case["exercise"]), 201)
@@ -495,7 +535,7 @@ def main() -> None:
         return
 
     result = {"fictional": True, "labeling": labeling, "real_inference": True, "cases": outcomes}
-    if args.suite == "phase4b":
+    if paired:
         result.update(
             run_metadata=metadata,
             repetitions=args.repeat,
