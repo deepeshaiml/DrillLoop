@@ -7,10 +7,15 @@ import { candidateError, candidateTime, reviewLabels, type AiCandidateQueueEntry
 type WorkspaceProps = Omit<AiAssistanceProps, 'capability' | 'onSaved' | 'onOpen' | 'onQueue'> & {
   capability?: AiAssistanceProps['capability']
   canReview: boolean
+  selected: string | null
+  setSelected: (id: string | null) => void
+  onFindingCreated: () => Promise<void>
+  onOpenFinding: (id: string) => Promise<void>
 }
 
-export default function AiCandidateWorkspace({ capability, canReview, ...props }: WorkspaceProps) {
-  const [selected, setSelected] = useState<string | null>(null)
+export default function AiCandidateWorkspace({
+  capability, canReview, selected, setSelected, onFindingCreated, onOpenFinding, ...props
+}: WorkspaceProps) {
   const [revision, setRevision] = useState(0)
   const queueHeading = useRef<HTMLHeadingElement>(null)
   const opener = useRef<HTMLElement | null>(null)
@@ -27,6 +32,7 @@ export default function AiCandidateWorkspace({ capability, canReview, ...props }
     returnFocus.current = false
     const previous = opener.current
     if (previous?.isConnected) previous.focus()
+    opener.current = null
     if (document.activeElement !== previous) queueHeading.current?.focus()
   }, [selected])
 
@@ -39,7 +45,7 @@ export default function AiCandidateWorkspace({ capability, canReview, ...props }
     </div>
     {selected && <CandidateDetailView key={selected} candidateId={selected} api={props.api}
       exerciseId={props.exerciseId} canReview={canReview}
-      onEvidence={props.onEvidence} onChange={refreshQueue} onBack={() => {
+      onEvidence={props.onEvidence} onChange={refreshQueue} onFindingCreated={onFindingCreated} onOpenFinding={onOpenFinding} onBack={() => {
         returnFocus.current = true
         refreshQueue()
         setSelected(null)
@@ -79,6 +85,7 @@ function CandidateQueue({ api, exerciseId, revision, headingRef, onOpen }: Queue
             id: candidate.id,
             reviewState: candidate.review_state,
             freshness: candidate.freshness,
+            promoted: candidate.promoted,
             objectiveId: candidate.objective_id,
             objectiveText: candidate.objective_text,
             interpretation: candidate.interpretation,
@@ -146,7 +153,7 @@ function CandidateQueue({ api, exerciseId, revision, headingRef, onOpen }: Queue
             </p>
           </div>
           <div className="cr-row-controls">
-            <CandidateStatus state={row.reviewState} freshness={row.freshness} />
+            <CandidateStatus state={row.reviewState} freshness={row.freshness} promoted={row.promoted} />
             <button type="button" className="button secondary" aria-label={`Open candidate for ${row.objectiveId}`} aria-describedby={`candidate-meta-${row.id}`}
               onClick={() => onOpen(row.id)}>Open candidate <ChevronRight size={16} aria-hidden="true" /></button>
           </div>

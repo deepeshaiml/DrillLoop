@@ -458,3 +458,56 @@
     padding-inline: 8px;
   }
 }
+
+.cr-dialog.cr-promotion-dialog {
+  width: min(640px, calc(100% - 24px));
+}
+
+.cr-promotion-context {
+  border-block: 1px solid var(--dl-line);
+}
+
+.cr-promotion-dialog fieldset {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+  margin: 0;
+  padding: 8px 0 0;
+  border: 0;
+}
+
+.cr-promotion-dialog legend {
+  font-weight: 750;
+}
+
+.cr-promotion-dialog label {
+  display: grid;
+  gap: 4px;
+}
+
+.cr-promotion-dialog input:not([type="checkbox"]),
+.cr-promotion-dialog select {
+  min-height: 44px;
+  width: 100%;
+  padding: 8px 10px;
+  color: var(--dl-ink);
+  background: var(--dl-surface);
+  border: 1px solid #80939c;
+  border-radius: 8px;
+  font: inherit;
+}
+
+.cr-promotion-dialog .cr-confirm-wording {
+  grid-template-columns: 24px 1fr;
+  align-items: start;
+  gap: 10px;
+  min-height: 44px;
+  font-weight: 500;
+}
+
+.cr-confirm-wording input {
+  width: 20px;
+  height: 20px;
+  margin: 2px 0;
+  accent-color: #147564;
+}

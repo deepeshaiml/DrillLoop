@@ -93,6 +93,7 @@ class Observation(Base):
 
 class Finding(Base):
     __tablename__ = "findings"
+    __table_args__ = (Index("ux_findings_exercise_id_id", "exercise_id", "id", unique=True),)
 
     id: Mapped[str] = mapped_column(String(36), primary_key=True)
     exercise_id: Mapped[str] = mapped_column(ForeignKey("exercises.id"), index=True)
@@ -189,6 +190,29 @@ class AiCandidate(Base):
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
 
 
+class AiCandidatePromotion(Base):
+    __tablename__ = "ai_candidate_promotions"
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["exercise_id", "organization_id", "candidate_id"],
+            ["ai_candidates.exercise_id", "ai_candidates.organization_id", "ai_candidates.id"],
+            ondelete="RESTRICT",
+            name="fk_ai_candidate_promotion_candidate_scope",
+        ),
+        ForeignKeyConstraint(
+            ["exercise_id", "finding_id"],
+            ["findings.exercise_id", "findings.id"],
+            ondelete="RESTRICT",
+            name="fk_ai_candidate_promotion_finding_scope",
+        ),
+    )
+
+    candidate_id: Mapped[str] = mapped_column(String(36), primary_key=True)
+    exercise_id: Mapped[str] = mapped_column(String(80))
+    organization_id: Mapped[str] = mapped_column(String(120))
+    finding_id: Mapped[str] = mapped_column(String(36), unique=True)
+
+
 class AiCandidateRequest(Base):
     __tablename__ = "ai_candidate_requests"
     __table_args__ = (
@@ -199,7 +223,7 @@ class AiCandidateRequest(Base):
             name="fk_ai_candidate_request_candidate_scope",
         ),
         CheckConstraint(
-            "operation IN ('save', 'review')", name="ck_ai_candidate_request_operation"
+            "operation IN ('save', 'review', 'promote')", name="ck_ai_candidate_request_operation"
         ),
         CheckConstraint("applied_version >= 1", name="ck_ai_candidate_request_version"),
     )

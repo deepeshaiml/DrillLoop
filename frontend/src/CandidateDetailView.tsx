@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useId, useRef, useState } from 'react'
 import { AlertTriangle, ArrowLeft, ChevronRight, FileText, History } from 'lucide-react'
+import CandidatePromotionDialog from './CandidatePromotionDialog'
 import { interpretationLabels, type AiAssistanceProps } from './AiAssistance'
 import {
   candidateError, candidateTime, createOperationKey, reviewActions, reviewLabels, staleReasons, transitions,
-  type ApiError, type CandidateApi, type CandidateDetail, type CandidateEvent, type ReviewDecision, type ReviewState, type ReviewOperation, type SavedCitation,
+  type ApiError, type Candidate, type CandidateApi, type CandidateDetail, type CandidateEvent, type ReviewDecision, type ReviewState, type ReviewOperation, type SavedCitation,
 } from './candidateApi'
 
 type Props = Pick<AiAssistanceProps, 'api' | 'exerciseId' | 'onEvidence'> & {
@@ -11,13 +12,15 @@ type Props = Pick<AiAssistanceProps, 'api' | 'exerciseId' | 'onEvidence'> & {
   canReview: boolean
   onChange: () => void
   onBack: () => void
+  onFindingCreated: () => Promise<void>
+  onOpenFinding: (id: string) => Promise<void>
 }
 
 function EvidenceQuotes({ title, citations, historical, onEvidence }: {
   title: string
   citations: SavedCitation[]
   historical: boolean
-  onEvidence: Props['onEvidence']
+  onEvidence?: Props['onEvidence']
 }) {
   if (!citations.length) return null
   return <div className="cr-citations">
@@ -31,12 +34,13 @@ function EvidenceQuotes({ title, citations, historical, onEvidence }: {
         </div>
       </figcaption>
       <blockquote>{item.text}</blockquote>
-      {(item.event_time_raw || item.time_confidence === 'uncertain' || item.extraction_method === 'ocr') && <p className="cr-meta">
+      {(item.event_time_raw || item.time_confidence === 'uncertain' || item.extraction_method === 'ocr' || item.source_locator.toLowerCase().startsWith('segment')) && <p className="cr-meta">
         {item.event_time_raw && <span>Reported time {item.event_time_raw}</span>}
         {item.time_confidence === 'uncertain' && <span>Source time uncertain</span>}
+        {item.source_locator.toLowerCase().startsWith('segment') && <span>Transcript offset locates the recording.</span>}
         {item.extraction_method === 'ocr' && <span>OCR wording and timing require verification against the original page.</span>}
       </p>}
-      {!historical && <button className="button secondary" type="button"
+      {!historical && onEvidence && <button className="button secondary" type="button"
         aria-label={`Inspect source ${item.source_filename}, ${item.source_locator}`}
         onClick={() => onEvidence(item)}>Inspect source <ChevronRight size={16} aria-hidden="true" /></button>}
     </figure>)}
@@ -45,7 +49,8 @@ function EvidenceQuotes({ title, citations, historical, onEvidence }: {
 
 function HistoryEvent({ event }: { event: CandidateEvent }) {
   const title = event.operation === 'ai_candidate_saved' ? 'Candidate saved'
-    : event.operation === 'ai_candidate_invalidated' ? 'Evidence invalidated' : reviewLabels[event.new_state]
+    : event.operation === 'ai_candidate_invalidated' ? 'Evidence invalidated'
+    : event.operation === 'ai_candidate_promoted' ? 'Proposed finding created' : reviewLabels[event.new_state]
   return <li>
     <strong>{title}</strong>
     <p className="cr-meta"><span>{event.operation === 'ai_candidate_invalidated' ? 'System' : event.actor}</span>
@@ -55,6 +60,7 @@ function HistoryEvent({ event }: { event: CandidateEvent }) {
       <p>From {reviewLabels[event.prior_state]} to {reviewLabels[event.new_state]}</p>
       {event.note && <p className="cr-note">{event.note}</p>}
     </>}
+    {event.operation === 'ai_candidate_promoted' && <p>Finding {event.finding_id}</p>}
     {event.operation === 'ai_candidate_invalidated' && <>
       <p>From current evidence to stale evidence</p>
       <p>{event.reasons.map(reason => staleReasons[reason] ?? reason).join(' ')}</p>
@@ -62,7 +68,35 @@ function HistoryEvent({ event }: { event: CandidateEvent }) {
   </li>
 }
 
-export default function CandidateDetailView({ api, exerciseId, candidateId, canReview, onEvidence, onChange, onBack }: Props) {
+function CandidateEvidence({ candidate, onEvidence }: {
+  candidate: Candidate
+  onEvidence?: Props['onEvidence']
+}) {
+  const historical = candidate.freshness === 'stale'
+  return <>
+    <section className="cr-section" aria-label="Original evidence">
+      <h4>Original evidence</h4>
+      <EvidenceQuotes title={historical ? 'Historical supporting quotations' : 'Supporting quotations'} citations={candidate.evidence} historical={historical} onEvidence={onEvidence} />
+      <EvidenceQuotes title={historical ? 'Historical counterevidence' : 'Counterevidence'} citations={candidate.counterevidence} historical={historical} onEvidence={onEvidence} />
+    </section>
+    <section className="cr-section" aria-label="AI interpretation">
+      <h4>AI interpretation</h4>
+      <p className="cr-meta">AI-generated · Independent verification required</p>
+      <p><strong>{interpretationLabels[candidate.kind]}</strong></p>
+      <p>{candidate.interpretation}</p>
+    </section>
+    <section className="cr-section" aria-label="Uncertainty and missing information">
+      <h4>Uncertainty and missing information</h4>
+      <div className="cr-warning cr-uncertainty">
+        <p>{candidate.uncertainty}</p>
+        {candidate.unknowns.length > 0 && <ul>{candidate.unknowns.map((item, index) => <li key={index}>{item}</li>)}</ul>}
+        <p>{candidate.review_reason}</p>
+      </div>
+    </section>
+  </>
+}
+
+export default function CandidateDetailView({ api, exerciseId, candidateId, canReview, onEvidence, onChange, onBack, onFindingCreated, onOpenFinding }: Props) {
   const headingId = useId()
   const headingRef = useRef<HTMLHeadingElement>(null)
   const request = useRef<AbortController | null>(null)
@@ -72,6 +106,9 @@ export default function CandidateDetailView({ api, exerciseId, candidateId, canR
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
   const [review, setReview] = useState<Pick<ReviewOperation, 'decision' | 'etag'> | null>(null)
+  const [promotion, setPromotion] = useState<string | null>(null)
+  const [findingError, setFindingError] = useState('')
+  const [openingFinding, setOpeningFinding] = useState(false)
   const [reviewDenied, setReviewDenied] = useState(false)
   const [historyBusy, setHistoryBusy] = useState(false)
   const [historyError, setHistoryError] = useState('')
@@ -135,6 +172,7 @@ export default function CandidateDetailView({ api, exerciseId, candidateId, canR
       if (status === 401 || status === 403 || status === 404) {
         setDetail(null)
         setReview(null)
+        setPromotion(null)
         setError(candidateError(reason, 'Candidate access is unavailable.'))
       } else {
         setHistoryError(candidateError(reason, 'More audit events could not be loaded. Try again.'))
@@ -145,9 +183,11 @@ export default function CandidateDetailView({ api, exerciseId, candidateId, canR
     }
   }
 
-  const afterReview = (message: string, reviewForbidden = false) => {
+  const afterDecision = (message: string, reviewForbidden = false) => {
     if (reviewForbidden) setReviewDenied(true)
     setReview(null)
+    setPromotion(null)
+    headingRef.current?.focus()
     setNotice(message)
     void reload()
     onChange()
@@ -155,8 +195,19 @@ export default function CandidateDetailView({ api, exerciseId, candidateId, canR
 
   const candidate = detail?.candidate
   const historical = candidate?.freshness === 'stale'
-  const actions = candidate && detail.etag && canReview && !reviewDenied && !historical && !loading && !error
-    ? transitions[candidate.review_state] : []
+  const canDecide = candidate && detail.etag && canReview && !reviewDenied && !historical && !loading && !error && !candidate.promoted
+  const actions = canDecide ? transitions[candidate.review_state] : []
+  const openFinding = async (id: string) => {
+    setFindingError('')
+    setOpeningFinding(true)
+    try {
+      await onOpenFinding(id)
+    } catch (reason) {
+      setFindingError(candidateError(reason, 'The linked finding could not be loaded. Try again.'))
+    } finally {
+      setOpeningFinding(false)
+    }
+  }
 
   return <section className="cr-panel cr-detail" aria-labelledby={headingId}>
     <header className="cr-detail-heading">
@@ -177,25 +228,7 @@ export default function CandidateDetailView({ api, exerciseId, candidateId, canR
         {candidate.stale_at && <p>Detected <time dateTime={candidate.stale_at}>{candidateTime(candidate.stale_at)}</time></p>}
         <ul>{candidate.stale_reasons.map(reason => <li key={reason}>{staleReasons[reason] ?? reason}</li>)}</ul>
       </div>}
-      <section className="cr-section" aria-label="Original evidence">
-        <h4>Original evidence</h4>
-        <EvidenceQuotes title={historical ? 'Historical supporting quotations' : 'Supporting quotations'} citations={candidate.evidence} historical={historical} onEvidence={onEvidence} />
-        <EvidenceQuotes title={historical ? 'Historical counterevidence' : 'Counterevidence'} citations={candidate.counterevidence} historical={historical} onEvidence={onEvidence} />
-      </section>
-      <section className="cr-section" aria-label="AI interpretation">
-        <h4>AI interpretation</h4>
-        <p className="cr-meta">AI-generated · Independent verification required</p>
-        <p><strong>{interpretationLabels[candidate.kind]}</strong></p>
-        <p>{candidate.interpretation}</p>
-      </section>
-      <section className="cr-section" aria-label="Uncertainty and missing information">
-        <h4>Uncertainty and missing information</h4>
-        <div className="cr-warning cr-uncertainty">
-          <p>{candidate.uncertainty}</p>
-          {candidate.unknowns.length > 0 && <ul>{candidate.unknowns.map((item, index) => <li key={index}>{item}</li>)}</ul>}
-          <p>{candidate.review_reason}</p>
-        </div>
-      </section>
+      <CandidateEvidence candidate={candidate} onEvidence={onEvidence} />
       <section className="cr-section" aria-label="Candidate decision">
         <h4>Candidate decision</h4>
         <CandidateStatus state={candidate.review_state} freshness={candidate.freshness} />
@@ -205,15 +238,33 @@ export default function CandidateDetailView({ api, exerciseId, candidateId, canR
         <p>Acceptance records a decision about this AI candidate. Finding approval remains a separate human decision.</p>
         {(!canReview || reviewDenied) && <p className="cr-meta">Review actions require an administrator or reviewer role.</p>}
         {candidate.review_state === 'rejected' && <p className="cr-meta">Rejection ends review of this candidate.</p>}
-        {!detail.etag && canReview && !historical && candidate.review_state !== 'rejected' && <p role="alert" className="cr-warning">The response did not include a review version. Reload before recording a decision.</p>}
+        {!detail.etag && canReview && !historical && !candidate.promoted && candidate.review_state !== 'rejected' && <p role="alert" className="cr-warning">The response did not include a review version. Reload before recording a decision.</p>}
         {actions.length > 0 && <div className="cr-toolbar">{actions.map(action => <button type="button" key={action}
           className={`button ${action === 'accepted_for_consideration' ? 'primary' : action === 'rejected' ? 'reject' : 'secondary'}`}
           onClick={() => {
             // Bind the decision to the version visible when the reviewer chooses it.
             if (detail.etag) setReview({ decision: action, etag: detail.etag })
           }}>{reviewActions[action].label}</button>)}</div>}
-        {!loading && !error && !detail.etag && canReview && !historical && candidate.review_state !== 'rejected' && <button type="button" className="button secondary" onClick={() => void reload()}>Reload review version</button>}
+        {canDecide && candidate.promotion_block_reason === null && <div className="cr-toolbar">
+          <button type="button" className="button primary" onClick={() => setPromotion(detail.etag)}>Create proposed finding</button>
+        </div>}
+        {candidate.review_state === 'accepted_for_consideration' && candidate.promotion_block_reason && !historical &&
+          <p className="cr-meta">{candidate.promotion_block_reason}</p>}
+        {!loading && !error && !detail.etag && canReview && !historical && !candidate.promoted && candidate.review_state !== 'rejected' && <button type="button" className="button secondary" onClick={() => void reload()}>Reload review version</button>}
       </section>
+      {candidate.linked_finding && <section className="cr-section" aria-label="Linked finding">
+        <h4>Linked finding</h4>
+        <p><strong>{candidate.linked_finding.title}</strong> · {candidate.linked_finding.code}</p>
+        <p>{candidate.linked_finding.status === 'proposed' ? 'Proposed · Awaiting separate human finding review' :
+          `Finding status: ${candidate.linked_finding.status}`}</p>
+        <div className="cr-toolbar">
+          <button type="button" className="button secondary" disabled={openingFinding}
+            onClick={() => { if (candidate.linked_finding) void openFinding(candidate.linked_finding.id) }}>
+            {openingFinding ? 'Opening finding…' : 'Open finding'} <ChevronRight size={16} aria-hidden="true" />
+          </button>
+        </div>
+        {findingError && <p role="alert" className="cr-warning">{findingError}</p>}
+      </section>}
       <section className="cr-section" aria-label="Candidate audit history">
         <h4><History size={18} aria-hidden="true" /> Audit history</h4>
         <ol className="cr-history">{candidate.history.map(event => <HistoryEvent key={event.id} event={event} />)}</ol>
@@ -239,7 +290,15 @@ export default function CandidateDetailView({ api, exerciseId, candidateId, canR
       </details>
     </>}
     {review && <ReviewDialog api={api} exerciseId={exerciseId} candidateId={candidateId}
-      decision={review.decision} etag={review.etag} headingRef={headingRef} onClose={() => setReview(null)} onReload={afterReview} />}
+      decision={review.decision} etag={review.etag} headingRef={headingRef} onClose={() => setReview(null)} onReload={afterDecision} />}
+    {promotion && candidate && <CandidatePromotionDialog api={api} candidate={candidate} etag={promotion}
+      headingRef={headingRef} onClose={() => setPromotion(null)} onReload={afterDecision}
+      onCreated={() => {
+        afterDecision('Proposed finding created. An authorized reviewer can now record a separate finding decision.')
+        void onFindingCreated().catch(reason => setFindingError(candidateError(reason, 'The Findings list could not be refreshed. Use Open finding to retry.')))
+      }}>
+      <CandidateEvidence candidate={candidate} />
+    </CandidatePromotionDialog>}
   </section>
 }
 
@@ -365,9 +424,10 @@ function ReviewDialog({ api, exerciseId, candidateId, decision, etag, headingRef
   </dialog>
 }
 
-export function CandidateStatus({ state, freshness }: { state: ReviewState; freshness: 'current' | 'stale' }) {
+export function CandidateStatus({ state, freshness, promoted }: { state: ReviewState; freshness: 'current' | 'stale'; promoted?: boolean }) {
   return <div className="cr-statuses">
     <span className={`cr-status cr-status--${state}`}>{reviewLabels[state]}</span>
+    {promoted && <span className="cr-status cr-status--accepted_for_consideration">Finding linked</span>}
     {freshness === 'stale' && <span className="cr-status cr-status--stale">Evidence stale</span>}
   </div>
 }

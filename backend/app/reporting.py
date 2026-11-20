@@ -405,12 +405,25 @@ def make_report_pdf(detail: dict) -> bytes:
                 styles["DLBody"],
             )
         )
+        source_candidate_id = finding.get("source_candidate_id")
+        interpretation_label = (
+            "<b>Human-confirmed interpretation</b>"
+            if source_candidate_id
+            else "<b>Analysis-time interpretation</b> <font color='#607487'>(stored with the finding; may predate the current reviewer decision)</font>"
+        )
         story.append(
             Paragraph(
-                f"<b>Analysis-time interpretation</b> <font color='#607487'>(stored with the finding; may predate the current reviewer decision)</font><br/>{escape(finding.get('interpretation') or 'Not provided')}",
+                f"{interpretation_label}<br/>{escape(finding.get('interpretation') or 'Not provided')}",
                 styles["DLBody"],
             )
         )
+        if source_candidate_id:
+            story.append(
+                Paragraph(
+                    f"<b>Source AI candidate:</b> {escape(source_candidate_id)}",
+                    styles["DLSmall"],
+                )
+            )
         if status in {"approved", "rejected"}:
             reviewer_status = (
                 f"{_decision_label(status)} by {reviewer} · {decision_time}. "

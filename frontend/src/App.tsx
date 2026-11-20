@@ -14,8 +14,8 @@ type Tab = 'exercises' | 'overview' | 'objectives' | 'evidence' | 'timeline' | '
 type ReportDownloadState = { status: 'idle' | 'preparing' | 'started' | 'failed'; message?: string; filename?: string }
 type Source = { id: string; filename: string; kind: string; mime_type: string; sha256: string; provenance: Record<string, unknown>; scan_status: string; observation_count: number }
 type Observation = { id: string; source_id: string; source_filename: string; text: string; event_time_raw: string | null; event_time_normalized: string | null; time_confidence: string; source_locator: string; observation_type: string; extraction_method: string; recognition_confidence: number | null }
-type Support = { source_id: string; source_filename: string; observation_id: string; source_locator: string; text: string; event_time_normalized: string | null; time_confidence: string }
-type Finding = { id: string; code: string; title: string; category: 'strength' | 'improvement'; objective_id: string | null; observation: string; interpretation: string; evidence_ids: string[]; evidence_labels: string[]; confidence: string; status: string; review_note: string; reviewer: string | null; supporting_evidence: Support[] }
+type Support = { event_time_raw?: string | null; extraction_method?: string; source_id: string; source_filename: string; observation_id: string; source_locator: string; text: string; event_time_normalized: string | null; time_confidence: string }
+type Finding = { source_candidate_id: string | null; id: string; code: string; title: string; category: 'strength' | 'improvement'; objective_id: string | null; observation: string; interpretation: string; evidence_ids: string[]; evidence_labels: string[]; confidence: string; status: string; review_note: string; reviewer: string | null; supporting_evidence: Support[] }
 type Action = { id: string; finding_id: string; finding_title: string; title: string; evidence_ids: string[]; owner: string | null; priority: string; due_date: string | null; acceptance_criteria: string; status: string; reviewer_decision: string; reviewer: string | null; closure_evidence: string }
 type Objective = { id: string; text: string; evaluation_rule?: Record<string, unknown> }
 type ObjectiveDraft = {
@@ -361,6 +361,15 @@ export default function App() {
     const detail = await api<Detail>(`/exercises/${encodeURIComponent(id)}`)
     setData(detail)
   }, [selectedId])
+
+  const refreshFindingData = async (id: string) => {
+    const latest = await api<Detail>(`/exercises/${encodeURIComponent(id)}`)
+    setData(current => current?.exercise.id === id ? latest : current)
+    setExercises(current => current.map(exercise => exercise.id === id
+      ? { ...exercise, finding_count: latest.findings.length, action_count: latest.actions.length }
+      : exercise))
+    return latest.findings
+  }
 
   const loadWorkspace = async () => {
     const [list, caps] = await Promise.all([api<Exercise[]>('/exercises'), api<Capabilities>('/capabilities')])
@@ -796,7 +805,7 @@ export default function App() {
             {tab === 'objectives' && <ObjectivesView data={data} canEdit={Boolean(canEdit)} onEdit={openObjectiveEditor} />}
             {tab === 'evidence' && <EvidenceView data={data} capabilities={capabilities} canEdit={Boolean(canEdit)} busy={busy} uploading={uploading} filteredSources={filteredSources} sourceFilter={sourceFilter} setSourceFilter={setSourceFilter} syntheticSourceIds={syntheticSourceIds} onUpload={uploadFiles} onSource={setSourceOpen} onEvidence={setEvidenceOpen} onGoTimeline={() => setTab('timeline')} onTranscribe={transcribeFile} />}
             {tab === 'timeline' && <TimelineView data={data} focusObservationId={timelineFocusId} onFocusConsumed={() => setTimelineFocusId('')} onEvidence={setEvidenceOpen} onGoEvidence={() => setTab('evidence')} />}
-            {tab === 'findings' && <FindingsView data={data} busy={busy} canEdit={Boolean(canEdit)} canReview={Boolean(canReview)} identityName={identity.name} isSyntheticDemo={syntheticSourceIds.size > 0} aiCapability={capabilities?.analysis.ai_assistance} onReview={(finding, decision) => setPendingReview({ kind: 'finding', record: finding, decision })} onEvidence={item => { const source = data.sources.find(candidate => candidate.id === item.source_id); if (source) { setSourceFocusObservationId(item.observation_id); setSourceOpen(source) } else setEvidenceOpen(item) }} />}
+            {tab === 'findings' && <FindingsView data={data} busy={busy} canEdit={Boolean(canEdit)} canReview={Boolean(canReview)} identityName={identity.name} isSyntheticDemo={syntheticSourceIds.size > 0} aiCapability={capabilities?.analysis.ai_assistance} refreshFindings={() => refreshFindingData(data.exercise.id)} onReview={(finding, decision) => setPendingReview({ kind: 'finding', record: finding, decision })} onEvidence={item => { const source = data.sources.find(candidate => candidate.id === item.source_id); if (source) { setSourceFocusObservationId(item.observation_id); setSourceOpen(source) } else setEvidenceOpen(item) }} />}
             {tab === 'actions' && <ActionsView data={data} busy={busy} canEdit={Boolean(canEdit)} canReview={Boolean(canReview)} identityName={identity.name} isSyntheticDemo={syntheticSourceIds.size > 0} onSave={saveAction} onReview={(action, decision) => setPendingReview({ kind: 'action', record: action, decision })} onClose={setClosureTarget} onEvidence={item => { const source = data.sources.find(candidate => candidate.id === item.source_id); if (source) { setSourceFocusObservationId(item.observation_id); setSourceOpen(source) } else setEvidenceOpen(item) }} />}
             {tab === 'reports' && <ReportsView data={data} busy={busy} download={reportDownload} onExport={() => void exportReport()} onTab={setTab} />}
 
@@ -1364,7 +1373,8 @@ function WorkflowStatus({ status, finding = false }: { status: string; finding?:
 
 function FindingEvidence({ evidence, onEvidence }: { evidence: Support[]; onEvidence: (item: Support) => void }) {
   return <section className="fa-evidence" aria-label="Observed evidence"><div className="fa-section-label"><div><FileCheck2 size={17} /><h4>Observed evidence · source wording</h4></div><span>{evidence.length} cited record{evidence.length === 1 ? '' : 's'}</span></div>
-    {evidence.length ? <div className="fa-evidence-list">{evidence.map(item => <button className="fa-evidence-link" key={item.observation_id} onClick={() => onEvidence(item)}><span className="fa-evidence-file"><FileText size={17} /></span><span className="fa-evidence-copy"><strong>{item.source_filename}</strong><small>{item.source_locator}{item.event_time_normalized ? ` · Source time ${shortTime(item.event_time_normalized)}` : ''}</small><q>{item.text}</q></span><ChevronRight size={17} className="fa-evidence-chevron" /></button>)}</div> : <div className="fa-evidence-missing"><AlertTriangle size={17} /><p><strong>Source support is unavailable.</strong> This finding has no source wording to inspect. Keep it under evaluator review; approval is disabled.</p></div>}
+    {evidence.length ? <div className="fa-evidence-list">{evidence.map(item => <button className="fa-evidence-link" key={item.observation_id} onClick={() => onEvidence(item)}><span className="fa-evidence-file"><FileText size={17} /></span><span className="fa-evidence-copy"><strong>{item.source_filename}</strong><small>{item.source_locator}{item.extraction_method === 'ocr' ? ` · OCR${item.event_time_raw ? ` · Reported time ${item.event_time_raw}` : ''} · Verify against original page`
+        : item.event_time_normalized ? ` · Source time ${shortTime(item.event_time_normalized)}` : ''}{item.time_confidence === 'uncertain' ? ' · Time uncertain' : ''}</small><q>{item.text}</q></span><ChevronRight size={17} className="fa-evidence-chevron" /></button>)}</div> : <div className="fa-evidence-missing"><AlertTriangle size={17} /><p><strong>Source support is unavailable.</strong> This finding has no source wording to inspect. Keep it under evaluator review; approval is disabled.</p></div>}
   </section>
 }
 
@@ -1377,10 +1387,28 @@ function FindingWorkflow({ finding, actions }: { finding: Finding; actions: Acti
   return <section className="fa-workflow" aria-label="Finding and corrective action workflow"><div className="fa-workflow-step is-complete"><span>1</span><div><strong>Finding proposed</strong><small>Source-linked analysis draft</small></div></div><ChevronRight size={16} aria-hidden="true" /><div className={`fa-workflow-step ${decisionClass}`}><span>2</span><div><strong>Human decision</strong><small>{statusText}</small></div></div><ChevronRight size={16} aria-hidden="true" /><div className={`fa-workflow-step ${actionClass}`}><span>3</span><div><strong>Corrective action</strong><small>{actionSummary}</small></div></div></section>
 }
 
-function FindingsView({ data, busy, canEdit, canReview, identityName, isSyntheticDemo, aiCapability, onReview, onEvidence }: { data: Detail; busy: boolean; canEdit: boolean; canReview: boolean; identityName: string; isSyntheticDemo: boolean; aiCapability?: AiCapability; onReview: (finding: Finding, decision: 'approved' | 'rejected') => void; onEvidence: (item: Support) => void }) {
+function FindingsView({ data, busy, canEdit, canReview, identityName, isSyntheticDemo, aiCapability, refreshFindings, onReview, onEvidence }: { data: Detail; busy: boolean; canEdit: boolean; canReview: boolean; identityName: string; isSyntheticDemo: boolean; aiCapability?: AiCapability; refreshFindings: () => Promise<Finding[]>; onReview: (finding: Finding, decision: 'approved' | 'rejected') => void; onEvidence: (item: Support) => void }) {
   const [query, setQuery] = useState('')
   const [status, setStatus] = useState('all')
   const [objectiveId, setObjectiveId] = useState('all')
+  const [selectedCandidate, setSelectedCandidate] = useState<string | null>(null)
+  const [focusedFinding, setFocusedFinding] = useState<string | null>(null)
+  const focusedSummary = useRef<HTMLElement>(null)
+
+  const openFinding = async (id: string) => {
+    const findings = await refreshFindings()
+    if (!findings.some(finding => finding.id === id)) throw new Error('Linked finding is unavailable.')
+    setQuery('')
+    setStatus('all')
+    setObjectiveId('all')
+    setSelectedCandidate(null)
+    setFocusedFinding(id)
+  }
+
+  useLayoutEffect(() => {
+    if (focusedFinding && !selectedCandidate) focusedSummary.current?.focus()
+  }, [focusedFinding, selectedCandidate])
+
   const proposed = data.findings.filter(finding => finding.status === 'proposed').length
   const visible = data.findings.filter(finding => {
     const objective = data.exercise.objectives.find(item => item.id === finding.objective_id)
@@ -1398,6 +1426,10 @@ function FindingsView({ data, busy, canEdit, canReview, identityName, isSyntheti
       exerciseId={data.exercise.id}
       api={candidateApi}
       canReview={canReview}
+      selected={selectedCandidate}
+      setSelected={setSelectedCandidate}
+      onFindingCreated={async () => { await refreshFindings() }}
+      onOpenFinding={openFinding}
       capability={canEdit ? aiCapability : undefined}
       objectives={data.exercise.objectives}
       assessments={data.objective_assessments}
@@ -1413,20 +1445,26 @@ function FindingsView({ data, busy, canEdit, canReview, identityName, isSyntheti
       const evidenceConflicts = finding.supporting_evidence.filter(item => conflictIds.has(item.observation_id) || item.time_confidence === 'conflicting')
       const unknowns = [...new Set([...(assessment?.unknowns || []), ...(assessment?.conflicts || [])])]
       const hasNoSupport = finding.supporting_evidence.length === 0
-      return <details className="fa-finding-card" key={finding.id} open={index === 0}>
-        <summary className="fa-finding-summary">
+      return <details className="fa-finding-card" key={finding.id} open={index === 0 || finding.id === focusedFinding}>
+        <summary className="fa-finding-summary" ref={finding.id === focusedFinding ? focusedSummary : undefined}>
           <div className="fa-finding-head"><span className={`fa-kind-icon ${finding.category}`} aria-hidden="true">{finding.category === 'strength' ? <Check size={18} /> : <AlertTriangle size={18} />}</span><div className="fa-finding-title"><p className="fa-finding-kicker">{finding.category === 'strength' ? 'OBSERVED STRENGTH' : 'AREA FOR IMPROVEMENT'} <span>·</span> {finding.code}</p><h3>{finding.title}</h3></div><WorkflowStatus status={finding.status} finding /></div>
           <div className="fa-finding-summary-meta"><span className="fa-summary-objective">{objective ? <><strong>{objective.id}</strong><span>{objective.text}</span></> : <span className="is-missing"><AlertTriangle size={14} /> No objective linked</span>}</span><span className={`fa-summary-evidence ${hasNoSupport ? 'is-missing' : ''}`}>{hasNoSupport ? <><AlertTriangle size={14} /> No source support</> : <><FileCheck2 size={14} /> {finding.supporting_evidence.length} cited record{finding.supporting_evidence.length === 1 ? '' : 's'}</>}</span><span className="fa-expand-hint">{index === 0 ? 'Review details' : 'Open review details'} <ChevronDown size={15} /></span></div>
         </summary>
         <div className="fa-finding-details">
         <FindingEvidence evidence={finding.supporting_evidence} onEvidence={onEvidence} />
+        {finding.source_candidate_id && <section className="fa-analysis-card" aria-label="Human-authored observation">
+          <h4>Human-authored observation</h4><p>{finding.observation}</p>
+          <button type="button" className="button secondary" onClick={() => setSelectedCandidate(finding.source_candidate_id)}>
+            Review source candidate and uncertainty
+          </button>
+        </section>}
         <div className="fa-analysis-grid is-single"><section className="fa-analysis-card is-interpretation"><span className="fa-analysis-label"><Sparkles size={16} /> Objective-based interpretation</span><p>{finding.interpretation}</p></section></div>
         <section className={`fa-uncertainty ${hasNoSupport || evidenceConflicts.length || unknowns.length || !objective ? 'needs-attention' : ''}`}><span className="fa-analysis-label"><AlertTriangle size={16} /> Uncertainty and missing information</span>{hasNoSupport ? <p>Source evidence is not available in this record. The reviewer must resolve this before approving.</p> : <>{evidenceConflicts.length > 0 && <p><strong>Conflicting source timing:</strong> {evidenceConflicts.map(item => `${item.source_filename}, ${item.source_locator}`).join('; ')}. Open each source record before deciding.</p>}{unknowns.length > 0 ? <ul>{unknowns.map(item => <li key={item}>{item}</li>)}</ul> : !evidenceConflicts.length && <p>{objective ? 'No additional unknowns or conflicts were recorded for the linked objective.' : 'The objective mapping is missing; evaluator review is needed to confirm how this finding should be assessed.'}</p>}</>}</section>
         <FindingWorkflow finding={finding} actions={linkedActions} />
         {(finding.review_note || finding.status !== 'proposed') && <div className={`fa-review-outcome ${finding.status === 'rejected' ? 'is-rejected' : ''}`}>{finding.status === 'rejected' ? <XCircle size={17} /> : <CheckCircle2 size={17} />}<span><strong>Reviewer decision: {finding.status === 'approved' ? 'Approved' : finding.status === 'rejected' ? 'Rejected' : finding.status}{finding.reviewer ? ` by ${finding.reviewer}` : ''}</strong>{finding.review_note && <small>Reviewer note: {finding.review_note}</small>}</span></div>}
         {finding.status === 'proposed' && <div className="fa-review-footer"><p>{hasNoSupport ? 'Resolve source support before a reviewer can approve this finding.' : canReview ? 'Review the source quotations and uncertainties before recording your decision.' : 'Awaiting a decision from an authorized reviewer.'}</p>{canReview && <div className="fa-review-actions"><button className="button reject" onClick={() => onReview(finding, 'rejected')} disabled={busy}><XCircle size={16} /> Reject finding</button><button className="button primary" onClick={() => onReview(finding, 'approved')} disabled={busy || hasNoSupport} title={hasNoSupport ? 'Source support is required before approval' : undefined}><CheckCircle2 size={16} /> Approve finding</button></div>}</div>}
         <AuditHistory events={data.audit_events.filter(event => event.object_id === finding.id)} />
-        <p className="fa-confidence">Rule-based match confidence: <strong>{finding.confidence}</strong>. This is not a reviewer decision.</p>
+        {!finding.source_candidate_id && <p className="fa-confidence">Rule-based match confidence: <strong>{finding.confidence}</strong>. This is not a reviewer decision.</p>}
         </div>
       </details>
     })}</div> : data.findings.length === 0 ? <div className="fa-empty"><span className="fa-empty-icon"><ShieldCheck size={25} /></span><p className="fa-eyebrow">NO FINDINGS YET</p><h3>{data.analysis_locked ? 'No finding proposals were produced' : 'Start with objectives and source evidence'}</h3><p>{data.analysis_locked ? 'The current analysis did not produce findings for this exercise. Review the evidence and objective assessments if more information is needed.' : 'Add exercise objectives and source files, then run evidence analysis. Any findings will appear here as proposals for human review.'}</p></div> : <div className="fa-empty fa-filter-empty"><Search size={23} /><h3>No findings match these filters</h3><p>Change the search, status or objective filter to see more results.</p><button type="button" className="button secondary" onClick={() => { setQuery(''); setStatus('all'); setObjectiveId('all') }}>Clear filters</button></div>}
@@ -1506,7 +1544,7 @@ function ReviewDecisionModal({ target, data, busy, errorMessage, onClose, onSubm
   return <div className="modal-shade fa-modal-shade" onMouseDown={event => { if (event.target === event.currentTarget && !busy) onClose() }}><section ref={dialogRef} className="fa-decision-modal" role="dialog" aria-modal="true" aria-labelledby="review-decision-heading" aria-describedby="review-decision-explanation" tabIndex={-1}><form onSubmit={event => { event.preventDefault(); void onSubmit(note.trim()) }}>
     <div className="fa-modal-heading"><span className={`fa-modal-icon ${target.decision}`} aria-hidden="true">{target.decision === 'approved' ? <CheckCircle2 size={21} /> : <XCircle size={21} />}</span><div><p className="fa-eyebrow">HUMAN REVIEW · {target.kind.toUpperCase()}</p><h2 id="review-decision-heading">{heading}</h2></div><button type="button" className="icon-button" onClick={onClose} aria-label="Close review decision" disabled={busy}><X size={18} /></button></div>
     <div className="fa-modal-content"><div className="fa-review-subject"><span>{isFinding ? 'FINDING' : 'CORRECTIVE ACTION'}</span><strong>{title}</strong>{!isFinding && <small>Linked finding: {linkedFinding?.title || 'Finding information unavailable'}</small>}<small>{evidenceCount} linked source reference{evidenceCount === 1 ? '' : 's'}</small></div>
-      <p id="review-decision-explanation" className="fa-decision-explanation">{isFinding ? target.decision === 'approved' ? 'Approval records your decision that this source-linked finding is accepted for this exercise. It also allows its related corrective action to proceed to review. DrillLoop does not independently verify the event.' : 'Rejection records that this proposed finding is not accepted for this exercise. Finding decisions cannot be changed after they are recorded.' : target.decision === 'approved' ? 'Approval records your decision to accept this corrective action. The linked finding must be approved, and an owner and due date must be assigned.' : 'Rejection records that this proposed corrective action is not accepted. An open action can be reviewed again before it is closed.'}</p>
+      <p id="review-decision-explanation" className="fa-decision-explanation">{isFinding ? target.decision === 'approved' ? 'Approval records your decision that this source-linked finding is accepted for this exercise. DrillLoop does not independently verify the event.' : 'Rejection records that this proposed finding is not accepted for this exercise. Finding decisions cannot be changed after they are recorded.' : target.decision === 'approved' ? 'Approval records your decision to accept this corrective action. The linked finding must be approved, and an owner and due date must be assigned.' : 'Rejection records that this proposed corrective action is not accepted. An open action can be reviewed again before it is closed.'}</p>
       <label className="fa-review-note"><span>Reviewer note <small>Optional</small></span><textarea value={note} onChange={event => setNote(event.target.value)} maxLength={3000} rows={3} placeholder="Add context for the audit history, if useful." aria-describedby="review-note-help" /><small id="review-note-help">Up to 3,000 characters. This note will be stored with your decision.</small></label>
       {errorMessage && <div className="fa-modal-error" role="alert"><AlertTriangle size={16} />{errorMessage}</div>}
     </div>

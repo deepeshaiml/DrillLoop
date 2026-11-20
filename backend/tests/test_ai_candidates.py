@@ -206,7 +206,7 @@ def test_save_provenance_restart_and_deterministic_state(client):
         assert restarted.get(url).json() == candidate
         assert save(restarted, issued["save_token"]).json() == saved
         assert restarted.get(EXERCISE).json() == before
-        assert restarted.post(f"{url}/promote").status_code == 404
+        assert restarted.get(url).json()["linked_finding"] is None
 
     create_exercise(client, "OTHER-FICTIONAL")
     assert (
@@ -356,6 +356,20 @@ def test_panel_stages_identity_and_missing_documentation_survive_save_and_review
     assert "A record that confirms the expected outcome occurred." in documentation["unknowns"]
     for key, url in ids.items():
         assert review(client, url, "accepted_for_consideration", key=key).status_code == 200
+        blocked = client.post(
+            f"{url}/promote",
+            headers={"If-Match": '"2"', "Idempotency-Key": key},
+            json={
+                "title": "Fictional panel handoff",
+                "observation": "The fictional panel was released.",
+                "interpretation": "The reviewer considered the available evidence.",
+                "category": "strength",
+                "objective_id": key,
+                "confirmed": True,
+            },
+        )
+        assert blocked.status_code == 409
+        assert blocked.json()["detail"]["code"] == "CANDIDATE_PROMOTION_INELIGIBLE"
 
     stage["kind"] = "contradiction"
     configure_provider(stage)

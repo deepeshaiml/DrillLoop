@@ -23,6 +23,9 @@ from scripts.isolated_runtime import configure  # noqa: E402
 
 WORDING = "No matching handoff entry was found in the fictional dispatch notebook."
 EXCERPT = "matching handoff entry was found in the fictional dispatch notebook"
+PROMOTION_WORDING = (
+    "The fictional dispatcher recorded the signed panel handoff in the exercise log."
+)
 
 
 class FictionalProvider:
@@ -30,24 +33,32 @@ class FictionalProvider:
         from app.ai_evaluation import ProviderReply
 
         context = json.loads(evidence)
-        record = next(item["record"] for item in context["records"] if item["text"] == WORDING)
-        return ProviderReply(
-            json.dumps(
-                {
-                    "suggestions": [
-                        {
-                            "objective_id": objective_id,
-                            "kind": "insufficient_evidence",
-                            "citations": []
-                            if objective_id == "OBJ-UNSOURCED"
-                            else [{"record": record, "excerpt": EXCERPT}],
-                            "missing_information": ["completion_record"],
-                        }
-                        for objective_id in context["objectives"]
-                    ]
-                }
-            )
-        )
+        records = {item["text"]: item["record"] for item in context["records"]}
+        suggestions = []
+        for objective in context["objectives"]:
+            if objective.startswith("PROMOTION-"):
+                suggestions.append(
+                    {
+                        "objective_id": objective,
+                        "kind": "relevant_observation",
+                        "citations": [
+                            {"record": records[PROMOTION_WORDING], "excerpt": PROMOTION_WORDING}
+                        ],
+                        "missing_information": ["verified_timing"],
+                    }
+                )
+            else:
+                suggestions.append(
+                    {
+                        "objective_id": objective,
+                        "kind": "insufficient_evidence",
+                        "citations": []
+                        if objective == "OBJ-UNSOURCED"
+                        else [{"record": records[WORDING], "excerpt": EXCERPT}],
+                        "missing_information": ["completion_record"],
+                    }
+                )
+        return ProviderReply(json.dumps({"suggestions": suggestions}))
 
 
 @contextmanager
@@ -139,12 +150,14 @@ def main() -> None:
         app.router.lifespan_context = with_fictional_provider
         with serve(app) as port:
             browser_env["DRILLLOOP_E2E_BASE_URL"] = f"http://127.0.0.1:{port}"
-            subprocess.run([*command, "review"], cwd=ROOT, env=browser_env, check=True)
+            for mode in ("review", "promotion"):
+                subprocess.run([*command, mode], cwd=ROOT, env=browser_env, check=True)
     finally:
         app.router.lifespan_context = original_lifespan
 
     with serve(app, port=port):
-        subprocess.run([*command, "ai-disabled"], cwd=ROOT, env=browser_env, check=True)
+        for mode in ("ai-disabled", "promotion-restart"):
+            subprocess.run([*command, mode], cwd=ROOT, env=browser_env, check=True)
 
 
 if __name__ == "__main__":

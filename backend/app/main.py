@@ -19,7 +19,7 @@ from fastapi import Depends, FastAPI, File, HTTPException, Request, Response, Up
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse, PlainTextResponse
 from fastapi.staticfiles import StaticFiles
-from sqlalchemy import func, select, text
+from sqlalchemy import select, text
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 from starlette.middleware.trustedhost import TrustedHostMiddleware
@@ -52,8 +52,10 @@ from app.exercise_access import (
     _require_role,
     begin_exercise_write,
 )
+from app.finding_evidence import has_source_support
 from app.limits import RequestBodyLimitMiddleware
 from app.models import (
+    AiCandidatePromotion,
     AuditEvent,
     CorrectiveAction,
     Exercise,
@@ -885,6 +887,13 @@ def _detail(db: Session, exercise: Exercise) -> dict:
         .where(Finding.exercise_id == exercise.id)
         .order_by(Finding.category, Finding.created_at)
     ).all()
+    promoted_candidates = dict(
+        db.execute(
+            select(AiCandidatePromotion.finding_id, AiCandidatePromotion.candidate_id).where(
+                AiCandidatePromotion.exercise_id == exercise.id
+            )
+        ).all()
+    )
     findings = []
     for row in findings_rows:
         evidence_ids = _load(row.evidence_ids_json)
@@ -901,6 +910,7 @@ def _detail(db: Session, exercise: Exercise) -> dict:
             {
                 "id": row.id,
                 "code": row.code,
+                "source_candidate_id": promoted_candidates.get(row.id),
                 "title": row.title,
                 "category": row.category,
                 "objective_id": row.objective_id,
@@ -918,6 +928,8 @@ def _detail(db: Session, exercise: Exercise) -> dict:
                         "observation_id": obs.id,
                         "source_locator": obs.source_locator,
                         "text": obs.text,
+                        "event_time_raw": obs.event_time_raw,
+                        "extraction_method": obs.extraction_method,
                         "event_time_normalized": obs.event_time_normalized,
                         "time_confidence": obs.time_confidence,
                     }
@@ -1416,48 +1428,7 @@ def edit_finding(
 
 
 def _finding_has_source_support(db: Session, finding: Finding) -> bool:
-    try:
-        evidence_ids = _load(finding.evidence_ids_json)
-    except (json.JSONDecodeError, RecursionError):
-        return False
-    if not isinstance(evidence_ids, list) or not evidence_ids:
-        return False
-    if any(
-        not isinstance(item, str)
-        or not 1 <= len(item) <= 36
-        or item != item.strip()
-        or not item.isprintable()
-        for item in evidence_ids
-    ):
-        return False
-    if len(set(evidence_ids)) != len(evidence_ids):
-        return False
-
-    scoped_observations = (
-        select(Observation.source_locator, Observation.text, Source.filename)
-        .join(Source, Source.id == Observation.source_id)
-        .where(
-            Observation.exercise_id == finding.exercise_id,
-            Source.exercise_id == finding.exercise_id,
-            Source.scan_status.in_(("clean", "not_scanned")),
-            # The original download route uses retained text for legacy sources without bytes.
-            func.coalesce(
-                func.length(Source.source_bytes), func.length(func.trim(Source.content_text))
-            )
-            > 0,
-        )
-        .with_for_update(read=True, of=(Observation, Source))
-    )
-    # Keep large evidence lists within database bind-parameter limits.
-    for offset in range(0, len(evidence_ids), 500):
-        batch = evidence_ids[offset : offset + 500]
-        citations = db.execute(scoped_observations.where(Observation.id.in_(batch))).all()
-        if len(citations) != len(batch) or any(
-            not (locator.strip() and wording.strip() and filename.strip())
-            for locator, wording, filename in citations
-        ):
-            return False
-    return True
+    return has_source_support(db, finding.exercise_id, finding.evidence_ids_json)
 
 
 @app.post("/api/findings/{finding_id}/review")

@@ -4,6 +4,14 @@ In **Findings**, an evaluator or administrator can generate AI suggestions and s
 
 Open a candidate to read the original source wording, filename, source ID, and locator. Inspect the original source for current citations, especially when the wording or time came from OCR. An exact citation confirms a match to the stored observation. Evaluators verify whether the wording supports the interpretation. Stale candidates retain their historical citations, original objective, and decisions.
 
+## Create a proposed finding
+
+An administrator or reviewer can open an eligible candidate accepted for consideration and select **Create proposed finding**. Read the original quotations and uncertainty, then enter the title, observable facts and interpretation, choose strength or improvement, and confirm the objective and wording. Keep reported times and potential causes qualified whenever the evidence leaves them uncertain.
+
+A candidate needs current, validated support for a relevant observation or corroboration. Abstentions, different response phases, contradictions, unresolved event identity or cause, and candidates with counterevidence stay in candidate review. The server checks for overlapping evidence or matching wording in another finding for the same objective. The [architecture policy](../architecture/AI_CANDIDATE_LIFECYCLE.md#11-implemented-phase-4c4-promotion-policy) documents the complete eligibility and duplicate rules.
+
+Select **Open finding** to go to the regular Findings review. The proposal has an unassigned reviewer. A subsequent review decision is recorded separately, and any corrective action follows its own workflow. The source candidate remains available with its original evidence, acceptance and promotion history.
+
 ## Implemented API contract
 
 All paths below start with `/api/exercises/{exercise_id}`. Each request requires the authenticated identity and a live exercise grant within the exercise's organization. Writes use the existing session and CSRF protection.
@@ -15,6 +23,9 @@ All paths below start with `/api/exercises/{exercise_id}`. Each request requires
 | `GET /ai-candidates` | Any granted role. `limit` is 1–50, default 20. `after` is the previous response's ID cursor. | `200` with `candidates` and nullable `next_after`. |
 | `GET /ai-candidates/{id}` | Any granted role. `history_after_version` defaults to 0. `history_limit` is 1–50, default 20. | `200` with the full saved snapshot, current review state and freshness, latest human decision, the requested history page, and nullable `next_history_after_version`. `ETag` is a quoted positive integer such as `"3"`. |
 | `POST /ai-candidates/{id}/review` | Admin or reviewer. Body `{"decision":"…","note":null}`. Requires `Idempotency-Key` and `If-Match` with the exact detail ETag. | `200` with `id`, applied `version`, and `decision`. The interface reloads detail and audit history. |
+| `POST /ai-candidates/{id}/promote` | Admin or reviewer. Requires exact `If-Match` and `Idempotency-Key`. Body includes `title`, `observation`, `interpretation`, `category`, `objective_id` and `confirmed: true`. | `201` with candidate `id`, applied `version`, `finding_id` and `finding_status: "proposed"`. An exact committed retry returns that creation outcome. Read detail for the current finding status. |
+
+List and detail include `promoted`. Detail includes `linked_finding` with the current finding ID, code, title and status, or a `promotion_block_reason` if candidate policy prevents promotion.
 
 The list summary contains `id`, `exercise_id`, `organization_id`, `objective_id`, `kind`, `assessment`, `status`, `review_state`, `freshness`, `stale_at`, `stale_reasons`, `version`, `created_at`, and `updated_at`. The backend orders by candidate ID and has cursor pagination. The interface fetches six entries at a time and reads their detail snapshots with `history_limit=1` to display interpretation, original objective text, supporting-reference count, and requester attribution. Filters apply to the current page.
 
@@ -36,15 +47,15 @@ An eligible save token expires after 15 minutes. The server signs it for the req
 | HTTP status | Relevant response details |
 | --- | --- |
 | 401 / 403 / 404 | Missing session, insufficient role or CSRF, or unavailable exercise/candidate scope. Token scope mismatch returns `AI_SUGGESTION_NOT_FOUND`. |
-| 409 | `AI_CONTEXT_CHANGED`, `AI_SOURCE_UNAVAILABLE`, `AI_CANDIDATE_STALE`, `INVALID_CANDIDATE_TRANSITION`, `IDEMPOTENCY_CONFLICT`. |
+| 409 | `AI_CONTEXT_CHANGED`, `AI_SOURCE_UNAVAILABLE`, `AI_CANDIDATE_STALE`, `INVALID_CANDIDATE_TRANSITION`, `IDEMPOTENCY_CONFLICT`, `CANDIDATE_PROMOTION_INELIGIBLE`, `CANDIDATE_ALREADY_PROMOTED`, `AI_CITATIONS_INVALID` (promotion), `FINDING_DUPLICATE`. |
 | 412 | `CANDIDATE_VERSION_MISMATCH`. |
-| 422 | `AI_REQUEST_INVALID`, `AI_SAVE_TOKEN_INVALID`, `AI_SAVE_TOKEN_EXPIRED`, `AI_CITATIONS_INVALID`, `INVALID_CANDIDATE_VERSION`, `INVALID_IDEMPOTENCY_KEY`, `AI_OBJECTIVES_REQUIRED`, `AI_INVALID_OBJECTIVES`, `AI_EVIDENCE_REQUIRED`. |
+| 422 | `AI_REQUEST_INVALID`, `AI_SAVE_TOKEN_INVALID`, `AI_SAVE_TOKEN_EXPIRED`, `AI_CITATIONS_INVALID`, `INVALID_CANDIDATE_VERSION`, `INVALID_IDEMPOTENCY_KEY`, `AI_OBJECTIVES_REQUIRED`, `AI_INVALID_OBJECTIVES`, `AI_EVIDENCE_REQUIRED`, `CANDIDATE_OBJECTIVE_MISMATCH`. |
 | 428 | `IDEMPOTENCY_KEY_REQUIRED` or `CANDIDATE_VERSION_REQUIRED`. |
 | 429 / 502 / 503 / 504 | `AI_BUSY`, `AI_INVALID_RESPONSE`, `AI_DISABLED`, `AI_UNAVAILABLE`, `AI_SAVE_UNAVAILABLE`, `AI_VERIFICATION_UNAVAILABLE`, `AI_TIMEOUT`. |
 
 Candidate-specific errors use `detail.code` and `detail.message`. Existing authorization errors may supply a string `detail`. Context-limited generation returns a successful abstention without a save token.
 
-Audit events contain `id`, `operation`, `actor`, `actor_user_id`, `exercise_id`, `candidate_id`, `organization_id`, `request_id`, `timestamp`, and `version`. `ai_candidate_saved` records `prior_state: null` and `new_state`. `ai_candidate_reviewed` records `prior_state`, `new_state`, and `note`. `ai_candidate_invalidated` records `prior_freshness`, `new_freshness`, and `reasons` under the system actor. The detail endpoint pages events in ascending version order and exposes the latest human review separately.
+Audit events contain `id`, `operation`, `actor`, `actor_user_id`, `exercise_id`, `candidate_id`, `organization_id`, `request_id`, `timestamp`, and `version`. `ai_candidate_saved` records `prior_state: null` and `new_state`. `ai_candidate_reviewed` records `prior_state`, `new_state`, and `note`. `ai_candidate_invalidated` records `prior_freshness`, `new_freshness`, and `reasons` under the system actor. `ai_candidate_promoted` records the retained review state, `finding_id`, creation status and wording confirmation. The detail endpoint pages events in ascending version order and exposes the latest human review separately.
 
 ## Run the fictional browser workflow
 
@@ -55,4 +66,4 @@ npm --prefix frontend run build
 python frontend/e2e/run_candidate_review.py
 ```
 
-The runner migrates a new owned SQLite database, injects a fictional provider, starts the real application on loopback, and restarts it with AI disabled. The browser calls the actual save, review, authorization, and evidence APIs. Screenshots default to a new temporary directory. Add `--screenshots /path/to/artifacts` to select a destination and `--axe-script /path/to/axe.min.js` to run focused accessibility scans with an installed axe-core script. This change uses the existing React, TypeScript, and Playwright dependencies. axe-core was used as an optional local test tool with no application dependency.
+The runner migrates a new owned SQLite database, injects a fictional provider, starts the real application on loopback, and restarts it with AI disabled. The browser calls the actual save, candidate review, promotion, finding review, authorization, and evidence APIs. Screenshots default to a new temporary directory. Add `--screenshots /path/to/artifacts` to select a destination and `--axe-script /path/to/axe.min.js` to run focused accessibility scans with an installed axe-core script. This change uses the existing React, TypeScript, and Playwright dependencies. axe-core was used as an optional local test tool with no application dependency.

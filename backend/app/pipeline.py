@@ -9,7 +9,14 @@ from datetime import date, datetime
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.models import CorrectiveAction, Exercise, Finding, Observation, utcnow
+from app.models import (
+    AiCandidatePromotion,
+    CorrectiveAction,
+    Exercise,
+    Finding,
+    Observation,
+    utcnow,
+)
 
 _TIME_RE = re.compile(r"\b(\d{1,2}:\d{2}(?::\d{2})?)\b")
 _DURATION_RE = re.compile(
@@ -543,15 +550,17 @@ def analyze_exercise(session: Session, exercise: Exercise) -> dict:
     candidates = [item["candidate"] for item in outcomes if item["candidate"] is not None]
     candidate_codes = {item["code"] for item in candidates}
     new_count = 0
+    rule_findings = select(Finding).where(
+        Finding.exercise_id == exercise.id,
+        ~select(AiCandidatePromotion.finding_id)
+        .where(AiCandidatePromotion.finding_id == Finding.id)
+        .exists(),
+    )
     for candidate in candidates:
         evidence = candidate["evidence"]
         if not evidence:
             continue
-        existing = session.scalar(
-            select(Finding).where(
-                Finding.exercise_id == exercise.id, Finding.code == candidate["code"]
-            )
-        )
+        existing = session.scalar(rule_findings.where(Finding.code == candidate["code"]))
         if existing:
             if existing.status in {"proposed", "stale"}:
                 existing.status = "proposed"
@@ -586,7 +595,7 @@ def analyze_exercise(session: Session, exercise: Exercise) -> dict:
             _make_action(session, exercise, finding, candidate)
         new_count += 1
 
-    for finding in session.scalars(select(Finding).where(Finding.exercise_id == exercise.id)).all():
+    for finding in session.scalars(rule_findings):
         if finding.status == "proposed" and finding.code not in candidate_codes:
             finding.status = "stale"
             finding.updated_at = utcnow()

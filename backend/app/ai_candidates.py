@@ -17,7 +17,7 @@ from sqlalchemy import Select, select, update
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
-from app.ai_evaluation import AiFailure, AiResult
+from app.ai_evaluation import UNKNOWNS, AiFailure, AiResult
 from app.auth import Identity, current_identity
 from app.candidate_evidence import (
     CandidateSnapshot,
@@ -31,13 +31,24 @@ from app.candidate_evidence import (
 )
 from app.db import SessionLocal, get_db
 from app.exercise_access import EDIT_ROLES, READ_ROLES, REVIEW_ROLES, _audit, _exercise_for_user
-from app.models import AiCandidate, AiCandidateRequest, AuditEvent, Exercise, utcnow
+from app.finding_evidence import has_source_support
+from app.models import (
+    AiCandidate,
+    AiCandidatePromotion,
+    AiCandidateRequest,
+    AuditEvent,
+    Exercise,
+    Finding,
+    utcnow,
+)
 from app.observability import server_request_id_context
-from app.schemas import CandidateReview, CandidateSave
+from app.pipeline import candidate_findings
+from app.schemas import CandidatePromotion, CandidateReview, CandidateSave
 
 logger = logging.getLogger("drillloop.ai_candidates")
 SAVED = "ai_candidate_saved"
 REVIEWED = "ai_candidate_reviewed"
+PROMOTED = "ai_candidate_promoted"
 INVALIDATED = "ai_candidate_invalidated"
 TRANSITIONS = {
     "pending_review": {"accepted_for_consideration", "rejected", "more_evidence_required"},
@@ -60,7 +71,7 @@ def _request_validation_message(error: RequestValidationError) -> str:
         if issue["type"] == "value_error":
             # Only the application's fixed review validators use custom value errors.
             return issue["msg"].removeprefix("Value error, ")
-    return "Check the candidate request fields, pagination bounds and save token length."
+    return "Check the candidate request fields, required confirmations and field lengths."
 
 
 class CandidateRoute(APIRoute):
@@ -206,8 +217,37 @@ def _snapshot(row: AiCandidate) -> CandidateSnapshot:
 
 def _check_version() -> AiFailure:
     return AiFailure(
-        412, "CANDIDATE_VERSION_MISMATCH", "Candidate changed. Reload it before reviewing."
+        412,
+        "CANDIDATE_VERSION_MISMATCH",
+        "Candidate changed. Reload it before recording a decision.",
     )
+
+
+def _require_version_header(if_match: str | None) -> str:
+    if if_match is None:
+        raise AiFailure(
+            428, "CANDIDATE_VERSION_REQUIRED", "Supply If-Match with the current quoted version."
+        )
+    if not re.fullmatch(r'"[1-9][0-9]{0,9}"', if_match):
+        raise AiFailure(
+            422, "INVALID_CANDIDATE_VERSION", "If-Match must be a quoted positive integer."
+        )
+    return if_match
+
+
+def _require_current_version(
+    db: Session, exercise: Exercise, row: AiCandidate, snapshot: CandidateSnapshot, if_match: str
+) -> None:
+    was_current = row.freshness == "current"
+    if was_current:
+        _refresh(db, exercise, row, snapshot, _evidence(db, exercise, allow_incomplete=True))
+    if was_current and row.freshness == "stale":
+        db.commit()
+        raise AiFailure(409, "AI_CANDIDATE_STALE", "Evidence changed. This candidate is read-only.")
+    if if_match != f'"{row.version}"':
+        raise _check_version()
+    if row.freshness == "stale":
+        raise AiFailure(409, "AI_CANDIDATE_STALE", "Evidence changed. This candidate is read-only.")
 
 
 def _cas(db: Session, row: AiCandidate, **changes) -> int:
@@ -272,6 +312,40 @@ def invalidate_changed_candidates(db: Session, exercise: Exercise) -> None:
             ) from None
 
 
+def _linked_finding(db: Session, row: AiCandidate) -> Finding | None:
+    return db.scalar(
+        select(Finding)
+        .join(AiCandidatePromotion, Finding.id == AiCandidatePromotion.finding_id)
+        .where(
+            AiCandidatePromotion.candidate_id == row.id,
+            AiCandidatePromotion.exercise_id == row.exercise_id,
+            AiCandidatePromotion.organization_id == row.organization_id,
+        )
+    )
+
+
+def _promotion_block(row: AiCandidate, snapshot: CandidateSnapshot) -> str | None:
+    if row.review_state != "accepted_for_consideration":
+        return "Accept this candidate for consideration before creating a proposed finding."
+    if row.freshness != "current":
+        return "Current exercise evidence and objectives are required."
+    if not snapshot.evidence:
+        return "At least one valid supporting quotation is required."
+    if len(snapshot.objective_id) > 80:
+        return "The saved objective ID exceeds the finding model's limit."
+    if (
+        snapshot.kind not in {"relevant_observation", "corroboration"}
+        or snapshot.assessment != "advisory"
+        or snapshot.counterevidence
+        or any(
+            UNKNOWNS[reason] in snapshot.unknowns
+            for reason in ("cause_verification", "event_identity")
+        )
+    ):
+        return "Promotion requires a grounded relevant observation or corroboration. Unresolved identity, cause or conflicting evidence stays in candidate review."
+    return None
+
+
 def _summary(row: AiCandidate, snapshot: CandidateSnapshot) -> dict:
     return {
         "id": row.id,
@@ -296,7 +370,7 @@ def _history(row: AiCandidate) -> Select:
         AuditEvent.exercise_id == row.exercise_id,
         AuditEvent.object_id == row.id,
         AuditEvent.candidate_version.is_not(None),
-        AuditEvent.action.in_([SAVED, REVIEWED, INVALIDATED]),
+        AuditEvent.action.in_([SAVED, REVIEWED, INVALIDATED, PROMOTED]),
     )
 
 
@@ -412,6 +486,13 @@ def list_candidates(
     if after is not None:
         query = query.where(AiCandidate.id > after)
     rows = db.scalars(query.order_by(AiCandidate.id).limit(limit + 1)).all()
+    promoted_ids = set(
+        db.scalars(
+            select(AiCandidatePromotion.candidate_id).where(
+                AiCandidatePromotion.candidate_id.in_([row.id for row in rows[:limit]])
+            )
+        )
+    )
     candidates = []
     context = None
     for row in rows[:limit]:
@@ -420,7 +501,7 @@ def list_candidates(
             if context is None:
                 context = _evidence(db, exercise, allow_incomplete=True)
             _refresh(db, exercise, row, snapshot, context)
-        candidates.append(_summary(row, snapshot))
+        candidates.append({**_summary(row, snapshot), "promoted": row.id in promoted_ids})
     db.commit()
     return {
         "candidates": candidates,
@@ -458,11 +539,19 @@ def candidate_detail(
     )
     latest_decision = _event_dict(latest) if latest else None
     response.headers["ETag"] = f'"{row.version}"'
+    linked = _linked_finding(db, row)
     result = {
         **snapshot.model_dump(mode="json"),
         **_summary(row, snapshot),
         "reviewer_decision": latest_decision["new_state"] if latest_decision else None,
         "latest_decision": latest_decision,
+        "promoted": linked is not None,
+        "linked_finding": (
+            {"id": linked.id, "code": linked.code, "title": linked.title, "status": linked.status}
+            if linked
+            else None
+        ),
+        "promotion_block_reason": None if linked else _promotion_block(row, snapshot),
         "history": [_event_dict(event) for event in events[:history_limit]],
         "next_history_after_version": (
             events[history_limit - 1].candidate_version if len(events) > history_limit else None
@@ -492,25 +581,12 @@ def review_candidate(
             "version": replay.applied_version,
             "decision": replay.decision,
         }
-    if if_match is None:
+    if_match = _require_version_header(if_match)
+    _require_current_version(db, exercise, row, _snapshot(row), if_match)
+    if db.get(AiCandidatePromotion, row.id):
         raise AiFailure(
-            428, "CANDIDATE_VERSION_REQUIRED", "Supply If-Match with the current quoted version."
+            409, "CANDIDATE_ALREADY_PROMOTED", "Review the linked finding for any further decision."
         )
-    if not re.fullmatch(r'"[1-9][0-9]{0,9}"', if_match):
-        raise AiFailure(
-            422, "INVALID_CANDIDATE_VERSION", "If-Match must be a quoted positive integer."
-        )
-
-    was_current = row.freshness == "current"
-    if was_current:
-        _refresh(db, exercise, row, _snapshot(row), _evidence(db, exercise, allow_incomplete=True))
-    if was_current and row.freshness == "stale":
-        db.commit()
-        raise AiFailure(409, "AI_CANDIDATE_STALE", "Evidence changed. This candidate is read-only.")
-    if if_match != f'"{row.version}"':
-        raise _check_version()
-    if row.freshness == "stale":
-        raise AiFailure(409, "AI_CANDIDATE_STALE", "Evidence changed. This candidate is read-only.")
     previous = row.review_state
     if payload.decision not in TRANSITIONS[previous]:
         raise AiFailure(
@@ -533,3 +609,157 @@ def review_candidate(
     )
     db.commit()
     return {"id": row.id, "version": version, "decision": payload.decision}
+
+
+def _normalized_wording(text: str) -> str:
+    return " ".join(text.casefold().split())
+
+
+def _check_duplicate_finding(
+    db: Session, exercise: Exercise, payload: CandidatePromotion, evidence_ids: list[str]
+) -> None:
+    def overlaps(title: str, observation: str, interpretation: str, cited_ids: list[str]) -> bool:
+        return (
+            not set(evidence_ids).isdisjoint(cited_ids)
+            or _normalized_wording(payload.title) == _normalized_wording(title)
+            or (
+                _normalized_wording(payload.observation) == _normalized_wording(observation)
+                and _normalized_wording(payload.interpretation)
+                == _normalized_wording(interpretation)
+            )
+        )
+
+    existing = db.scalars(
+        select(Finding).where(
+            Finding.exercise_id == exercise.id, Finding.objective_id == payload.objective_id
+        )
+    )
+    for finding in existing:
+        try:
+            cited = json.loads(finding.evidence_ids_json)
+            if not isinstance(cited, list) or not all(isinstance(item, str) for item in cited):
+                raise ValueError("Invalid finding citations")
+        except (ValueError, RecursionError) as error:
+            raise _verification_unavailable() from error
+        if overlaps(finding.title, finding.observation, finding.interpretation, cited):
+            raise AiFailure(
+                409,
+                "FINDING_DUPLICATE",
+                "A finding for this objective already uses this evidence or wording. Review the existing finding.",
+            )
+
+    # Reserve matching current rule results even when analysis has not been run.
+    # Analysis and promotion acquire the same exercise write lock.
+    for draft in candidate_findings(db, exercise):
+        if draft.get("objective_id") == payload.objective_id and overlaps(
+            draft["title"],
+            draft["observation"],
+            draft["interpretation"],
+            [item.id for item in draft["evidence"]],
+        ):
+            raise AiFailure(
+                409,
+                "FINDING_DUPLICATE",
+                "Evidence analysis can already propose a matching finding for this objective. Review the rule result in Findings.",
+            )
+
+
+@router.post("/ai-candidates/{candidate_id}/promote", status_code=201)
+def promote_candidate(
+    exercise_id: str,
+    candidate_id: CandidateId,
+    payload: CandidatePromotion,
+    if_match: VersionHeader = None,
+    idempotency_key: IdempotencyHeader = None,
+    identity: Identity = Depends(current_identity),
+    db: Session = Depends(get_db),
+) -> dict:
+    exercise = _exercise_for_user(db, exercise_id, identity, REVIEW_ROLES, lock=True)
+    row = _find(db, exercise, candidate_id)
+    scope = _idem_scope(exercise, identity, "promote", idempotency_key)
+    if_match = _require_version_header(if_match)
+    request_hash = fingerprint([row.id, if_match, payload.model_dump()])
+    link = db.get(AiCandidatePromotion, row.id)
+    if replay := _replay(db, scope, request_hash):
+        if link is None:
+            raise _verification_unavailable()
+        return {
+            "id": row.id,
+            "version": replay.applied_version,
+            "finding_id": link.finding_id,
+            "finding_status": "proposed",
+        }
+
+    snapshot = _snapshot(row)
+    _require_current_version(db, exercise, row, snapshot, if_match)
+    if link is not None:
+        raise AiFailure(
+            409, "CANDIDATE_ALREADY_PROMOTED", "This candidate already has a linked finding."
+        )
+    if reason := _promotion_block(row, snapshot):
+        raise AiFailure(409, "CANDIDATE_PROMOTION_INELIGIBLE", reason)
+    if payload.objective_id != snapshot.objective_id:
+        raise AiFailure(
+            422,
+            "CANDIDATE_OBJECTIVE_MISMATCH",
+            "Confirm the objective retained with this candidate.",
+        )
+
+    evidence_ids = [cite.observation_id for cite in snapshot.evidence]
+    evidence_json = json.dumps(evidence_ids)
+    if not has_source_support(db, exercise.id, evidence_json):
+        raise AiFailure(
+            409,
+            "AI_CITATIONS_INVALID",
+            "Promotion requires unique, available supporting citations from this exercise.",
+        )
+    _check_duplicate_finding(db, exercise, payload, evidence_ids)
+
+    finding_id = uuid.uuid4()
+    # This namespace is separate from rule-generated finding codes.
+    finding = Finding(
+        id=str(finding_id),
+        code=f"AI-{finding_id.hex.upper()}",
+        exercise_id=exercise.id,
+        objective_id=snapshot.objective_id,
+        title=payload.title,
+        observation=payload.observation,
+        interpretation=payload.interpretation,
+        category=payload.category,
+        evidence_ids_json=evidence_json,
+        confidence="unrated",
+        status="proposed",
+        review_note="",
+        reviewer=None,
+    )
+    version = _cas(db, row)
+    db.add(finding)
+    db.flush()
+    db.add(
+        AiCandidatePromotion(
+            candidate_id=row.id,
+            exercise_id=exercise.id,
+            organization_id=exercise.organization_id,
+            finding_id=finding.id,
+        )
+    )
+    _event(
+        db,
+        row,
+        version,
+        PROMOTED,
+        identity,
+        prior_state=row.review_state,
+        new_state=row.review_state,
+        finding_id=finding.id,
+        finding_status="proposed",
+        wording_confirmed=True,
+    )
+    _record(db, scope, request_hash, row, version)
+    db.commit()
+    return {
+        "id": row.id,
+        "version": version,
+        "finding_id": finding.id,
+        "finding_status": "proposed",
+    }
