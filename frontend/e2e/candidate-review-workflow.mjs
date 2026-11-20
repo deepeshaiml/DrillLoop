@@ -590,12 +590,21 @@ async function promotionJourney() {
   await page.setViewportSize({ width: 1440, height: 1050 })
 
   dialog = await promotionDialog(page)
+  const titleField = dialog.getByLabel('Finding title')
+  await dialog.getByRole('button', { name: 'Confirm proposed finding' }).press('Enter')
+  assert.ok(await titleField.evaluate(node => node === document.activeElement && node.validity.valueMissing))
   await fillFinding(dialog)
+  await titleField.fill('    ')
+  await dialog.getByRole('button', { name: 'Confirm proposed finding' }).press('Enter')
+  await dialog.getByRole('alert').getByText(/Enter at least four characters/).waitFor()
+  assert.ok(await titleField.evaluate(node => node === document.activeElement))
+  await titleField.fill(findingTitle)
   const path = paths[promotionObjective] + '/promote'
   let committed
   let firstRequest
   await page.route(url => url.pathname === path, async route => {
     firstRequest = route.request()
+    assert.match(await dialog.getByRole('status').textContent(), /Submitting the proposed finding/)
     const response = await route.fetch()
     assert.equal(response.status(), 201)
     committed = await response.json()
@@ -613,6 +622,9 @@ async function promotionJourney() {
   assert.equal(retriedHeaders['idempotency-key'], (await firstRequest.allHeaders())['idempotency-key'])
   assert.deepEqual(retried.request().postDataJSON(), firstRequest.postDataJSON())
   await dialog.waitFor({ state: 'detached' })
+  await candidate(page).getByRole('status').getByText(/Proposed finding created/).waitFor()
+  assert.ok(await candidate(page).getByRole('heading', { name: 'AI candidate review' })
+    .evaluate(node => node === document.activeElement))
   await linkedFinding(page).getByText(/Awaiting separate human finding review/).waitFor()
   await audit(page).getByText('Proposed finding created', { exact: true }).waitFor()
   assert.equal(await promotionButton(page).count(), 0)

@@ -8,6 +8,13 @@ from sqlalchemy.orm import Session
 from app.models import Observation, Source
 
 
+def stored_evidence_ids(value: str) -> set[str]:
+    ids = json.loads(value)
+    if not isinstance(ids, list) or not all(isinstance(item, str) for item in ids):
+        raise ValueError("Invalid finding citations")
+    return set(ids)
+
+
 def has_source_support(db: Session, exercise_id: str, evidence_ids_json: str) -> bool:
     try:
         evidence_ids = json.loads(evidence_ids_json)

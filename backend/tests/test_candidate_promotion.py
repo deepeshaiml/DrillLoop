@@ -471,7 +471,86 @@ def test_distinct_candidates_and_existing_rule_findings_do_not_duplicate(promoti
     assert all(finding["status"] == "proposed" for finding in after)
 
 
-@pytest.mark.parametrize("opponent", ["promotion", "candidate_review", "evidence", "analysis"])
+def test_matching_wording_allows_distinct_supporting_observations(promotion_client):
+    client = promotion_client
+    create_exercise(client)
+    second_wording = "The fictional night dispatcher logged a second backup panel handoff."
+    add_transcript(client, WORDING, second_wording)
+    configure_provider(entry((1, WORDING)))
+    first = accept(client, "first")
+    configure_provider(entry((2, second_wording)))
+    second = accept(client, "second")
+
+    assert promote(client, first).status_code == 201
+    result = promote(client, second, key="promote-second", observation=second_wording)
+    assert result.status_code == 201, result.text
+    one, two = client.get(EXERCISE).json()["findings"]
+    assert one["title"] == two["title"]
+    assert set(one["evidence_ids"]).isdisjoint(two["evidence_ids"])
+
+
+def test_new_rule_result_does_not_duplicate_promoted_evidence(promotion_client):
+    client = promotion_client
+    rule = {
+        "type": "elapsed_time",
+        "start_terms": ["panel drill began"],
+        "completion_terms": ["panel drill ended"],
+        "threshold_seconds": 60,
+    }
+    create_exercise(client, objectives=[{**OBJECTIVES[0], "evaluation_rule": rule}])
+    start = "The fictional panel drill began."
+    upload_text(client, "fictional-start.txt", f"09:00 {start}")
+    configure_provider(entry((1, start), unknowns=("completion_record",)))
+    url = accept(client)
+    result = promote(
+        client,
+        url,
+        title="Fictional panel drill start recorded",
+        observation=start,
+        interpretation="The source records the start. It gives no completion time.",
+    )
+    assert result.status_code == 201, result.text
+    before = client.get(EXERCISE).json()["findings"]
+
+    upload_text(client, "fictional-end.txt", "09:02 The fictional panel drill ended.")
+    for _ in range(2):
+        analysis = client.post(f"{EXERCISE}/analyze").json()
+        assert analysis["objective_assessments"][0]["state"] == "confirmed_failure"
+        assert analysis["new_findings"] == 0
+    detail = client.get(EXERCISE).json()
+    assert detail["findings"] == before
+    assert detail["actions"] == []
+
+
+def test_rule_conflict_blocks_a_one_sided_advisory_candidate(promotion_client):
+    client = promotion_client
+    rule = {
+        "type": "required_field",
+        "present_terms": ["signature was present"],
+        "missing_terms": ["signature was absent"],
+    }
+    create_exercise(client, objectives=[{**OBJECTIVES[0], "evaluation_rule": rule}])
+    present = "The fictional controller said the signature was present."
+    absent = "The fictional evaluator said the signature was absent."
+    add_transcript(client, present, absent)
+    configure_provider(entry((1, present)))
+    url = accept(client)
+
+    result = promote(
+        client,
+        url,
+        title="Fictional signature report",
+        observation=present,
+        interpretation="One source reports the signature present.",
+    )
+    assert result.status_code == 409, result.text
+    assert result.json()["detail"]["code"] == "CANDIDATE_PROMOTION_INELIGIBLE"
+    assert_no_promotions()
+
+
+@pytest.mark.parametrize(
+    "opponent", ["promotion", "shared_evidence", "candidate_review", "evidence", "analysis"]
+)
 def test_serialization_under_exercise_lock(promotion_client, monkeypatch, opponent):
     client = promotion_client
     if opponent == "analysis":
@@ -481,6 +560,7 @@ def test_serialization_under_exercise_lock(promotion_client, monkeypatch, oppone
     else:
         prepare(client)
     url = accept(client)
+    competing_url = accept(client, "shared-evidence") if opponent == "shared_evidence" else url
     grant(client, "test-reviewer")
     reviewer = TestClient(main.app)
     login(reviewer, "test-reviewer")
@@ -522,7 +602,7 @@ def test_serialization_under_exercise_lock(promotion_client, monkeypatch, oppone
     second_op = (
         (lambda: review(reviewer, url, "rejected", version=2))
         if opponent == "candidate_review"
-        else (lambda: promote(reviewer, url, key="other-actor-and-key"))
+        else (lambda: promote(reviewer, competing_url, key="other-actor-and-key"))
     )
     with ThreadPoolExecutor(max_workers=2) as pool:
         first = pool.submit(first_op)
@@ -544,7 +624,11 @@ def test_serialization_under_exercise_lock(promotion_client, monkeypatch, oppone
         assert second_result.json()["detail"]["code"] == "FINDING_DUPLICATE"
         assert len(detail["findings"]) == 1 and detail["findings"][0]["source_candidate_id"] is None
     else:
-        assert first_result.status_code == 201 and status == 412
+        assert first_result.status_code == 201
+        if opponent == "shared_evidence":
+            assert status == 409 and second_result.json()["detail"]["code"] == "FINDING_DUPLICATE"
+        else:
+            assert status == 412
         assert len(detail["findings"]) == 1 and detail["findings"][0]["status"] == "proposed"
         assert detail["actions"] == []
 

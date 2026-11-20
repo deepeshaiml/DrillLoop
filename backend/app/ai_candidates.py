@@ -31,7 +31,7 @@ from app.candidate_evidence import (
 )
 from app.db import SessionLocal, get_db
 from app.exercise_access import EDIT_ROLES, READ_ROLES, REVIEW_ROLES, _audit, _exercise_for_user
-from app.finding_evidence import has_source_support
+from app.finding_evidence import has_source_support, stored_evidence_ids
 from app.models import (
     AiCandidate,
     AiCandidatePromotion,
@@ -42,7 +42,7 @@ from app.models import (
     utcnow,
 )
 from app.observability import server_request_id_context
-from app.pipeline import candidate_findings
+from app.pipeline import objective_assessments
 from app.schemas import CandidatePromotion, CandidateReview, CandidateSave
 
 logger = logging.getLogger("drillloop.ai_candidates")
@@ -611,56 +611,44 @@ def review_candidate(
     return {"id": row.id, "version": version, "decision": payload.decision}
 
 
-def _normalized_wording(text: str) -> str:
-    return " ".join(text.casefold().split())
-
-
 def _check_duplicate_finding(
-    db: Session, exercise: Exercise, payload: CandidatePromotion, evidence_ids: list[str]
+    db: Session, exercise: Exercise, objective_id: str, evidence_ids: list[str]
 ) -> None:
-    def overlaps(title: str, observation: str, interpretation: str, cited_ids: list[str]) -> bool:
-        return (
-            not set(evidence_ids).isdisjoint(cited_ids)
-            or _normalized_wording(payload.title) == _normalized_wording(title)
-            or (
-                _normalized_wording(payload.observation) == _normalized_wording(observation)
-                and _normalized_wording(payload.interpretation)
-                == _normalized_wording(interpretation)
-            )
-        )
-
+    cited = set(evidence_ids)
     existing = db.scalars(
-        select(Finding).where(
-            Finding.exercise_id == exercise.id, Finding.objective_id == payload.objective_id
+        select(Finding.evidence_ids_json).where(
+            Finding.exercise_id == exercise.id, Finding.objective_id == objective_id
         )
     )
-    for finding in existing:
+    for stored in existing:
         try:
-            cited = json.loads(finding.evidence_ids_json)
-            if not isinstance(cited, list) or not all(isinstance(item, str) for item in cited):
-                raise ValueError("Invalid finding citations")
+            prior_evidence = stored_evidence_ids(stored)
         except (ValueError, RecursionError) as error:
             raise _verification_unavailable() from error
-        if overlaps(finding.title, finding.observation, finding.interpretation, cited):
+        if not cited.isdisjoint(prior_evidence):
             raise AiFailure(
                 409,
                 "FINDING_DUPLICATE",
-                "A finding for this objective already uses this evidence or wording. Review the existing finding.",
+                "A finding for this objective already cites this evidence. Review the existing finding.",
             )
 
-    # Reserve matching current rule results even when analysis has not been run.
-    # Analysis and promotion acquire the same exercise write lock.
-    for draft in candidate_findings(db, exercise):
-        if draft.get("objective_id") == payload.objective_id and overlaps(
-            draft["title"],
-            draft["observation"],
-            draft["interpretation"],
-            [item.id for item in draft["evidence"]],
+    # Reserve overlapping rule results and check for opposing evidence the model omitted.
+    for assessment in objective_assessments(db, exercise):
+        if assessment["objective_id"] != objective_id or cited.isdisjoint(
+            item["observation_id"] for item in assessment["evidence"]
         ):
+            continue
+        if assessment["conflicts"]:
+            raise AiFailure(
+                409,
+                "CANDIDATE_PROMOTION_INELIGIBLE",
+                "Exercise evidence analysis identifies conflicting records for this objective. Review the objective assessment and sources in Findings.",
+            )
+        if assessment["state"] in {"confirmed_success", "confirmed_failure"}:
             raise AiFailure(
                 409,
                 "FINDING_DUPLICATE",
-                "Evidence analysis can already propose a matching finding for this objective. Review the rule result in Findings.",
+                "Evidence analysis can already propose a finding that cites this evidence for the same objective. Review the rule result in Findings.",
             )
 
 
@@ -713,7 +701,7 @@ def promote_candidate(
             "AI_CITATIONS_INVALID",
             "Promotion requires unique, available supporting citations from this exercise.",
         )
-    _check_duplicate_finding(db, exercise, payload, evidence_ids)
+    _check_duplicate_finding(db, exercise, snapshot.objective_id, evidence_ids)
 
     finding_id = uuid.uuid4()
     # This namespace is separate from rule-generated finding codes.
