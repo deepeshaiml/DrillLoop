@@ -19,7 +19,7 @@ from fastapi import Depends, FastAPI, File, HTTPException, Request, Response, Up
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse, PlainTextResponse
 from fastapi.staticfiles import StaticFiles
-from sqlalchemy import select, text
+from sqlalchemy import func, select, text
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 from starlette.middleware.trustedhost import TrustedHostMiddleware
@@ -1353,7 +1353,7 @@ def analyze(
     identity: Identity = Depends(current_identity),
     db: Session = Depends(get_db),
 ) -> dict:
-    exercise = _exercise_for_user(db, exercise_id, identity, EDIT_ROLES)
+    exercise = _exercise_for_user(db, exercise_id, identity, EDIT_ROLES, lock=True)
     started = time.perf_counter()
     try:
         result = analyze_exercise(db, exercise)
@@ -1375,6 +1375,26 @@ def analyze(
     return result
 
 
+def _finding_for_write(
+    db: Session, finding_id: str, identity: Identity, allowed_roles: set[str]
+) -> Finding:
+    _require_role(identity, allowed_roles)
+    exercise_id = db.scalar(select(Finding.exercise_id).where(Finding.id == finding_id))
+    if exercise_id is None:
+        raise HTTPException(status_code=404, detail="Finding not found.")
+    # End the lookup transaction before acquiring the SQLite write reservation.
+    db.rollback()
+    _exercise_for_user(db, exercise_id, identity, allowed_roles, lock=True)
+    finding = db.scalar(
+        select(Finding)
+        .where(Finding.id == finding_id, Finding.exercise_id == exercise_id)
+        .with_for_update()
+    )
+    if finding is None:
+        raise HTTPException(status_code=404, detail="Finding not found.")
+    return finding
+
+
 @app.patch("/api/findings/{finding_id}")
 def edit_finding(
     finding_id: str,
@@ -1382,11 +1402,7 @@ def edit_finding(
     identity: Identity = Depends(current_identity),
     db: Session = Depends(get_db),
 ) -> dict:
-    _require_role(identity, EDIT_ROLES)
-    finding = db.get(Finding, finding_id)
-    if not finding:
-        raise HTTPException(status_code=404, detail="Finding not found.")
-    _exercise_for_user(db, finding.exercise_id, identity, EDIT_ROLES)
+    finding = _finding_for_write(db, finding_id, identity, EDIT_ROLES)
     if finding.status != "proposed":
         raise HTTPException(status_code=409, detail="Only proposed findings can be edited.")
     finding.title = payload.title
@@ -1399,6 +1415,51 @@ def edit_finding(
     return {"id": finding.id, "status": finding.status, "title": finding.title}
 
 
+def _finding_has_source_support(db: Session, finding: Finding) -> bool:
+    try:
+        evidence_ids = _load(finding.evidence_ids_json)
+    except (json.JSONDecodeError, RecursionError):
+        return False
+    if not isinstance(evidence_ids, list) or not evidence_ids:
+        return False
+    if any(
+        not isinstance(item, str)
+        or not 1 <= len(item) <= 36
+        or item != item.strip()
+        or not item.isprintable()
+        for item in evidence_ids
+    ):
+        return False
+    if len(set(evidence_ids)) != len(evidence_ids):
+        return False
+
+    scoped_observations = (
+        select(Observation.source_locator, Observation.text, Source.filename)
+        .join(Source, Source.id == Observation.source_id)
+        .where(
+            Observation.exercise_id == finding.exercise_id,
+            Source.exercise_id == finding.exercise_id,
+            Source.scan_status.in_(("clean", "not_scanned")),
+            # The original download route uses retained text for legacy sources without bytes.
+            func.coalesce(
+                func.length(Source.source_bytes), func.length(func.trim(Source.content_text))
+            )
+            > 0,
+        )
+        .with_for_update(read=True, of=(Observation, Source))
+    )
+    # Keep large evidence lists within database bind-parameter limits.
+    for offset in range(0, len(evidence_ids), 500):
+        batch = evidence_ids[offset : offset + 500]
+        citations = db.execute(scoped_observations.where(Observation.id.in_(batch))).all()
+        if len(citations) != len(batch) or any(
+            not (locator.strip() and wording.strip() and filename.strip())
+            for locator, wording, filename in citations
+        ):
+            return False
+    return True
+
+
 @app.post("/api/findings/{finding_id}/review")
 def review_finding(
     finding_id: str,
@@ -1409,12 +1470,17 @@ def review_finding(
     _require_role(identity, REVIEW_ROLES)
     if payload.decision not in {"approved", "rejected"}:
         raise HTTPException(status_code=422, detail="Decision must be approved or rejected.")
-    finding = db.get(Finding, finding_id)
-    if not finding:
-        raise HTTPException(status_code=404, detail="Finding not found.")
-    _exercise_for_user(db, finding.exercise_id, identity, REVIEW_ROLES)
+    finding = _finding_for_write(db, finding_id, identity, REVIEW_ROLES)
     if finding.status != "proposed":
         raise HTTPException(status_code=409, detail="This finding already has a reviewer decision.")
+    if payload.decision == "approved" and not _finding_has_source_support(db, finding):
+        raise HTTPException(
+            status_code=422,
+            detail={
+                "code": "FINDING_EVIDENCE_REQUIRED",
+                "message": "Approval requires a nonempty list of unique, available source citations from this exercise.",
+            },
+        )
     finding.status = payload.decision
     finding.review_note = payload.note
     finding.reviewer = identity.name
