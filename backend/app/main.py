@@ -25,6 +25,7 @@ from sqlalchemy.orm import Session
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
 from app import db as database
+from app.ai_evaluation import AiFailure, AiResult, AiService, read_context
 from app.auth import (
     SESSION_COOKIE,
     SESSION_MAX_AGE,
@@ -95,6 +96,7 @@ APP_REVISION = os.getenv("DRILLLOOP_BUILD_REVISION", "unknown")
 async def lifespan(_app: FastAPI):
     validate_runtime_config()
     init_db()
+    _app.state.ai_evaluation = AiService.from_environment()
     logger.info(
         "application_started", extra={"fields": {"version": APP_VERSION, "revision": APP_REVISION}}
     )
@@ -595,7 +597,7 @@ def frontend() -> Response:
 
 
 @app.get("/api/capabilities")
-def capabilities() -> dict:
+def capabilities(request: Request) -> dict:
     model_dir = os.getenv("WHISPER_MODEL_PATH", "")
     asr_ready = False
     asr_version = None
@@ -614,6 +616,7 @@ def capabilities() -> dict:
         "analysis": {
             "mode": "offline deterministic objective rules",
             "cloud_api_required": False,
+            "ai_assistance": request.app.state.ai_evaluation.capability(),
         },
         "review": {
             "required_identity": True,
@@ -1394,6 +1397,30 @@ def analyze(
         {"candidate_count": result["candidate_count"]},
     )
     db.commit()
+    return result
+
+
+def _ai_exercise(exercise_id: str, identity: Identity = Depends(current_identity)) -> Exercise:
+    with SessionLocal() as db:
+        return _exercise_for_user(db, exercise_id, identity, EDIT_ROLES)
+
+
+@app.post("/api/exercises/{exercise_id}/ai-suggestions")
+async def ai_suggestions(
+    request: Request, response: Response, exercise: Exercise = Depends(_ai_exercise)
+) -> AiResult:
+    def load(max_input_bytes: int):
+        with SessionLocal() as db:
+            return read_context(db, exercise, max_input_bytes)
+
+    try:
+        result = await request.app.state.ai_evaluation.generate(load)
+    except AiFailure as exc:
+        raise HTTPException(
+            status_code=exc.status,
+            detail={"code": exc.code, "message": exc.message},
+        ) from None
+    response.headers["Cache-Control"] = "no-store"
     return result
 
 

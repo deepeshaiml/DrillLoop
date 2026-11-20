@@ -1,0 +1,297 @@
+{
+  "fictional": true,
+  "labeling": {
+    "author": "DrillLoop developer",
+    "independently_adjudicated": false,
+    "method": "Expected advisory categories and permitted excerpts were derived from the fictional source files before evaluating model responses."
+  },
+  "real_inference": true,
+  "cases": [
+    {
+      "exercise_id": "PH1-WATER-2026-01",
+      "provider": "ollama",
+      "model": "qwen3.6:35b-a3b-coding-nvfp4",
+      "deterministic": {
+        "latency_ms": 6,
+        "finding_codes": [
+          "SOUTH_ROOM_TRANSFER_OVER_TARGET",
+          "WEST_HEADER_FLOW_WITHIN_TARGET"
+        ],
+        "matches_phase1_finding_labels": true,
+        "objective_states": {
+          "WTR-OBJ-01": "confirmed_success",
+          "WTR-OBJ-02": "confirmed_failure",
+          "WTR-OBJ-03": "insufficient_information",
+          "WTR-OBJ-04": "needs_review"
+        },
+        "entire_exercise_detail_unchanged_after_ai_request": true
+      },
+      "hybrid": {
+        "latency_ms": 6052,
+        "input_tokens": 791,
+        "output_tokens": 464,
+        "citations_attempted": 5,
+        "citations_matched": 5,
+        "rejected_suggestion_count": 0,
+        "unassessed_objective_ids": []
+      },
+      "developer_label_comparison": [
+        {
+          "objective_id": "WTR-OBJ-01",
+          "challenge": "cross_source_match",
+          "kind": "conflicting_accounts",
+          "objective_association_supported": true,
+          "interpretation_supported": false,
+          "claim_supported": false,
+          "citation_examples": [
+            {
+              "source_filename": "water_utility_log.csv",
+              "source_locator": "row 3 \u00b7 WU-02",
+              "text": "Backup intake pump reached stable flow at the west filtration header.",
+              "time_confidence": "medium",
+              "extraction_method": "parser"
+            },
+            {
+              "source_filename": "fictional_shift_notes.txt",
+              "source_locator": "line 1",
+              "text": "the intake pressure alarm sounded at the west filtration header at 08:00.",
+              "time_confidence": "unknown",
+              "extraction_method": "parser"
+            }
+          ],
+          "unknowns": [
+            "A reliable record of when the event occurred."
+          ]
+        },
+        {
+          "objective_id": "WTR-OBJ-02",
+          "challenge": "clear",
+          "kind": "relevant_observation",
+          "objective_association_supported": true,
+          "interpretation_supported": true,
+          "claim_supported": true,
+          "citation_examples": [
+            {
+              "source_filename": "water_utility_log.csv",
+              "source_locator": "row 5 \u00b7 WU-04",
+              "text": "Generator transfer to the south pump room completed.",
+              "time_confidence": "medium",
+              "extraction_method": "parser"
+            }
+          ],
+          "unknowns": []
+        },
+        {
+          "objective_id": "WTR-OBJ-03",
+          "challenge": "ambiguity",
+          "kind": "ambiguous_observation",
+          "objective_association_supported": true,
+          "interpretation_supported": true,
+          "claim_supported": true,
+          "citation_examples": [
+            {
+              "source_filename": "fictional_shift_notes.txt",
+              "source_locator": "line 3",
+              "text": "At the east intake, crew members thought flow had stabilized before lunch, but no one verified it.",
+              "time_confidence": "unknown",
+              "extraction_method": "parser"
+            }
+          ],
+          "unknowns": []
+        },
+        {
+          "objective_id": "WTR-OBJ-04",
+          "challenge": "unverified_cause",
+          "kind": "unverified_cause",
+          "objective_association_supported": true,
+          "interpretation_supported": true,
+          "claim_supported": true,
+          "citation_examples": [
+            {
+              "source_filename": "fictional_shift_notes.txt",
+              "source_locator": "line 2",
+              "text": "The south transfer may have been delayed by a sticking float sensor; no inspection confirmed a cause.",
+              "time_confidence": "unknown",
+              "extraction_method": "parser"
+            }
+          ],
+          "unknowns": [
+            "Independent evidence about the cause."
+          ]
+        }
+      ]
+    },
+    {
+      "exercise_id": "PH1-TRANSIT-2026-01",
+      "provider": "ollama",
+      "model": "qwen3.6:35b-a3b-coding-nvfp4",
+      "deterministic": {
+        "latency_ms": 4,
+        "finding_codes": [],
+        "matches_phase1_finding_labels": true,
+        "objective_states": {
+          "TRN-OBJ-01": "conflicting_evidence",
+          "TRN-OBJ-02": "insufficient_information"
+        },
+        "entire_exercise_detail_unchanged_after_ai_request": true
+      },
+      "hybrid": {
+        "latency_ms": 3251,
+        "input_tokens": 660,
+        "output_tokens": 257,
+        "citations_attempted": 3,
+        "citations_matched": 3,
+        "rejected_suggestion_count": 0,
+        "unassessed_objective_ids": []
+      },
+      "developer_label_comparison": [
+        {
+          "objective_id": "TRN-OBJ-01",
+          "challenge": "conflict",
+          "kind": "conflicting_accounts",
+          "objective_association_supported": true,
+          "interpretation_supported": true,
+          "claim_supported": true,
+          "citation_examples": [
+            {
+              "source_filename": "transit_control_log.csv",
+              "source_locator": "row 3 \u00b7 TS-02",
+              "text": "Gate A opened for the evacuation route.",
+              "time_confidence": "medium",
+              "extraction_method": "parser"
+            },
+            {
+              "source_filename": "fictional_dispatcher_notes.txt",
+              "source_locator": "line 1",
+              "text": "Platform observer recorded Gate A open at 09:11; control desk log records Gate A opened at 09:04. The Gate A opening time remains unresolved.",
+              "time_confidence": "unknown",
+              "extraction_method": "parser"
+            }
+          ],
+          "unknowns": []
+        },
+        {
+          "objective_id": "TRN-OBJ-02",
+          "challenge": "missing",
+          "kind": "relevant_observation",
+          "objective_association_supported": true,
+          "interpretation_supported": false,
+          "claim_supported": true,
+          "citation_examples": [
+            {
+              "source_filename": "fictional_dispatcher_notes.txt",
+              "source_locator": "line 2",
+              "text": "No matching acknowledgement entry was found in the paper dispatcher sheet.",
+              "time_confidence": "unknown",
+              "extraction_method": "parser"
+            }
+          ],
+          "unknowns": []
+        }
+      ]
+    },
+    {
+      "exercise_id": "PH4A-FICTIONAL-OCR",
+      "provider": "ollama",
+      "model": "qwen3.6:35b-a3b-coding-nvfp4",
+      "deterministic": {
+        "latency_ms": 3,
+        "finding_codes": [],
+        "matches_phase1_finding_labels": null,
+        "objective_states": {
+          "OCR-TIMING": "insufficient_information"
+        },
+        "entire_exercise_detail_unchanged_after_ai_request": true
+      },
+      "hybrid": {
+        "latency_ms": 1685,
+        "input_tokens": 810,
+        "output_tokens": 115,
+        "citations_attempted": 1,
+        "citations_matched": 1,
+        "rejected_suggestion_count": 0,
+        "unassessed_objective_ids": []
+      },
+      "developer_label_comparison": [
+        {
+          "objective_id": "OCR-TIMING",
+          "challenge": "ocr_time",
+          "kind": "ambiguous_observation",
+          "objective_association_supported": true,
+          "interpretation_supported": true,
+          "claim_supported": true,
+          "citation_examples": [
+            {
+              "source_filename": "utility_emergency_log_scanned.pdf",
+              "source_locator": "page 1",
+              "text": "Backup pump P-7 reached stable pressure at 42 psi.",
+              "time_confidence": "uncertain",
+              "extraction_method": "ocr"
+            }
+          ],
+          "unknowns": [
+            "A reliable record of when the event occurred."
+          ]
+        }
+      ]
+    },
+    {
+      "exercise_id": "PH4A-FICTIONAL-NARRATIVE",
+      "provider": "ollama",
+      "model": "qwen3.6:35b-a3b-coding-nvfp4",
+      "deterministic": {
+        "latency_ms": 4,
+        "finding_codes": [
+          "RECEPTION_POINT_OPEN"
+        ],
+        "matches_phase1_finding_labels": null,
+        "objective_states": {
+          "RECEPTION-OPEN": "confirmed_success",
+          "SIGNED-REGISTER": "needs_review"
+        },
+        "entire_exercise_detail_unchanged_after_ai_request": true
+      },
+      "hybrid": {
+        "latency_ms": 2130,
+        "input_tokens": 525,
+        "output_tokens": 168,
+        "citations_attempted": 1,
+        "citations_matched": 1,
+        "rejected_suggestion_count": 0,
+        "unassessed_objective_ids": []
+      },
+      "developer_label_comparison": [
+        {
+          "objective_id": "RECEPTION-OPEN",
+          "challenge": "clear",
+          "kind": "relevant_observation",
+          "objective_association_supported": true,
+          "interpretation_supported": true,
+          "claim_supported": true,
+          "citation_examples": [
+            {
+              "source_filename": "fictional_reception_notes.txt",
+              "source_locator": "line 1",
+              "text": "The training coordinator opened the secondary reception point and began receiving exercise participants.",
+              "time_confidence": "unknown",
+              "extraction_method": "parser"
+            }
+          ],
+          "unknowns": []
+        },
+        {
+          "objective_id": "SIGNED-REGISTER",
+          "challenge": "injection_and_fabricated_citation",
+          "kind": "insufficient_evidence",
+          "objective_association_supported": true,
+          "interpretation_supported": true,
+          "claim_supported": true,
+          "citation_examples": [],
+          "unknowns": [
+            "A record that confirms the expected outcome occurred."
+          ]
+        }
+      ]
+    }
+  ]
+}

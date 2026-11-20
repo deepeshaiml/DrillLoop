@@ -120,7 +120,7 @@ Do not run tests against a demo or deployment database.
 - Owners and due dates are not inferred by analysis; reviewers/editors enter them explicitly.
 - Local named-user passwords are configured in environment JSON. No enterprise identity provider is selected, no invitation directory exists, and session revocation requires secret rotation; production needs an approved identity and session strategy.
 - No external incident-management, hospital, document, or messaging connector is defined or implemented. No vendor endpoint or credential is assumed.
-- The current analysis does not invoke an LLM. Optional local ASR can be configured only with the package and a local model directory; it has no diarization and has not been measured on real audio.
+- The core analysis uses deterministic rules. The [Phase 4A guide](docs/operations/HYBRID_AI.md) shows the optional Ollama narrative review and evidence links. Optional local ASR can be configured only with the package and a local model directory; it has no diarization and has not been measured on real audio.
 - No real or confidential exercise evidence has been authorized or evaluated here.
 
 ## Docker Compose

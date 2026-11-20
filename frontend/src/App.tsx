@@ -6,6 +6,7 @@ import {
   MessageSquareText, Plus, Search, ShieldCheck, Sparkles, Upload,
   MapPin, X, XCircle, Zap, CalendarDays, UserRound, History, ClipboardList,
 } from 'lucide-react'
+import AiAssistance, { type AiCapability, type AiResult } from './AiAssistance'
 
 type Tab = 'exercises' | 'overview' | 'objectives' | 'evidence' | 'timeline' | 'findings' | 'actions' | 'reports'
 type ReportDownloadState = { status: 'idle' | 'preparing' | 'started' | 'failed'; message?: string; filename?: string }
@@ -36,7 +37,7 @@ type AuditEvent = { actor: string; action: string; object_id: string; details: R
 type Detail = { exercise: Exercise; objective_assessments: ObjectiveAssessment[]; analysis_locked: boolean; sources: Source[]; timeline: Observation[]; timeline_conflicts: { observation_id: string; source_id: string; source_filename: string; source_locator: string; description: string }[]; findings: Finding[]; actions: Action[]; audit_events: AuditEvent[] }
 type Identity = { id: string; username: string; name: string; role: 'admin' | 'evaluator' | 'reviewer' | 'viewer'; organization_id: string }
 type AccessGrant = { user_id: string; username: string; name: string; role: Identity['role'] }
-type Capabilities = { asr: { available: boolean; package_version: string | null; model_path_configured: boolean; note: string }; analysis: { mode: string; cloud_api_required: boolean }; review: { required_identity: boolean; review_roles: string[] }; synthetic_demo_seed_enabled?: boolean }
+type Capabilities = { asr: { available: boolean; package_version: string | null; model_path_configured: boolean; note: string }; analysis: { mode: string; cloud_api_required: boolean; ai_assistance: AiCapability }; review: { required_identity: boolean; review_roles: string[] }; synthetic_demo_seed_enabled?: boolean }
 type ReviewTarget = { kind: 'finding'; record: Finding; decision: 'approved' | 'rejected' } | { kind: 'action'; record: Action; decision: 'approved' | 'rejected' }
 
 let csrfTokenValue = ''
@@ -789,7 +790,7 @@ export default function App() {
             {tab === 'objectives' && <ObjectivesView data={data} canEdit={Boolean(canEdit)} onEdit={openObjectiveEditor} />}
             {tab === 'evidence' && <EvidenceView data={data} capabilities={capabilities} canEdit={Boolean(canEdit)} busy={busy} uploading={uploading} filteredSources={filteredSources} sourceFilter={sourceFilter} setSourceFilter={setSourceFilter} syntheticSourceIds={syntheticSourceIds} onUpload={uploadFiles} onSource={setSourceOpen} onEvidence={setEvidenceOpen} onGoTimeline={() => setTab('timeline')} onTranscribe={transcribeFile} />}
             {tab === 'timeline' && <TimelineView data={data} focusObservationId={timelineFocusId} onFocusConsumed={() => setTimelineFocusId('')} onEvidence={setEvidenceOpen} onGoEvidence={() => setTab('evidence')} />}
-            {tab === 'findings' && <FindingsView data={data} busy={busy} canEdit={Boolean(canEdit)} canReview={Boolean(canReview)} identityName={identity.name} isSyntheticDemo={syntheticSourceIds.size > 0} onReview={(finding, decision) => setPendingReview({ kind: 'finding', record: finding, decision })} onEvidence={item => { const source = data.sources.find(candidate => candidate.id === item.source_id); if (source) { setSourceFocusObservationId(item.observation_id); setSourceOpen(source) } else setEvidenceOpen(item) }} />}
+            {tab === 'findings' && <FindingsView data={data} busy={busy} canEdit={Boolean(canEdit)} canReview={Boolean(canReview)} identityName={identity.name} isSyntheticDemo={syntheticSourceIds.size > 0} aiCapability={capabilities?.analysis.ai_assistance} onReview={(finding, decision) => setPendingReview({ kind: 'finding', record: finding, decision })} onEvidence={item => { const source = data.sources.find(candidate => candidate.id === item.source_id); if (source) { setSourceFocusObservationId(item.observation_id); setSourceOpen(source) } else setEvidenceOpen(item) }} />}
             {tab === 'actions' && <ActionsView data={data} busy={busy} canEdit={Boolean(canEdit)} canReview={Boolean(canReview)} identityName={identity.name} isSyntheticDemo={syntheticSourceIds.size > 0} onSave={saveAction} onReview={(action, decision) => setPendingReview({ kind: 'action', record: action, decision })} onClose={setClosureTarget} onEvidence={item => { const source = data.sources.find(candidate => candidate.id === item.source_id); if (source) { setSourceFocusObservationId(item.observation_id); setSourceOpen(source) } else setEvidenceOpen(item) }} />}
             {tab === 'reports' && <ReportsView data={data} busy={busy} download={reportDownload} onExport={() => void exportReport()} onTab={setTab} />}
 
@@ -1370,7 +1371,7 @@ function FindingWorkflow({ finding, actions }: { finding: Finding; actions: Acti
   return <section className="fa-workflow" aria-label="Finding and corrective action workflow"><div className="fa-workflow-step is-complete"><span>1</span><div><strong>Finding proposed</strong><small>Source-linked analysis draft</small></div></div><ChevronRight size={16} aria-hidden="true" /><div className={`fa-workflow-step ${decisionClass}`}><span>2</span><div><strong>Human decision</strong><small>{statusText}</small></div></div><ChevronRight size={16} aria-hidden="true" /><div className={`fa-workflow-step ${actionClass}`}><span>3</span><div><strong>Corrective action</strong><small>{actionSummary}</small></div></div></section>
 }
 
-function FindingsView({ data, busy, canEdit, canReview, identityName, isSyntheticDemo, onReview, onEvidence }: { data: Detail; busy: boolean; canEdit: boolean; canReview: boolean; identityName: string; isSyntheticDemo: boolean; onReview: (finding: Finding, decision: 'approved' | 'rejected') => void; onEvidence: (item: Support) => void }) {
+function FindingsView({ data, busy, canEdit, canReview, identityName, isSyntheticDemo, aiCapability, onReview, onEvidence }: { data: Detail; busy: boolean; canEdit: boolean; canReview: boolean; identityName: string; isSyntheticDemo: boolean; aiCapability?: AiCapability; onReview: (finding: Finding, decision: 'approved' | 'rejected') => void; onEvidence: (item: Support) => void }) {
   const [query, setQuery] = useState('')
   const [status, setStatus] = useState('all')
   const [objectiveId, setObjectiveId] = useState('all')
@@ -1386,6 +1387,14 @@ function FindingsView({ data, busy, canEdit, canReview, identityName, isSyntheti
     {isSyntheticDemo && <div className="fa-fictional"><Sparkles size={16} /><strong>Fictional synthetic demo data</strong><span>These exercise events and records are not real operational evidence.</span></div>}
     <div className={`fa-access-note ${canReview ? 'is-reviewer' : canEdit ? 'is-editor' : 'is-viewer'}`}><LockKeyhole size={17} /><span>{canReview ? <>Review decisions will be recorded as <strong>{identityName}</strong>.</> : canEdit ? 'Evaluator access · you can view findings and edit action details; a reviewer must record decisions.' : 'Viewer access · decisions and action edits are not available to this account.'}</span></div>
     <section className="fa-process-strip" aria-label="Evaluation workflow"><span className="fa-process-current"><i>1</i> Proposed finding</span><ChevronRight size={15} /><span><i>2</i> Human decision</span><ChevronRight size={15} /><span><i>3</i> Corrective action</span></section>
+    {canEdit && aiCapability && <AiAssistance
+      key={data.exercise.id}
+      capability={aiCapability}
+      objectives={data.exercise.objectives}
+      assessments={data.objective_assessments}
+      generate={signal => api<AiResult>(`/exercises/${encodeURIComponent(data.exercise.id)}/ai-suggestions`, { method: 'POST', signal })}
+      onEvidence={item => onEvidence({ ...item, event_time_normalized: null })}
+    />}
     {data.findings.length > 0 && <section className="fa-toolbar" aria-label="Findings filters"><label className="fa-search"><Search size={17} /><span className="sr-only">Search findings</span><input value={query} onChange={event => setQuery(event.target.value)} placeholder="Search findings, objectives or sources" />{query && <button type="button" aria-label="Clear finding search" onClick={() => setQuery('')}><X size={15} /></button>}</label><label className="fa-filter"><span>Status</span><select value={status} onChange={event => setStatus(event.target.value)}><option value="all">All statuses</option><option value="proposed">Proposed · needs review</option><option value="approved">Approved</option><option value="rejected">Rejected</option></select></label><label className="fa-filter"><span>Objective</span><select value={objectiveId} onChange={event => setObjectiveId(event.target.value)}><option value="all">All objectives</option>{data.exercise.objectives.map(item => <option key={item.id} value={item.id}>{item.id} · {item.text}</option>)}{data.findings.some(item => !item.objective_id || !data.exercise.objectives.some(objective => objective.id === item.objective_id)) && <option value="">No objective linked</option>}</select></label><span className="fa-result-count">{visible.length} of {data.findings.length}</span></section>}
     {visible.length ? <div className="fa-finding-list">{visible.map((finding, index) => {
       const objective = data.exercise.objectives.find(item => item.id === finding.objective_id)
