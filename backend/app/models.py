@@ -3,8 +3,11 @@ from __future__ import annotations
 from datetime import UTC, datetime
 
 from sqlalchemy import (
+    CheckConstraint,
     DateTime,
     ForeignKey,
+    ForeignKeyConstraint,
+    Index,
     Integer,
     LargeBinary,
     String,
@@ -25,8 +28,10 @@ class Base(DeclarativeBase):
 
 class Exercise(Base):
     __tablename__ = "exercises"
+    __table_args__ = (Index("ux_exercises_id_organization", "id", "organization_id", unique=True),)
 
     id: Mapped[str] = mapped_column(String(80), primary_key=True)
+    organization_id: Mapped[str] = mapped_column(String(120), server_default=text("''"))
     title: Mapped[str] = mapped_column(String(200))
     scenario: Mapped[str] = mapped_column(Text)
     exercise_date: Mapped[str] = mapped_column(String(20))
@@ -128,6 +133,15 @@ class CorrectiveAction(Base):
 
 class AuditEvent(Base):
     __tablename__ = "audit_events"
+    __table_args__ = (
+        Index(
+            "ux_audit_events_candidate_version",
+            "exercise_id",
+            "object_id",
+            "candidate_version",
+            unique=True,
+        ),
+    )
 
     id: Mapped[str] = mapped_column(String(36), primary_key=True)
     exercise_id: Mapped[str] = mapped_column(ForeignKey("exercises.id"), index=True)
@@ -135,4 +149,67 @@ class AuditEvent(Base):
     action: Mapped[str] = mapped_column(String(80))
     object_id: Mapped[str] = mapped_column(String(80))
     details_json: Mapped[str] = mapped_column(Text, default="{}")
+    candidate_version: Mapped[int | None] = mapped_column(Integer)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+
+class AiCandidate(Base):
+    __tablename__ = "ai_candidates"
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["exercise_id", "organization_id"],
+            ["exercises.id", "exercises.organization_id"],
+            ondelete="RESTRICT",
+            name="fk_ai_candidate_exercise_owner",
+        ),
+        CheckConstraint(
+            "review_state IN ('pending_review', 'accepted_for_consideration', 'rejected', 'more_evidence_required')",
+            name="ck_ai_candidate_review_state",
+        ),
+        CheckConstraint(
+            "(freshness = 'current' AND stale_at IS NULL) OR (freshness = 'stale' AND stale_at IS NOT NULL)",
+            name="ck_ai_candidate_freshness",
+        ),
+        CheckConstraint("version >= 1", name="ck_ai_candidate_version"),
+        Index("ux_ai_candidates_scope", "exercise_id", "organization_id", "id", unique=True),
+    )
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True)
+    exercise_id: Mapped[str] = mapped_column(String(80))
+    organization_id: Mapped[str] = mapped_column(String(120))
+    issuance_id: Mapped[str] = mapped_column(String(36), unique=True)
+    # Immutable generation snapshot, validated with CandidateSnapshot.
+    snapshot_json: Mapped[str] = mapped_column(Text)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+    review_state: Mapped[str] = mapped_column(String(32), default="pending_review")
+    freshness: Mapped[str] = mapped_column(String(8), default="current")
+    stale_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    stale_reasons_json: Mapped[str] = mapped_column(Text, default="[]")
+    version: Mapped[int] = mapped_column(Integer, default=1)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+
+class AiCandidateRequest(Base):
+    __tablename__ = "ai_candidate_requests"
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["exercise_id", "organization_id", "candidate_id"],
+            ["ai_candidates.exercise_id", "ai_candidates.organization_id", "ai_candidates.id"],
+            ondelete="RESTRICT",
+            name="fk_ai_candidate_request_candidate_scope",
+        ),
+        CheckConstraint(
+            "operation IN ('save', 'review')", name="ck_ai_candidate_request_operation"
+        ),
+        CheckConstraint("applied_version >= 1", name="ck_ai_candidate_request_version"),
+    )
+
+    exercise_id: Mapped[str] = mapped_column(String(80), primary_key=True)
+    organization_id: Mapped[str] = mapped_column(String(120), primary_key=True)
+    actor_user_id: Mapped[str] = mapped_column(String(120), primary_key=True)
+    operation: Mapped[str] = mapped_column(String(8), primary_key=True)
+    key: Mapped[str] = mapped_column(String(128), primary_key=True)
+    request_hash: Mapped[str] = mapped_column(String(64))
+    candidate_id: Mapped[str] = mapped_column(String(36))
+    applied_version: Mapped[int] = mapped_column(Integer)
+    decision: Mapped[str | None] = mapped_column(String(32))

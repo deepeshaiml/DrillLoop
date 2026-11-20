@@ -12,8 +12,8 @@ from sqlalchemy.engine import make_url
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "backend"))
 
+from app.database_config import database_connect_args, enforce_sqlite_foreign_keys  # noqa: E402
 from app.models import Base  # noqa: E402
-from app.database_config import database_connect_args  # noqa: E402
 
 config = context.config
 if config.config_file_name is not None:
@@ -47,7 +47,9 @@ def run_migrations_online() -> None:
         return
 
     url = _database_url()
-    engine = create_engine(url, connect_args=database_connect_args(str(url)), pool_pre_ping=True)
+    engine = enforce_sqlite_foreign_keys(
+        create_engine(url, connect_args=database_connect_args(str(url)), pool_pre_ping=True)
+    )
     try:
         with engine.connect() as connection:
             context.configure(

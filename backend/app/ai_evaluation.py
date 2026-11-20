@@ -9,7 +9,7 @@ import re
 import threading
 import time
 from collections.abc import Callable
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Literal, Protocol
 
 import httpx
@@ -186,9 +186,7 @@ class Citation(StrictModel):
     event_time_raw: str | None
 
 
-class Suggestion(StrictModel):
-    evidence: list[Citation]
-    counterevidence: list[Citation]
+class Advisory(StrictModel):
     objective_id: str
     kind: Interpretation
     assessment: Assessment
@@ -196,8 +194,14 @@ class Suggestion(StrictModel):
     unknowns: list[str]
     uncertainty: str
     review_reason: str
+
+
+class Suggestion(Advisory):
+    evidence: list[Citation]
+    counterevidence: list[Citation]
     status: Literal["proposed"] = "proposed"
     reviewer_decision: None = None
+    save_token: str | None = None
 
 
 class AiResult(StrictModel):
@@ -352,6 +356,9 @@ class AiContext:
     source_hashes: dict[str, str]
     timing_rules: dict[str, TimingRuleTerms]
     context_limited: bool = False
+    observation_provenance: dict[str, tuple[str | None, str, float | None]] = field(
+        default_factory=dict
+    )
 
 
 def read_context(db: Session, exercise: Exercise, max_input_bytes: int) -> AiContext:
@@ -393,6 +400,9 @@ def read_context(db: Session, exercise: Exercise, max_input_bytes: int) -> AiCon
             Observation.time_confidence,
             Observation.event_time_raw,
             Source.sha256,
+            Observation.event_time_normalized,
+            Observation.observation_type,
+            Observation.recognition_confidence,
         )
         .join(Source, Source.id == Observation.source_id)
         .where(Observation.exercise_id == exercise.id, Source.exercise_id == exercise.id)
@@ -401,12 +411,25 @@ def read_context(db: Session, exercise: Exercise, max_input_bytes: int) -> AiCon
     )
     records: list[Citation] = []
     source_hashes: dict[str, str] = {}
+    provenance = {}
     for index, row in enumerate(rows):
         if index == MAX_RECORDS:
             return AiContext(objectives, [], {}, {}, context_limited=True)
-        observation_id, source_id, filename, locator, text, method, confidence, raw_time, digest = (
-            row
-        )
+        (
+            observation_id,
+            source_id,
+            filename,
+            locator,
+            text,
+            method,
+            confidence,
+            raw_time,
+            digest,
+            normalized_time,
+            observation_type,
+            recognition_confidence,
+        ) = row
+        provenance[observation_id] = (normalized_time, observation_type, recognition_confidence)
         source_hashes[source_id] = digest
         records.append(
             Citation(
@@ -430,7 +453,9 @@ def read_context(db: Session, exercise: Exercise, max_input_bytes: int) -> AiCon
     records.sort(
         key=lambda cite: (source_order[cite.source_id], _locator_number(cite.source_locator))
     )
-    return AiContext(objectives, records, source_hashes, timing_rules)
+    return AiContext(
+        objectives, records, source_hashes, timing_rules, observation_provenance=provenance
+    )
 
 
 def _rule_terms(rule: dict, key: str) -> list[str]:
@@ -477,7 +502,11 @@ class AiService:
             "model": self.settings.model if self.settings else None,
         }
 
-    async def generate(self, load: Callable[[int], AiContext]) -> AiResult:
+    async def generate(
+        self,
+        load: Callable[[int], AiContext],
+        handoff: Callable[[ModelAnswer, AiResult, set[str]], None] | None = None,
+    ) -> AiResult:
         if self.configuration_error:
             raise unavailable()
         if self.settings is None or self.provider is None or self.slots is None:
@@ -523,13 +552,16 @@ class AiService:
                 answer = ModelAnswer.model_validate_json(reply.content)
             except (ValidationError, UnicodeEncodeError):
                 raise invalid_response() from None
-            return _validate_suggestions(
+            result, eligible = validate_suggestions(
                 context,
                 answer,
                 reply,
                 self.settings.model,
                 round(1000 * (time.perf_counter() - start)),
             )
+            if handoff:
+                handoff(answer, result, eligible)
+            return result
         finally:
             self.slots.release()
 
@@ -799,6 +831,10 @@ def _select_suggestion(candidates: list[Suggestion]) -> Suggestion:
         for candidate in candidates
         for cite in candidate.evidence + candidate.counterevidence
     }
+    opposing_ids = {
+        cite.observation_id for candidate in candidates for cite in candidate.counterevidence
+    }
+    selected_citations = [by_observation[key] for key in sorted(by_observation)[:4]]
     selected = min(candidates, key=lambda item: (item.kind, key(item)))
     uncertainty = "Competing interpretations require evaluator review of the original sources."
     if any(cite.extraction_method == "ocr" for cite in by_observation.values()):
@@ -809,8 +845,12 @@ def _select_suggestion(candidates: list[Suggestion]) -> Suggestion:
         update={
             "kind": "unknown",
             "assessment": "abstained",
-            "evidence": [by_observation[key] for key in sorted(by_observation)[:4]],
-            "counterevidence": [],
+            "evidence": [
+                cite for cite in selected_citations if cite.observation_id not in opposing_ids
+            ],
+            "counterevidence": [
+                cite for cite in selected_citations if cite.observation_id in opposing_ids
+            ],
             "interpretation": INTERPRETATIONS["unknown"],
             "unknowns": sorted(
                 {word for candidate in candidates for word in candidate.unknowns}
@@ -821,14 +861,20 @@ def _select_suggestion(candidates: list[Suggestion]) -> Suggestion:
     )
 
 
-def _validate_suggestions(
+def validate_suggestions(
     context: AiContext, answer: ModelAnswer, reply: ProviderReply, model: str, elapsed_ms: int
-) -> AiResult:
+) -> tuple[AiResult, set[str]]:
     candidates: dict[str, list[Suggestion]] = {}
     attempted = matched = 0
+    required: dict[str, set[str]] = {}
+    ineligible: set[str] = set()
     comparisons = _completion_comparisons(context)
     for item in answer.suggestions:
         related = _resolve_citations(context, item.citations)
+        objective = item.objective_id
+        required.setdefault(objective, set()).update(cite.observation_id for cite in related)
+        if not related:
+            ineligible.add(objective)
         attempted += len(item.citations)
         matched += len(related)
         if (
@@ -838,6 +884,7 @@ def _validate_suggestions(
             or (item.kind not in ABSTENTIONS and not related)
             or (item.kind in {"contradiction", "different_response_phases"} and len(related) != 2)
         ):
+            ineligible.add(objective)
             continue
         kind = item.kind
         unknowns = set(item.missing_information)
@@ -894,6 +941,7 @@ def _validate_suggestions(
         ):
             unknowns.add("completion_record")
         if kind in {"unknown", "insufficient_evidence"} and not unknowns:
+            ineligible.add(objective)
             continue
         if kind in {"relevant_observation", "corroboration"} and (
             comparison := comparisons.get(item.objective_id)
@@ -937,8 +985,17 @@ def _validate_suggestions(
             uncertainty=uncertainty,
             review_reason="An evaluator must check the original sources and decide how they relate to the objective.",
         )
-        candidates.setdefault(item.objective_id, []).append(candidate)
+        required[objective].update(cite.observation_id for cite in evidence + opposing)
+        candidates.setdefault(objective, []).append(candidate)
     suggestions = {objective: _select_suggestion(items) for objective, items in candidates.items()}
+    eligible = {
+        objective
+        for objective, suggestion in suggestions.items()
+        if objective not in ineligible
+        and required[objective]
+        and required[objective]
+        == {cite.observation_id for cite in suggestion.evidence + suggestion.counterevidence}
+    }
     return AiResult(
         provider="ollama",
         model=model,
@@ -950,4 +1007,4 @@ def _validate_suggestions(
         latency_ms=elapsed_ms,
         input_tokens=reply.input_tokens,
         output_tokens=reply.output_tokens,
-    )
+    ), eligible

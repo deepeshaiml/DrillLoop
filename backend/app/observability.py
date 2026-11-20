@@ -10,6 +10,7 @@ from collections import Counter
 from contextvars import ContextVar
 
 request_id_context: ContextVar[str] = ContextVar("drillloop_request_id", default="-")
+server_request_id_context: ContextVar[str] = ContextVar("drillloop_server_request_id", default="-")
 _SAFE_ID = re.compile(r"^[A-Za-z0-9._-]{1,64}$")
 
 
@@ -229,8 +230,20 @@ class CorrelationMiddleware:
             await self.app(scope, receive, send)
             return
         headers = {key.lower(): value.decode("latin-1") for key, value in scope.get("headers", [])}
-        identifier = request_id(headers.get(b"x-request-id"))
+        server_identifier = request_id(None)
+        client_identifier = headers.get(b"x-request-id")
+        identifier = (
+            client_identifier
+            if client_identifier and _SAFE_ID.fullmatch(client_identifier)
+            else server_identifier
+        )
         token = request_id_context.set(identifier)
+        server_token = server_request_id_context.set(server_identifier)
+        path = scope.get("path", "").split("/")
+        no_store = path[:3] == ["", "api", "exercises"] and path[4:5] in (
+            ["ai-candidates"],
+            ["ai-suggestions"],
+        )
         started = time.perf_counter()
         status = 500
 
@@ -240,6 +253,13 @@ class CorrelationMiddleware:
                 status = message["status"]
                 response_headers = list(message.get("headers", []))
                 response_headers.append((b"x-request-id", identifier.encode("ascii")))
+                if no_store:
+                    response_headers = [
+                        (name, value)
+                        for name, value in response_headers
+                        if name.lower() != b"cache-control"
+                    ]
+                    response_headers.append((b"cache-control", b"no-store"))
                 message["headers"] = response_headers
             await send(message)
 
@@ -258,8 +278,10 @@ class CorrelationMiddleware:
                         "method": method,
                         "route": route_path,
                         "status": status,
+                        "server_request_id": server_identifier,
                         "duration_ms": round(duration * 1000, 2),
                     }
                 },
             )
+            server_request_id_context.reset(server_token)
             request_id_context.reset(token)
