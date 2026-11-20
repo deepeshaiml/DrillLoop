@@ -272,7 +272,7 @@ async function reviewJourney() {
   const savedQueue = await api(admin, candidatePath, 200)
   assert.equal(savedQueue.body.candidates.length, 4)
   await page.getByRole('button', { name: 'Saved candidates', exact: true }).click()
-  await queueButton(page, 'OBJ-ACCEPT').waitFor()
+  await queue(page).getByRole('status').getByText('4 candidates shown.', { exact: true }).waitFor()
   assert.equal(await queue(page).getByText('Requested by Fictional Evaluation Lead', { exact: true }).count(), 4)
   await capture(page, 1440, 'saved-queue', queue(page))
   await checkAxe(page, '.cr-panel', 'saved candidate queue')
@@ -604,7 +604,7 @@ async function promotionJourney() {
   let firstRequest
   await page.route(url => url.pathname === path, async route => {
     firstRequest = route.request()
-    assert.match(await dialog.getByRole('status').textContent(), /Submitting the proposed finding/)
+    await dialog.getByRole('status').getByText('Submitting the proposed finding.', { exact: true }).waitFor()
     const response = await route.fetch()
     assert.equal(response.status(), 201)
     committed = await response.json()
