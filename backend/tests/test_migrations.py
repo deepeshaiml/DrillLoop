@@ -134,3 +134,95 @@ def test_failed_initial_migration_does_not_delete_existing_rows():
     finally:
         existing_engine.dispose()
         db_path.unlink(missing_ok=True)
+
+
+def test_candidate_ownership_preflight_is_atomic_and_accepts_explicit_resolution(tmp_path):
+    from argparse import Namespace
+
+    root = database.Path(database.os.environ["DRILLLOOP_TEST_DB_ROOT"])
+    migration_engine = database.create_database_engine(
+        f"sqlite:///{root / f'test-{uuid.uuid4().hex}.sqlite3'}"
+    )
+    config = database._alembic_config()
+    legacy = "a53481bc2d73"
+    try:
+        with migration_engine.begin() as connection:
+            config.attributes["connection"] = connection
+            command.upgrade(config, legacy)
+            connection.execute(
+                text(
+                    "INSERT INTO exercises "
+                    "(id,title,scenario,exercise_date,duration_minutes,objectives_json,criteria_json,"
+                    "evaluator_roles_json,participants_json,milestones_json,created_at) "
+                    "VALUES (:id,'Fictional','Fictional','2026-11-20',20,'[]','[]','[]','[]','[]','2026-11-20 00:00:00')"
+                ),
+                [{"id": "ZERO"}, {"id": "CONFLICT"}, {"id": "KNOWN"}],
+            )
+            connection.execute(
+                text(
+                    "INSERT INTO exercise_grants (id,exercise_id,user_id,organization_id,access_role,created_at) "
+                    "VALUES (:id,:exercise,:id,:org,'admin','2026-11-20 00:00:00')"
+                ),
+                [
+                    {"id": "a", "exercise": "CONFLICT", "org": "org-a"},
+                    {"id": "b", "exercise": "CONFLICT", "org": "org-b"},
+                    {"id": "c", "exercise": "KNOWN", "org": "org-a"},
+                    {"id": "d", "exercise": "KNOWN", "org": "org-a"},
+                ],
+            )
+        with (
+            pytest.raises(RuntimeError, match="CONFLICT.*ZERO"),
+            migration_engine.begin() as connection,
+        ):
+            config.attributes["connection"] = connection
+            command.upgrade(config, "head")
+        with migration_engine.connect() as connection:
+            assert connection.scalar(text("SELECT version_num FROM alembic_version")) == legacy
+            assert "organization_id" not in {
+                col["name"] for col in inspect(connection).get_columns("exercises")
+            }
+            assert connection.scalar(text("SELECT count(*) FROM exercise_grants")) == 4
+        manifest = tmp_path / "reviewed-owners.json"
+        config.cmd_opts = Namespace(x=[f"exercise_owners={manifest}"])
+        manifest.write_text(
+            '{"ZERO":"org-explicit","CONFLICT":"org-a","CONFLICT":"org-b"}',
+            encoding="utf-8",
+        )
+        with (
+            pytest.raises(RuntimeError, match="duplicate exercise ID"),
+            migration_engine.begin() as connection,
+        ):
+            config.attributes["connection"] = connection
+            command.upgrade(config, "head")
+        with migration_engine.connect() as connection:
+            assert connection.scalar(text("SELECT version_num FROM alembic_version")) == legacy
+            assert "organization_id" not in {
+                col["name"] for col in inspect(connection).get_columns("exercises")
+            }
+
+        manifest.write_text('{"ZERO":"org-explicit","CONFLICT":"org-b"}', encoding="utf-8")
+        with migration_engine.begin() as connection:
+            config.attributes["connection"] = connection
+            command.upgrade(config, "head")
+        database.init_db(migration_engine)
+        with migration_engine.connect() as connection:
+            assert connection.execute(
+                text("SELECT id, organization_id FROM exercises ORDER BY id")
+            ).all() == [
+                ("CONFLICT", "org-b"),
+                ("KNOWN", "org-a"),
+                ("ZERO", "org-explicit"),
+            ]
+            assert connection.scalar(text("SELECT count(*) FROM exercise_grants")) == 4
+            assert connection.execute(text("PRAGMA foreign_key_check")).all() == []
+        from sqlalchemy.exc import IntegrityError
+
+        with (
+            pytest.raises(IntegrityError, match="immutable"),
+            migration_engine.begin() as connection,
+        ):
+            connection.execute(
+                text("UPDATE exercises SET organization_id='org-other' WHERE id='CONFLICT'")
+            )
+    finally:
+        migration_engine.dispose()

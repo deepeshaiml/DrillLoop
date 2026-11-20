@@ -13,7 +13,7 @@ from sqlalchemy import create_engine, inspect
 from sqlalchemy.engine import Engine, make_url
 from sqlalchemy.orm import Session, sessionmaker
 
-from app.database_config import database_connect_args
+from app.database_config import database_connect_args, enforce_sqlite_foreign_keys
 from app.models import Base
 
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./drillloop.db")
@@ -105,10 +105,10 @@ def create_database_engine(database_url: str, *, require_new_test_db: bool | Non
         raise UnsafeTestDatabaseError(
             "DRILLLOOP_TEST_DB_ALLOW_EXISTING is allowed only in test mode"
         )
-    return create_engine(
-        database_url,
-        connect_args=database_connect_args(database_url),
-        pool_pre_ping=True,
+    return enforce_sqlite_foreign_keys(
+        create_engine(
+            database_url, connect_args=database_connect_args(database_url), pool_pre_ping=True
+        )
     )
 
 

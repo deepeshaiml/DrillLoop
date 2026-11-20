@@ -402,7 +402,10 @@ def test_competing_suggestions_are_selected_independent_of_order(ai_client, reve
         assert item["kind"] == "contradiction" and len(item["counterevidence"]) == 1
     else:
         assert item["kind"] == "unknown" and item["assessment"] == "abstained"
-        assert len(item["evidence"]) == 2
+        assert [cite["source_filename"] for cite in item["evidence"]] == ["fictional-affirmed.txt"]
+        assert [cite["source_filename"] for cite in item["counterevidence"]] == [
+            "fictional-denied.txt"
+        ]
         assert any("competing interpretations" in text for text in item["unknowns"])
 
 

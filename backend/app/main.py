@@ -25,7 +25,9 @@ from sqlalchemy.orm import Session
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
 from app import db as database
-from app.ai_evaluation import AiFailure, AiResult, AiService, read_context
+from app.ai_candidates import invalidate_changed_candidates
+from app.ai_candidates import router as candidate_router
+from app.ai_evaluation import AiService
 from app.auth import (
     SESSION_COOKIE,
     SESSION_MAX_AGE,
@@ -41,6 +43,15 @@ from app.auth import (
 )
 from app.db import SessionLocal, get_db, init_db
 from app.evidence import EvidenceError, ParsedEvidence, parse_evidence, safe_filename
+from app.exercise_access import (
+    EDIT_ROLES,
+    READ_ROLES,
+    REVIEW_ROLES,
+    _audit,
+    _exercise_for_user,
+    _require_role,
+    begin_exercise_write,
+)
 from app.limits import RequestBodyLimitMiddleware
 from app.models import (
     AuditEvent,
@@ -80,9 +91,6 @@ MAX_FILE_SIZE = 15 * 1024 * 1024
 MAX_EVIDENCE_FILES = 10
 MAX_TOTAL_UPLOAD_SIZE = 30 * 1024 * 1024
 MAX_REQUEST_BODY_SIZE = MAX_TOTAL_UPLOAD_SIZE + 1 * 1024 * 1024
-READ_ROLES = {"admin", "evaluator", "reviewer", "viewer"}
-EDIT_ROLES = {"admin", "evaluator"}
-REVIEW_ROLES = {"admin", "reviewer"}
 _LOGIN_FAILURES: dict[str, tuple[int, float]] = {}
 _LOGIN_WINDOW_SECONDS = 60
 _LOGIN_MAX_FAILURES = 8
@@ -101,17 +109,12 @@ async def lifespan(_app: FastAPI):
         "application_started", extra={"fields": {"version": APP_VERSION, "revision": APP_REVISION}}
     )
     if os.getenv("DEMO_SEED", "0").lower() in {"1", "true", "yes"}:
+        demo_owner = configured_users().get(os.getenv("DRILLLOOP_DEMO_OWNER_ID", ""))
+        if demo_owner is None:
+            raise RuntimeError("DEMO_SEED requires a configured DRILLLOOP_DEMO_OWNER_ID.")
         with SessionLocal() as db:
-            exercise = _seed_demo(db)
+            exercise = _seed_demo(db, _identity_from_user(demo_owner))
             analyze_exercise(db, exercise)
-            demo_owner = os.getenv("DRILLLOOP_DEMO_OWNER_ID", "")
-            try:
-                user = configured_users().get(demo_owner)
-            except AuthConfigurationError:
-                user = None
-            if user:
-                _create_exercise_grant(db, exercise, _identity_from_user(user))
-                db.commit()
     try:
         yield
     finally:
@@ -124,6 +127,7 @@ app = FastAPI(
     description="Evidence-backed emergency exercise evaluation demo",
     lifespan=lifespan,
 )
+app.include_router(candidate_router)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=comma_separated(
@@ -134,13 +138,10 @@ app.add_middleware(
     ),
     allow_credentials=True,
     allow_methods=["*"],
-    allow_headers=["Content-Type", "X-CSRF-Token"],
+    allow_headers=["Content-Type", "X-CSRF-Token", "Idempotency-Key", "If-Match"],
+    expose_headers=["ETag"],
 )
 app.add_middleware(RequestBodyLimitMiddleware, max_bytes=MAX_REQUEST_BODY_SIZE)
-app.add_middleware(CorrelationMiddleware)
-_trusted_hosts = comma_separated("DRILLLOOP_TRUSTED_HOSTS")
-if _trusted_hosts:
-    app.add_middleware(TrustedHostMiddleware, allowed_hosts=_trusted_hosts)
 
 FRONTEND_DIST = Path(__file__).resolve().parents[2] / "frontend" / "dist"
 if (FRONTEND_DIST / "assets").is_dir():
@@ -270,6 +271,12 @@ async def csrf_protection(request: Request, call_next):
     return response
 
 
+app.add_middleware(CorrelationMiddleware)
+_trusted_hosts = comma_separated("DRILLLOOP_TRUSTED_HOSTS")
+if _trusted_hosts:
+    app.add_middleware(TrustedHostMiddleware, allowed_hosts=_trusted_hosts)
+
+
 def _observe_database_pool() -> None:
     pool = database.engine.pool
     try:
@@ -292,19 +299,9 @@ def _identity_from_user(user: dict[str, str]) -> Identity:
     )
 
 
-def _require_role(identity: Identity, allowed: set[str]) -> None:
-    if identity.role not in allowed:
-        logger.warning("authorization_denied", extra={"fields": {"role": identity.role}})
-        raise HTTPException(
-            status_code=403,
-            detail={
-                "code": "ROLE_FORBIDDEN",
-                "message": "Your account role cannot perform this action.",
-            },
-        )
-
-
 def _create_exercise_grant(db: Session, exercise: Exercise, identity: Identity) -> None:
+    if exercise.organization_id != identity.organization_id:
+        raise HTTPException(status_code=404, detail="Exercise not found.")
     existing = db.scalar(
         select(ExerciseGrant).where(
             ExerciseGrant.exercise_id == exercise.id,
@@ -322,40 +319,6 @@ def _create_exercise_grant(db: Session, exercise: Exercise, identity: Identity) 
                 access_role=identity.role,
             )
         )
-
-
-def _exercise_for_user(
-    db: Session, exercise_id: str, identity: Identity, allowed_roles: set[str]
-) -> Exercise:
-    _require_role(identity, allowed_roles)
-    exercise = db.get(Exercise, exercise_id)
-    if not exercise:
-        raise HTTPException(status_code=404, detail="Exercise not found.")
-    grant = db.scalar(
-        select(ExerciseGrant.id).where(
-            ExerciseGrant.exercise_id == exercise_id,
-            ExerciseGrant.user_id == identity.user_id,
-            ExerciseGrant.organization_id == identity.organization_id,
-        )
-    )
-    if grant is None:
-        raise HTTPException(status_code=404, detail="Exercise not found.")
-    return exercise
-
-
-def _audit(
-    db: Session, exercise_id: str, actor: str, action: str, object_id: str, details: dict
-) -> None:
-    db.add(
-        AuditEvent(
-            id=str(uuid.uuid4()),
-            exercise_id=exercise_id,
-            actor=actor,
-            action=action,
-            object_id=object_id,
-            details_json=_dump(details),
-        )
-    )
 
 
 def _store_parsed(
@@ -400,12 +363,14 @@ def _store_parsed(
     return source
 
 
-def _seed_demo(db: Session) -> Exercise:
-    existing = db.get(Exercise, "HOSP-PO-2026-01")
+def _seed_demo(db: Session, owner: Identity) -> Exercise:
+    begin_exercise_write(db)
+    existing = db.scalar(select(Exercise).where(Exercise.id == "HOSP-PO-2026-01").with_for_update())
     if existing:
-        return existing
+        return _exercise_for_user(db, existing.id, owner, READ_ROLES)
     exercise = Exercise(
         id="HOSP-PO-2026-01",
+        organization_id=owner.organization_id,
         title="Night Shift: Extended Power Loss",
         scenario="Fictional regional hospital exercise: prolonged utility outage tests emergency power transfer, unit communications, timestamp accuracy, and patient-care continuity.",
         exercise_date="2026-10-16",
@@ -527,8 +492,8 @@ def _seed_demo(db: Session) -> Exercise:
         )
         parsed = parse_evidence(file_name, mime, raw, date.fromisoformat(exercise.exercise_date))
         _store_parsed(db, exercise.id, file_name, mime, parsed, raw)
-    db.commit()
-    db.refresh(exercise)
+    _create_exercise_grant(db, exercise, owner)
+    db.flush()
     return exercise
 
 
@@ -636,7 +601,9 @@ def list_exercises(
         ExerciseGrant.organization_id == identity.organization_id,
     )
     rows = db.scalars(
-        select(Exercise).where(Exercise.id.in_(grant_ids)).order_by(Exercise.exercise_date.desc())
+        select(Exercise)
+        .where(Exercise.id.in_(grant_ids), Exercise.organization_id == identity.organization_id)
+        .order_by(Exercise.exercise_date.desc())
     ).all()
     result = []
     for row in rows:
@@ -664,21 +631,14 @@ def create_exercise(
 ) -> dict:
     _require_role(identity, EDIT_ROLES)
     if db.get(Exercise, payload.id):
-        grant = db.scalar(
-            select(ExerciseGrant.id).where(
-                ExerciseGrant.exercise_id == payload.id,
-                ExerciseGrant.user_id == identity.user_id,
-                ExerciseGrant.organization_id == identity.organization_id,
-            )
-        )
-        if grant is None:
-            raise HTTPException(status_code=404, detail="Exercise not found.")
+        _exercise_for_user(db, payload.id, identity, EDIT_ROLES)
         raise HTTPException(
             status_code=409,
             detail={"code": "EXERCISE_EXISTS", "message": "That exercise ID is already in use."},
         )
     exercise = Exercise(
         id=payload.id,
+        organization_id=identity.organization_id,
         title=payload.title,
         scenario=payload.scenario,
         exercise_date=payload.exercise_date.isoformat(),
@@ -704,7 +664,7 @@ def update_objectives(
     identity: Identity = Depends(current_identity),
     db: Session = Depends(get_db),
 ) -> dict:
-    exercise = _exercise_for_user(db, exercise_id, identity, EDIT_ROLES)
+    exercise = _exercise_for_user(db, exercise_id, identity, EDIT_ROLES, lock=True)
     has_findings = (
         db.scalar(select(Finding.id).where(Finding.exercise_id == exercise_id).limit(1)) is not None
     )
@@ -734,6 +694,7 @@ def update_objectives(
         exercise.id,
         {"objective_count": len(payload.objectives)},
     )
+    invalidate_changed_candidates(db, exercise)
     db.commit()
     return _exercise_dict(exercise)
 
@@ -778,6 +739,7 @@ def list_exercise_access(
         }
         for grant in grants
         if grant.user_id in users
+        and users[grant.user_id]["organization_id"] == exercise.organization_id
     ]
 
 
@@ -788,7 +750,7 @@ def grant_exercise_access(
     identity: Identity = Depends(current_identity),
     db: Session = Depends(get_db),
 ) -> dict[str, str]:
-    exercise = _exercise_for_user(db, exercise_id, identity, EDIT_ROLES)
+    exercise = _exercise_for_user(db, exercise_id, identity, EDIT_ROLES, lock=True)
     user = configured_users().get(payload.user_id)
     if user is None or user["organization_id"] != identity.organization_id:
         raise HTTPException(
@@ -798,9 +760,16 @@ def grant_exercise_access(
         select(ExerciseGrant).where(
             ExerciseGrant.exercise_id == exercise.id,
             ExerciseGrant.user_id == user["id"],
-            ExerciseGrant.organization_id == identity.organization_id,
         )
     )
+    if grant is not None and grant.organization_id != exercise.organization_id:
+        raise HTTPException(
+            status_code=409,
+            detail={
+                "code": "EXERCISE_GRANT_SCOPE_CONFLICT",
+                "message": "A retained grant for this user belongs to a different organization.",
+            },
+        )
     if grant is None:
         db.add(
             ExerciseGrant(
@@ -830,7 +799,7 @@ def revoke_exercise_access(
     identity: Identity = Depends(current_identity),
     db: Session = Depends(get_db),
 ) -> dict[str, str]:
-    exercise = _exercise_for_user(db, exercise_id, identity, EDIT_ROLES)
+    exercise = _exercise_for_user(db, exercise_id, identity, EDIT_ROLES, lock=True)
     if user_id == identity.user_id:
         raise HTTPException(status_code=409, detail="You cannot revoke your own exercise access.")
     grant = db.scalar(
@@ -855,8 +824,7 @@ def seed_demo(
     _require_role(identity, EDIT_ROLES)
     if os.getenv("DRILLLOOP_ENABLE_DEMO_SEED", "0").casefold() not in {"1", "true", "yes"}:
         raise HTTPException(status_code=404, detail="Synthetic demo seeding is disabled.")
-    exercise = _seed_demo(db)
-    _create_exercise_grant(db, exercise, identity)
+    exercise = _seed_demo(db, identity)
     analysis = analyze_exercise(db, exercise)
     db.commit()
     return {"id": exercise.id, "analysis": analysis}
@@ -982,7 +950,7 @@ def _detail(db: Session, exercise: Exercise) -> dict:
     ]
     audit_rows = db.scalars(
         select(AuditEvent)
-        .where(AuditEvent.exercise_id == exercise.id)
+        .where(AuditEvent.exercise_id == exercise.id, AuditEvent.candidate_version.is_(None))
         .order_by(AuditEvent.created_at.desc())
     ).all()
     sources_data = [
@@ -1159,6 +1127,8 @@ async def upload_evidence(
 
     # Persist only after every file in this request has passed scan and extraction.
     # A retry after a capacity/scanner 503 can therefore never duplicate a partial batch.
+    db.rollback()
+    exercise = _exercise_for_user(db, exercise_id, identity, EDIT_ROLES, lock=True)
     created = []
     committed: list[tuple[Source, ParsedEvidence, ScanResult, float]] = []
     for file, raw, parsed, scan_result, processing_duration in processed:
@@ -1196,6 +1166,7 @@ async def upload_evidence(
                 "observation_count": len(parsed.observations),
             },
         )
+    invalidate_changed_candidates(db, exercise)
     db.commit()
     for source, parsed, scan_result, processing_duration in committed:
         METRICS.observe_upload("accepted", scan_result.status, processing_duration)
@@ -1315,6 +1286,8 @@ async def transcribe_audio(
         date.fromisoformat(exercise.exercise_date),
     )
     parsed.kind = "transcript"
+    db.rollback()
+    exercise = _exercise_for_user(db, exercise_id, identity, EDIT_ROLES, lock=True)
     source = _store_parsed(
         db,
         exercise_id,
@@ -1324,6 +1297,7 @@ async def transcribe_audio(
         raw,
         scan_status,
     )
+    invalidate_changed_candidates(db, exercise)
     db.commit()
     return {
         "source_id": source.id,
@@ -1342,7 +1316,7 @@ def ingest_transcript(
     identity: Identity = Depends(current_identity),
     db: Session = Depends(get_db),
 ) -> dict:
-    exercise = _exercise_for_user(db, exercise_id, identity, EDIT_ROLES)
+    exercise = _exercise_for_user(db, exercise_id, identity, EDIT_ROLES, lock=True)
     transcript_payload = {
         "model": payload.model_version,
         "language": payload.language,
@@ -1363,6 +1337,7 @@ def ingest_transcript(
         ) from error
     parsed.kind = "transcript"
     source = _store_parsed(db, exercise_id, payload.source_name, "application/json", parsed, raw)
+    invalidate_changed_candidates(db, exercise)
     db.commit()
     return {
         "source_id": source.id,
@@ -1397,30 +1372,6 @@ def analyze(
         {"candidate_count": result["candidate_count"]},
     )
     db.commit()
-    return result
-
-
-def _ai_exercise(exercise_id: str, identity: Identity = Depends(current_identity)) -> Exercise:
-    with SessionLocal() as db:
-        return _exercise_for_user(db, exercise_id, identity, EDIT_ROLES)
-
-
-@app.post("/api/exercises/{exercise_id}/ai-suggestions")
-async def ai_suggestions(
-    request: Request, response: Response, exercise: Exercise = Depends(_ai_exercise)
-) -> AiResult:
-    def load(max_input_bytes: int):
-        with SessionLocal() as db:
-            return read_context(db, exercise, max_input_bytes)
-
-    try:
-        result = await request.app.state.ai_evaluation.generate(load)
-    except AiFailure as exc:
-        raise HTTPException(
-            status_code=exc.status,
-            detail={"code": exc.code, "message": exc.message},
-        ) from None
-    response.headers["Cache-Control"] = "no-store"
     return result
 
 

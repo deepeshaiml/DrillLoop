@@ -25,9 +25,9 @@ def test_sqlite_backup_restore_preserves_evidence_review_and_access_records():
             connection.execute(
                 text(
                     "INSERT INTO exercises "
-                    "(id,title,scenario,exercise_date,duration_minutes,objectives_json,criteria_json,"
+                    "(id,organization_id,title,scenario,exercise_date,duration_minutes,objectives_json,criteria_json,"
                     "evaluator_roles_json,participants_json,milestones_json,created_at) "
-                    "VALUES ('REC-1','Synthetic recovery','Fictional','2026-11-03',60,'[{\"id\":\"O1\"}]','[]','[]','[]','[]','2026-11-03 00:00:00')"
+                    "VALUES ('REC-1','org-1','Synthetic recovery','Fictional','2026-11-03',60,'[{\"id\":\"O1\"}]','[]','[]','[]','[]','2026-11-03 00:00:00')"
                 )
             )
             connection.execute(

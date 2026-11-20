@@ -276,7 +276,7 @@ def main() -> None:
                 "-d",
                 database_name,
                 "-c",
-                "INSERT INTO exercises (id,title,scenario,exercise_date,duration_minutes,objectives_json,criteria_json,evaluator_roles_json,participants_json,milestones_json,created_at) VALUES ('PG-MIGRATION-SYNTHETIC','Synthetic populated upgrade','Fictional disposable data','2026-11-03',30,'[]','[]','[]','[]','[]',NOW()); INSERT INTO sources (id,exercise_id,filename,kind,mime_type,sha256,content_text,source_bytes,provenance_json,created_at) VALUES ('pg-migration-source','PG-MIGRATION-SYNTHETIC','synthetic.txt','text','text/plain','a12871fee210fb8619291eaea194581cbd2531e4b23759d225f6806923f63222','fictional source wording',decode('0102','hex'),'{}',NOW());",
+                "INSERT INTO exercises (id,title,scenario,exercise_date,duration_minutes,objectives_json,criteria_json,evaluator_roles_json,participants_json,milestones_json,created_at) VALUES ('PG-MIGRATION-SYNTHETIC','Synthetic populated upgrade','Fictional disposable data','2026-11-03',30,'[]','[]','[]','[]','[]',NOW()); INSERT INTO exercise_grants (id,exercise_id,user_id,organization_id,access_role,created_at) VALUES ('pg-migration-grant','PG-MIGRATION-SYNTHETIC','demo-admin','phase3-synthetic','admin',NOW()); INSERT INTO sources (id,exercise_id,filename,kind,mime_type,sha256,content_text,source_bytes,provenance_json,created_at) VALUES ('pg-migration-source','PG-MIGRATION-SYNTHETIC','synthetic.txt','text','text/plain','a12871fee210fb8619291eaea194581cbd2531e4b23759d225f6806923f63222','fictional source wording',decode('0102','hex'),'{}',NOW());",
             ]
         )
         _run(compose + ["--profile", "maintenance", "run", "--build", "--rm", "migrate"])

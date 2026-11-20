@@ -3,7 +3,8 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
-from sqlalchemy.engine import make_url
+from sqlalchemy import event
+from sqlalchemy.engine import Engine, make_url
 
 
 def database_connect_args(database_url: str) -> dict:
@@ -21,3 +22,13 @@ def database_connect_args(database_url: str) -> dict:
             raise RuntimeError("Database password secret file is empty.")
         return {"password": password}
     return {}
+
+
+def enforce_sqlite_foreign_keys(engine: Engine) -> Engine:
+    if engine.dialect.name == "sqlite":
+
+        @event.listens_for(engine, "connect")
+        def enable_foreign_keys(connection, _record):
+            connection.execute("PRAGMA foreign_keys=ON")
+
+    return engine

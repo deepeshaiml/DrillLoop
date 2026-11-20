@@ -1,8 +1,11 @@
 from __future__ import annotations
 
 from datetime import date
+from typing import Literal
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
+
+from app.candidate_evidence import MAX_SAVE_TOKEN
 
 
 class ExerciseCreate(BaseModel):
@@ -146,3 +149,22 @@ class TranscriptIngest(BaseModel):
     language: str = Field(default="en", max_length=50)
     model_version: str = Field(default="pre-generated", max_length=120)
     segments: list[dict] = Field(default_factory=list, max_length=10_000)
+
+
+class CandidateSave(BaseModel):
+    model_config = ConfigDict(extra="forbid", hide_input_in_errors=True)
+    save_token: str = Field(min_length=1, max_length=MAX_SAVE_TOKEN)
+
+
+class CandidateReview(BaseModel):
+    model_config = ConfigDict(extra="forbid", hide_input_in_errors=True)
+    decision: Literal["accepted_for_consideration", "rejected", "more_evidence_required"]
+    note: str | None = Field(default=None, max_length=3000)
+
+    @model_validator(mode="after")
+    def require_evidence_note(self):
+        if self.decision == "more_evidence_required" and not (self.note or "").strip():
+            raise ValueError("Explain what evidence is needed.")
+        if self.note is not None and "\x00" in self.note:
+            raise ValueError("Review notes cannot contain null characters.")
+        return self
