@@ -210,6 +210,13 @@ Production remains NOT READY. Staging infrastructure/TLS/secrets, approved malwa
 - Demonstrate using `.venv/bin/python scripts/serve_phase3_ocr_demo.py --port 8000`, then `cd frontend && npm run dev -- --host 127.0.0.1`; sign in as `evaluation-admin` / `synthetic-evaluation-only-password`, select `OCR-PHASE3-DEMO`, and upload `evals/phase3/sources/phase3_same_page_mixed_water_log.pdf`. The disposable demo server is for this generated fictional fixture only. See [OCR operations and results](docs/operations/SCANNED_PDF_OCR.md).
 - During Phase 3 implementation no commit, push, deployment, Phase 4 work, LLM/agent, connector, database schema, or application business-rule change occurred. The subsequent authorized preservation work is tracked in PR #3.
 
+## PR #3 independent OCR review (20 November 2026)
+
+- Corrected mixed-page render coordinates for cropped and rotated PDFs. Missing OCR dependencies preserve selectable observations and mark affected pages partial. An unreadable page in an otherwise readable document now carries an extraction issue. Cancellation terminates the POSIX parser process group, including its active OCR subprocess.
+- Added regression coverage for the visible page origin and rotation, missing OCR, unreadable pages and parser cancellation. The OCR fixture evaluator now fails on unexpected extraction errors and requires the labeled unreadable fixture to return the expected controlled error.
+- The local Tesseract 5.5.3 Phase 3 replay reproduced 35/35 observations, 17/17 timestamp transcriptions, 6/6 extraction-method attributions and 1/1 required citations across four scored fictional PDFs. The fifth PDF returned the expected `EMPTY_PDF`. The Phase 2 API workflow preserved original bytes, kept OCR timestamps uncertain and exported the page-cited proposed finding.
+- Local verification passed with 121 backend tests and one optional ClamAV integration skip. Ruff, the frontend build, dependency audits, the fresh SQLite migration check, both OCR Chromium walkthroughs and the existing Chromium review and corrective-action workflow passed on disposable data. The hosted job includes the actual ClamAV test and now checks OCR inside the hardened production container.
+
 ## Phase 5 — scanner integration, bounded concurrency and release candidate (4 November 2026)
 
 Phase 5 was performed on the already dirty Phase 3/4 worktree. Existing local databases, ignored files, Docker data and application data were preserved. No commit, push, PR, hosted CI run, approved staging deployment or production deployment occurred.

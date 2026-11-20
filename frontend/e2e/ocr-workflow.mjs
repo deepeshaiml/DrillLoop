@@ -88,13 +88,13 @@ try {
 
   const sourceCard = page.locator('.et-source-card').filter({ hasText: filename })
   await sourceCard.waitFor()
-  await sourceCard.getByText('OCR completed · 2 scanned pages').waitFor()
+  await sourceCard.getByText('OCR completed · 2 pages').waitFor()
   await page.screenshot({ path: resolve(screenshotDir, 'ocr-demo-evidence.png'), fullPage: true })
 
   await sourceCard.click()
   const sourceDialog = page.getByRole('dialog', { name: filename })
   await sourceDialog.waitFor()
-  await sourceDialog.getByText(/OCR completed for original PDF pages 1, 2/i).waitFor()
+  await sourceDialog.getByText(/OCR processed original PDF pages 1, 2/i).waitFor()
   await sourceDialog.getByText(/line positions and word confidence are unavailable/i).waitFor()
   await sourceDialog.getByText('page 2', { exact: true }).first().waitFor()
   await sourceDialog.getByRole('link', { name: /Download original file/ }).waitFor()

@@ -59,7 +59,7 @@ DrillLoop must not fill the unknown cause with a guess. The finding remains prop
 | Fixed rules / deterministic | Clear, pre-written checks that return the same result for the same input. They are easier to inspect but can miss wording outside the examples they recognize. |
 | CSV / JSON | Common file formats: CSV is a spreadsheet-like table; JSON stores named data fields in a structured text form. |
 | SQLite / PostgreSQL | Two kinds of databases. SQLite is convenient for one local demo; PostgreSQL is designed to store data for a deployed service. |
-| OCR | Optical character recognition: software that tries to read words from a scanned image. This MVP does not do OCR; its PDF reader needs selectable text. |
+| OCR | Optical character recognition: software that tries to read words from a scanned image. DrillLoop uses local OCR for scanned PDF pages and embedded images. Review the recognized wording and times against the original PDF. |
 | WER / RSS | Word error rate compares a transcript with the spoken words. Resident set size (RSS) is the amount of computer memory a running process uses. |
 | RBAC / SSO | Role-based access control gives different permissions to different job roles. Single sign-on (SSO) uses an organization’s existing login service. Neither is implemented in the demo. |
 | SME | Subject-matter expert: a person with specific emergency preparedness or exercise-evaluation knowledge. |

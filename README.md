@@ -115,7 +115,7 @@ The detailed walkthrough, reset choices, and visible error cases are in [DEMO_GU
 
 ## What the app does with evidence
 
-- Imports UTF-8 TXT/MD notes, CSV event logs, JSON event/transcript records, and selectable-text PDFs.
+- Imports UTF-8 TXT/MD notes, CSV event logs, JSON event/transcript records, and PDFs with selectable text, scanned pages, or embedded images. [OCR setup and limits](docs/operations/SCANNED_PDF_OCR.md).
 - Keeps the original uploaded file and records where extracted text came from: a CSV row, note line, PDF page, or transcript segment. It also stores a SHA-256 fingerprint (a checksum that helps detect whether the file later changes).
 - Shows only times that appear in the evidence. A missing time stays unknown. If two people report different times, both remain visible until a reviewer resolves them.
 - Uses a small set of understandable local rules to suggest candidate findings and link them to stated exercise objectives. This sample is small enough to search directly; it does not need a separate vector database or a free-running AI agent.

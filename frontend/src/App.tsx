@@ -284,7 +284,7 @@ const pdfExtractionLabel = (source: Source) => {
   if (source.kind !== 'pdf') return null
   const pages = source.provenance.ocr_pages
   const ocrPageCount = Array.isArray(pages) ? pages.length : 0
-  if (source.provenance.ocr_status === 'partial') return `Partial OCR · ${ocrPageCount} page${ocrPageCount === 1 ? '' : 's'}`
+  if (source.provenance.ocr_status === 'partial') return 'Partial OCR'
   return ocrPageCount ? `OCR completed · ${ocrPageCount} page${ocrPageCount === 1 ? '' : 's'}` : 'Selectable text extracted'
 }
 const isTranscript = (source: Source | undefined) => source?.kind === 'transcript'

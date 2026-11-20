@@ -48,7 +48,7 @@ Candidate creation is a fixed workflow rather than an open-ended tool-using agen
 
 ### Main services
 
-- `backend/app/evidence.py`: TXT/MD, CSV, JSON event/transcript, and selectable-text PDF parsing. pypdf is used for PDF extraction; scanned image OCR is not implemented.
+- `backend/app/evidence.py`: TXT/MD, CSV, JSON event/transcript, and PDF extraction. pypdf reads selectable text. The isolated parser uses PDFium and Tesseract for bounded OCR of scanned pages and embedded image regions. [OCR dependencies, licenses, and limits](docs/operations/SCANNED_PDF_OCR.md).
 - `backend/app/pipeline.py`: deterministic, configured objective rules for elapsed time, reported duration, event presence, and required fields; missing/contradictory evidence is retained as unknown or conflict. It emits source-cited proposed findings with null owner and due date.
 - `backend/app/main.py`: named-user sessions, role and organization-scoped exercise grants, exercise setup/objective edits before analysis, ingestion, optional local ASR route, human review, action transitions, source download, audit log, readiness check, and PDF response.
 - `backend/app/reporting.py`: generated report that keeps observation, interpretation, evidence, reviewer status, and action fields distinct.

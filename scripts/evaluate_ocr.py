@@ -811,6 +811,7 @@ def main() -> None:
             or hashlib.sha256(source.read_bytes()).hexdigest() != document["sha256"]
         ):
             raise SystemExit(f"Fictional source is missing or changed: {document['path']}")
+        expected_error = document.get("expected_processing_error")
         start = time.perf_counter()
         usage_before = resource.getrusage(resource.RUSAGE_CHILDREN)
         try:
@@ -821,11 +822,19 @@ def main() -> None:
                 exercise_date,
             )
         except UploadProcessingFailure as exc:
+            if exc.code != expected_error:
+                raise SystemExit(
+                    f"{document['filename']}: unexpected extraction error {exc.code}: {exc.message}"
+                ) from exc
             result = _processing_failure_metrics(
                 document, exc.code, exc.message, time.perf_counter() - start
             )
             result["scan_status"] = exc.details.get("scan_status", "unknown")
         else:
+            if expected_error is not None:
+                raise SystemExit(
+                    f"{document['filename']}: expected extraction error {expected_error}, got an import."
+                )
             if parsed.kind != "pdf":
                 raise RuntimeError(
                     f"Unexpected evidence kind for {document['filename']}: {parsed.kind}"
