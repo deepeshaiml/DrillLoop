@@ -8,7 +8,7 @@ const password = process.env.DRILLLOOP_CANDIDATE_E2E_PASSWORD
 const screenshots = process.env.DRILLLOOP_CANDIDATE_E2E_SCREENSHOTS
 const axeScript = process.env.DRILLLOOP_CANDIDATE_E2E_AXE
 const mode = process.argv[2]
-assert.ok(baseURL && password && screenshots && ['review', 'ai-disabled'].includes(mode), 'Use run_candidate_review.py with its disposable fixture.')
+assert.ok(baseURL && password && screenshots && ['review', 'ai-disabled', 'promotion', 'promotion-restart'].includes(mode), 'Use run_candidate_review.py with its disposable fixture.')
 const exerciseId = 'FICTIONAL-CANDIDATE-REVIEW'
 const exerciseTitle = 'Fictional dispatch handoff exercise'
 const exercisePath = `/api/exercises/${exerciseId}`
@@ -49,9 +49,9 @@ async function api(session, path, status, options = {}) {
   return { body: await response.json(), headers: response.headers() }
 }
 
-async function openFindings(page) {
-  await page.locator('#exercise-picker').selectOption(exerciseId)
-  await page.getByRole('heading', { name: exerciseTitle, exact: true }).waitFor()
+async function openFindings(page, id = exerciseId, title = exerciseTitle) {
+  await page.locator('#exercise-picker').selectOption(id)
+  await page.getByRole('heading', { name: title, exact: true }).waitFor()
   await page.getByRole('navigation', { name: 'Exercise sections' }).getByRole('button', { name: /^Findings/ }).click()
 }
 
@@ -272,7 +272,7 @@ async function reviewJourney() {
   const savedQueue = await api(admin, candidatePath, 200)
   assert.equal(savedQueue.body.candidates.length, 4)
   await page.getByRole('button', { name: 'Saved candidates', exact: true }).click()
-  await queueButton(page, 'OBJ-ACCEPT').waitFor()
+  await queue(page).getByRole('status').getByText('4 candidates shown.', { exact: true }).waitFor()
   assert.equal(await queue(page).getByText('Requested by Fictional Evaluation Lead', { exact: true }).count(), 4)
   await capture(page, 1440, 'saved-queue', queue(page))
   await checkAxe(page, '.cr-panel', 'saved candidate queue')
@@ -504,9 +504,194 @@ async function disabledJourney() {
   console.log('AI-disabled restart and browser refresh preserved the reviewer’s saved candidates, citations, and audit history.')
 }
 
+const promotionExerciseId = 'FICTIONAL-CANDIDATE-PROMOTION'
+const promotionExerciseTitle = 'Fictional panel handoff promotion exercise'
+const promotionExercisePath = `/api/exercises/${promotionExerciseId}`
+const promotionObjective = 'PROMOTION-HANDOFF'
+const promotionConflictObjective = 'PROMOTION-CONFLICT'
+const promotionWording = 'The fictional dispatcher recorded the signed panel handoff in the exercise log.'
+const promotionFilename = 'fictional_panel_handoff.txt'
+const findingTitle = 'Signed fictional panel handoff documented'
+const promotionButton = page => decisionPanel(page).getByRole('button', { name: 'Create proposed finding', exact: true })
+const linkedFinding = page => candidate(page).getByRole('region', { name: 'Linked finding', exact: true })
+
+async function promotionDialog(page) {
+  await promotionButton(page).click()
+  const dialog = page.getByRole('dialog', { name: 'Create proposed finding' })
+  await dialog.waitFor()
+  return dialog
+}
+
+async function fillFinding(dialog) {
+  await dialog.getByLabel('Finding title').fill(findingTitle)
+  await dialog.getByLabel('Evidence-based observation').fill(promotionWording)
+  await dialog.getByLabel('Interpretation', { exact: true }).fill('The record supports the handoff documentation objective. The event time remains uncertain.')
+  await dialog.getByRole('combobox', { name: /^Category/ }).selectOption('strength')
+  await dialog.getByRole('checkbox', { name: /I confirm this wording/ }).check()
+}
+
+async function promotionJourney() {
+  const admin = await signIn('admin')
+  await api(admin, '/api/exercises', 201, {
+    method: 'POST', data: {
+      id: promotionExerciseId, title: promotionExerciseTitle,
+      scenario: 'Fictional exercise records for the candidate promotion workflow.',
+      exercise_date: '2026-11-20', duration_minutes: 20, objectives: [
+        { id: promotionObjective, text: 'Check the signed exercise panel handoff record.' },
+        { id: promotionConflictObjective, text: 'Review the exercise handoff documentation.' },
+      ],
+    },
+  })
+  await api(admin, `${promotionExercisePath}/access`, 201, { method: 'POST', data: { user_id: 'candidate-reviewer' } })
+  await api(admin, `${promotionExercisePath}/evidence`, 201, {
+    method: 'POST', multipart: { files: { name: promotionFilename, mimeType: 'text/plain', buffer: Buffer.from(promotionWording) } },
+  })
+  await admin.page.reload()
+  await openFindings(admin.page, promotionExerciseId, promotionExerciseTitle)
+  await generate(admin.page)
+  const paths = {}
+  for (const objective of [promotionObjective, promotionConflictObjective]) {
+    const card = suggestionCard(admin.page, objective)
+    assert.equal(await card.locator('q').textContent(), promotionWording)
+    const saved = admin.page.waitForResponse(response => response.url().endsWith('/ai-candidates') && response.request().method() === 'POST')
+    await card.getByRole('button', { name: 'Save for review' }).click()
+    const response = await saved
+    assert.equal(response.status(), 201)
+    paths[objective] = `${promotionExercisePath}/ai-candidates/${(await response.json()).id}`
+  }
+  await suggestionCard(admin.page, promotionObjective).getByRole('button', { name: 'Open saved candidate' }).click()
+  const original = candidate(admin.page).getByRole('region', { name: 'Original evidence' })
+  await original.getByRole('button', { name: /Inspect source/ }).click()
+  await admin.page.getByRole('dialog', { name: promotionFilename }).getByText(promotionWording, { exact: true }).waitFor()
+  await admin.page.keyboard.press('Escape')
+
+  const reviewer = await signIn('reviewer')
+  const { page } = reviewer
+  await openFindings(page, promotionExerciseId, promotionExerciseTitle)
+  await openCandidate(page, promotionObjective)
+  assert.equal(await promotionButton(page).count(), 0)
+  const decision = await beginReview(page, 'Accept for consideration')
+  await confirm(page, decision.dialog, 200, '"1"')
+  await promotionButton(page).waitFor()
+  assert.deepEqual((await api(reviewer, promotionExercisePath, 200)).body.findings, [])
+
+  let dialog = await promotionDialog(page)
+  assert.equal(await dialog.locator('blockquote').textContent(), promotionWording)
+  await dialog.getByText(/line 1 · Source ID/).waitFor()
+  await dialog.getByText('A reliable record of when the event occurred.').waitFor()
+  assert.ok(await dialog.getByRole('heading', { name: 'Create proposed finding' }).evaluate(node => node === document.activeElement))
+  await page.keyboard.press('Tab')
+  assert.ok(await dialog.getByLabel('Finding title').evaluate(node => node === document.activeElement))
+  for (const width of [1440, 768, 390, 320]) await capture(page, width, 'promotion-dialog', dialog)
+  await checkAxe(page, '.cr-promotion-dialog', '320px promotion dialog')
+  await page.keyboard.press('Escape')
+  await dialog.waitFor({ state: 'detached' })
+  assert.ok(await promotionButton(page).evaluate(node => node === document.activeElement))
+  await page.setViewportSize({ width: 1440, height: 1050 })
+
+  dialog = await promotionDialog(page)
+  const titleField = dialog.getByLabel('Finding title')
+  await dialog.getByRole('button', { name: 'Confirm proposed finding' }).press('Enter')
+  assert.ok(await titleField.evaluate(node => node === document.activeElement && node.validity.valueMissing))
+  await fillFinding(dialog)
+  await titleField.fill('    ')
+  await dialog.getByRole('button', { name: 'Confirm proposed finding' }).press('Enter')
+  await dialog.getByRole('alert').getByText(/Enter at least four characters/).waitFor()
+  assert.ok(await titleField.evaluate(node => node === document.activeElement))
+  await titleField.fill(findingTitle)
+  const path = paths[promotionObjective] + '/promote'
+  let committed
+  let firstRequest
+  await page.route(url => url.pathname === path, async route => {
+    firstRequest = route.request()
+    await dialog.getByRole('status').getByText('Submitting the proposed finding.', { exact: true }).waitFor()
+    const response = await route.fetch()
+    assert.equal(response.status(), 201)
+    committed = await response.json()
+    await route.abort('timedout')
+  }, { times: 1 })
+  await dialog.getByRole('button', { name: 'Confirm proposed finding' }).click()
+  await dialog.getByRole('alert').getByText(/Retry the same submission/).waitFor()
+  const retry = page.waitForResponse(response => new URL(response.url()).pathname === path)
+  await dialog.getByRole('button', { name: 'Retry promotion' }).click()
+  const retried = await retry
+  assert.equal(retried.status(), 201)
+  assert.deepEqual(await retried.json(), committed)
+  const retriedHeaders = await retried.request().allHeaders()
+  assert.equal(retriedHeaders['if-match'], '"2"')
+  assert.equal(retriedHeaders['idempotency-key'], (await firstRequest.allHeaders())['idempotency-key'])
+  assert.deepEqual(retried.request().postDataJSON(), firstRequest.postDataJSON())
+  await dialog.waitFor({ state: 'detached' })
+  await candidate(page).getByRole('status').getByText(/Proposed finding created/).waitFor()
+  assert.ok(await candidate(page).getByRole('heading', { name: 'AI candidate review' })
+    .evaluate(node => node === document.activeElement))
+  await linkedFinding(page).getByText(/Awaiting separate human finding review/).waitFor()
+  await audit(page).getByText('Proposed finding created', { exact: true }).waitFor()
+  assert.equal(await promotionButton(page).count(), 0)
+  const proposed = (await api(reviewer, promotionExercisePath, 200)).body
+  assert.equal(proposed.findings.length, 1)
+  assert.equal(proposed.findings[0].reviewer, null)
+  assert.equal(proposed.findings[0].status, 'proposed')
+  assert.deepEqual(proposed.actions, [])
+  await linkedFinding(page).getByRole('button', { name: 'Open finding' }).click()
+  await candidate(page).waitFor({ state: 'hidden' })
+  const finding = page.locator('.fa-finding-card').filter({ has: page.getByRole('heading', { name: findingTitle }) })
+  await finding.getByText('Awaiting reviewer decision', { exact: true }).waitFor()
+  assert.ok(await finding.locator('summary').evaluate(node => document.activeElement === node))
+  await finding.getByRole('button', { name: 'Approve finding' }).click()
+  const approval = page.getByRole('dialog', { name: 'Approve this finding?' })
+  await approval.getByRole('button', { name: 'Approve finding' }).click()
+  await finding.getByText('Reviewer decision: Approved by Fictional Independent Reviewer').waitFor()
+  await finding.getByText('Review and change history').click()
+  await finding.getByText('Finding approved', { exact: true }).waitFor()
+  const report = await page.request.get(`${promotionExercisePath}/report.pdf`)
+  assert.equal(report.status(), 200)
+  assert.equal((await report.body()).subarray(0, 5).toString(), '%PDF-')
+
+  await openCandidate(page, promotionConflictObjective)
+  const conflictDecision = await beginReview(page, 'Accept for consideration')
+  await confirm(page, conflictDecision.dialog, 200, '"1"')
+  dialog = await promotionDialog(page)
+  await fillFinding(dialog)
+  const conflictPath = paths[promotionConflictObjective]
+  await api(admin, conflictPath + '/promote', 201, {
+    method: 'POST', data: { ...firstRequest.postDataJSON(), objective_id: promotionConflictObjective, title: 'Second fictional handoff observation' },
+    headers: { 'Idempotency-Key': randomUUID(), 'If-Match': '"2"' },
+  })
+  const conflict = page.waitForResponse(response => new URL(response.url()).pathname === conflictPath + '/promote')
+  await dialog.getByRole('button', { name: 'Confirm proposed finding' }).click()
+  assert.equal((await conflict).status(), 412)
+  await dialog.waitFor({ state: 'detached' })
+  await linkedFinding(page).getByText('Second fictional handoff observation').waitFor()
+  assert.equal(await promotionButton(page).count(), 0)
+  assert.deepEqual((await api(reviewer, promotionExercisePath, 200)).body.actions, [])
+  console.log('Fictional promotion passed with a committed timeout retry, version conflict, separate finding approval and report export.')
+}
+
+async function promotionRestart() {
+  const reviewer = await signIn('reviewer')
+  const { page } = reviewer
+  const detail = (await api(reviewer, promotionExercisePath, 200)).body
+  assert.equal(detail.findings.length, 2)
+  assert.deepEqual(detail.actions, [])
+  assert.equal((await api(reviewer, '/api/capabilities', 200)).body.analysis.ai_assistance.state, 'disabled')
+  await openFindings(page, promotionExerciseId, promotionExerciseTitle)
+  await page.reload()
+  await page.getByRole('navigation', { name: 'Exercise sections' }).getByRole('button', { name: /^Findings/ }).click()
+  await openCandidate(page, promotionObjective)
+  await linkedFinding(page).getByText('Finding status: approved').waitFor()
+  await audit(page).getByText('Proposed finding created', { exact: true }).waitFor()
+  assert.equal(await promotionButton(page).count(), 0)
+  await linkedFinding(page).getByRole('button', { name: 'Open finding' }).click()
+  await page.getByText('Reviewer decision: Approved by Fictional Independent Reviewer').waitFor()
+  console.log('Promotion links, audit, reviewer decision and exercise selection survived an application restart and browser refresh.')
+}
+
 try {
   if (mode === 'review') await reviewJourney()
-  else await disabledJourney()
+  else if (mode === 'ai-disabled') await disabledJourney()
+  else if (mode === 'promotion') await promotionJourney()
+  else await promotionRestart()
   assert.deepEqual(errors, [])
   console.log(JSON.stringify({ mode, screenshots, axeChecks: axeResults, browserErrors: errors }))
 } finally {

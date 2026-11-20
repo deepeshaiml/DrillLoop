@@ -35,6 +35,7 @@ export const transitions: Record<ReviewState, ReviewDecision[]> = {
 
 type CandidateSummary = {
   id: string
+  promoted: boolean
   exercise_id: string
   organization_id: string
   objective_id: string
@@ -63,6 +64,7 @@ export type CandidateEvent = {
 } & (
   | { operation: 'ai_candidate_saved'; prior_state: null; new_state: 'pending_review' }
   | { operation: 'ai_candidate_reviewed'; prior_state: ReviewState; new_state: ReviewDecision; note: string | null }
+  | { operation: 'ai_candidate_promoted'; prior_state: 'accepted_for_consideration'; new_state: 'accepted_for_consideration'; finding_id: string }
   | { operation: 'ai_candidate_invalidated'; prior_freshness: 'current'; new_freshness: 'stale'; reasons: string[] }
 )
 
@@ -77,6 +79,8 @@ export type SavedCitation = AiCitation & {
 }
 
 export type Candidate = CandidateSummary & Pick<AiSuggestion, 'interpretation' | 'unknowns' | 'uncertainty' | 'review_reason'> & {
+  linked_finding: { id: string; title: string; code: string; status: string } | null
+  promotion_block_reason: string | null
   objective_text: string
   objective_fingerprint: string
   context_fingerprint: string
@@ -103,6 +107,7 @@ export type AiCandidateQueueEntry = {
   id: string
   reviewState: ReviewState
   freshness: Freshness
+  promoted: boolean
   objectiveId: string
   objectiveText: string
   interpretation: string
@@ -113,6 +118,15 @@ export type AiCandidateQueueEntry = {
 
 export type CandidateDetail = { candidate: Candidate; etag: string | null }
 export type ReviewOperation = { key: string; etag: string; decision: ReviewDecision; note: string | null }
+export type PromotionFields = {
+  title: string
+  observation: string
+  interpretation: string
+  category: 'strength' | 'improvement'
+  objective_id: string
+  confirmed: true
+}
+export type PromotionOperation = { key: string; etag: string; fields: PromotionFields }
 export type ApiRequest = <T>(path: string, options?: RequestInit) => Promise<{ body: T; headers: Headers }>
 
 export function createCandidateApi(request: ApiRequest) {
@@ -147,6 +161,18 @@ export function createCandidateApi(request: ApiRequest) {
           'If-Match': operation.etag,
         },
         body: JSON.stringify({ decision: operation.decision, note: operation.note }),
+        signal,
+      })).body
+    },
+    async promote(exerciseId: string, candidateId: string, operation: PromotionOperation, signal: AbortSignal) {
+      return (await request<{ id: string; version: number; finding_id: string; finding_status: 'proposed' }>(`${detailPath(exerciseId, candidateId)}/promote`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Idempotency-Key': operation.key,
+          'If-Match': operation.etag,
+        },
+        body: JSON.stringify(operation.fields),
         signal,
       })).body
     },

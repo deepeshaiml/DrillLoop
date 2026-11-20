@@ -4,12 +4,21 @@ import json
 import re
 import time
 import uuid
+from collections import defaultdict
 from datetime import date, datetime
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.models import CorrectiveAction, Exercise, Finding, Observation, utcnow
+from app.finding_evidence import stored_evidence_ids
+from app.models import (
+    AiCandidatePromotion,
+    CorrectiveAction,
+    Exercise,
+    Finding,
+    Observation,
+    utcnow,
+)
 
 _TIME_RE = re.compile(r"\b(\d{1,2}:\d{2}(?::\d{2})?)\b")
 _DURATION_RE = re.compile(
@@ -495,14 +504,6 @@ def objective_assessments(session: Session, exercise: Exercise) -> list[dict]:
     return [item["assessment"] for item in _evaluate_all(session, exercise)]
 
 
-def candidate_findings(session: Session, exercise: Exercise) -> list[dict]:
-    return [
-        item["candidate"]
-        for item in _evaluate_all(session, exercise)
-        if item["candidate"] is not None
-    ]
-
-
 def _make_action(session: Session, exercise: Exercise, finding: Finding, candidate: dict) -> None:
     existing = session.scalar(
         select(CorrectiveAction).where(CorrectiveAction.finding_id == finding.id)
@@ -543,21 +544,34 @@ def analyze_exercise(session: Session, exercise: Exercise) -> dict:
     candidates = [item["candidate"] for item in outcomes if item["candidate"] is not None]
     candidate_codes = {item["code"] for item in candidates}
     new_count = 0
+    promoted_support: dict[str | None, set[str]] = defaultdict(set)
+    for objective_id, evidence_json in session.execute(
+        select(Finding.objective_id, Finding.evidence_ids_json)
+        .join(AiCandidatePromotion, AiCandidatePromotion.finding_id == Finding.id)
+        .where(Finding.exercise_id == exercise.id)
+    ):
+        promoted_support[objective_id].update(stored_evidence_ids(evidence_json))
+    rule_findings = select(Finding).where(
+        Finding.exercise_id == exercise.id,
+        ~select(AiCandidatePromotion.finding_id)
+        .where(AiCandidatePromotion.finding_id == Finding.id)
+        .exists(),
+    )
     for candidate in candidates:
         evidence = candidate["evidence"]
-        if not evidence:
+        objective_id = candidate.get("objective_id")
+        # Keep the assessment visible when persisting its draft would duplicate a promotion.
+        if not evidence or not promoted_support[objective_id].isdisjoint(
+            row.id for row in evidence
+        ):
             continue
-        existing = session.scalar(
-            select(Finding).where(
-                Finding.exercise_id == exercise.id, Finding.code == candidate["code"]
-            )
-        )
+        existing = session.scalar(rule_findings.where(Finding.code == candidate["code"]))
         if existing:
             if existing.status in {"proposed", "stale"}:
                 existing.status = "proposed"
                 existing.title = candidate["title"]
                 existing.category = candidate["category"]
-                existing.objective_id = candidate.get("objective_id")
+                existing.objective_id = objective_id
                 existing.observation = candidate["observation"]
                 existing.interpretation = candidate["interpretation"]
                 existing.evidence_ids_json = _json(list(dict.fromkeys(row.id for row in evidence)))
@@ -572,7 +586,7 @@ def analyze_exercise(session: Session, exercise: Exercise) -> dict:
             code=candidate["code"],
             title=candidate["title"],
             category=candidate["category"],
-            objective_id=candidate.get("objective_id"),
+            objective_id=objective_id,
             observation=candidate["observation"],
             interpretation=candidate["interpretation"],
             evidence_ids_json=_json(list(dict.fromkeys(row.id for row in evidence))),
@@ -586,7 +600,7 @@ def analyze_exercise(session: Session, exercise: Exercise) -> dict:
             _make_action(session, exercise, finding, candidate)
         new_count += 1
 
-    for finding in session.scalars(select(Finding).where(Finding.exercise_id == exercise.id)).all():
+    for finding in session.scalars(rule_findings):
         if finding.status == "proposed" and finding.code not in candidate_codes:
             finding.status = "stale"
             finding.updated_at = utcnow()

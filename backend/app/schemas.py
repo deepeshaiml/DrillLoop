@@ -168,3 +168,25 @@ class CandidateReview(BaseModel):
         if self.note is not None and "\x00" in self.note:
             raise ValueError("Review notes cannot contain null characters.")
         return self
+
+
+class CandidatePromotion(FindingEdit):
+    model_config = ConfigDict(extra="forbid", hide_input_in_errors=True, str_strip_whitespace=True)
+
+    category: Literal["strength", "improvement"]
+    objective_id: str = Field(min_length=1, max_length=80)
+    confirmed: Literal[True]
+
+    @field_validator("confirmed", mode="before")
+    @classmethod
+    def require_explicit_confirmation(cls, value: object) -> Literal[True]:
+        if value is not True:
+            raise ValueError("Confirm the finding wording against the cited evidence.")
+        return True
+
+    @field_validator("title", "observation", "interpretation")
+    @classmethod
+    def no_null_characters(cls, value: str) -> str:
+        if "\x00" in value:
+            raise ValueError("Finding wording cannot contain null characters.")
+        return value

@@ -404,8 +404,12 @@ def stale_reasons(
     citations = snapshot.evidence + snapshot.counterevidence
     if any(not context.original_is_current(db, exercise, cite.source_id) for cite in citations):
         reasons.append("source_unavailable")
+    current_citations = (
+        {cite.observation_id: cite for cite in context.ai.records} if context.ai else {}
+    )
     if any(
         context.observations.get(cite.observation_id) != cite.observation_fingerprint
+        or cite != context.citation(current_citations[cite.observation_id])
         for cite in citations
     ):
         reasons.append("citation_invalid")

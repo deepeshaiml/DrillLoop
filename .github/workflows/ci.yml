@@ -134,18 +134,20 @@ jobs:
           alembic check
           test -f "$owned_dir/test-ci.sqlite3"
 
-      - name: Validate PostgreSQL migrations
+      - name: Validate PostgreSQL migrations and candidate promotion
         env:
           DATABASE_URL: postgresql+psycopg://drillloop_ci:ci-only-disposable-password@127.0.0.1:5432/drillloop_ci
         run: |
           alembic upgrade head
           alembic current
           alembic check
+          env -u DATABASE_URL DRILLLOOP_PROMOTION_TEST_POSTGRES_URL="$DATABASE_URL" \
+            pytest -q backend/tests/test_candidate_promotion.py
 
       - name: Install Chromium
         run: npx --prefix frontend playwright install --with-deps chromium
 
-      - name: Candidate review browser workflow on disposable SQLite
+      - name: Candidate review and promotion browser workflows on disposable SQLite
         run: python frontend/e2e/run_candidate_review.py
 
       - name: Browser workflow on fresh owned SQLite
