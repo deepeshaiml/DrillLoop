@@ -4,7 +4,8 @@ import os
 from io import BytesIO
 
 import pytest
-from pypdf import PdfWriter
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
 
 CLAMAV_HOST = os.getenv("DRILLLOOP_TEST_CLAMAV_HOST")
 pytestmark = pytest.mark.skipif(
@@ -28,10 +29,10 @@ def _exercise(client, exercise_id: str):
 
 
 def _pdf() -> bytes:
-    writer = PdfWriter()
-    writer.add_blank_page(width=72, height=72)
     output = BytesIO()
-    writer.write(output)
+    document = canvas.Canvas(output, pagesize=letter, invariant=1)
+    document.drawString(54, 720, "Fictional clean PDF evidence record.")
+    document.save()
     return output.getvalue()
 
 
@@ -92,7 +93,7 @@ def test_actual_clamav_csv_pdf_eicar_invalid_audit_and_cleanup(client, monkeypat
         "actual-clean.csv": "clean",
         "actual-clean.pdf": "clean",
     }
-    assert len(detail["timeline"]) == 2
+    assert len(detail["timeline"]) == 3
     rejected_event = next(
         event
         for event in detail["audit_events"]

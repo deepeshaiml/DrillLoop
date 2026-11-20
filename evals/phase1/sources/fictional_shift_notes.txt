@@ -1,0 +1,3 @@
+Shift supervisor independently reports: the intake pressure alarm sounded at the west filtration header at 08:00.
+The south transfer may have been delayed by a sticking float sensor; no inspection confirmed a cause.
+At the east intake, crew members thought flow had stabilized before lunch, but no one verified it.

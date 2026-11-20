@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 import asyncio
+import os
 import threading
 import time
 from datetime import date
+from pathlib import Path
 from unittest.mock import Mock
 
 import pytest
@@ -260,6 +262,8 @@ def test_parser_timeout_terminates_child_and_removes_quarantine(monkeypatch, tmp
             return None
 
     class Process:
+        pid = None
+
         def __init__(self, **_kwargs):
             self.alive = True
             self.terminated = False
@@ -425,6 +429,8 @@ def test_cancelled_parser_terminates_child_and_removes_quarantine(monkeypatch, t
             return None
 
     class Process:
+        pid = None
+
         def __init__(self, **_kwargs):
             self.alive = True
             self.terminated = False
@@ -568,6 +574,46 @@ def test_malformed_pdf_upload_returns_controlled_error(client, content):
     assert "Traceback" not in response.text
 
 
+def test_missing_ocr_dependency_returns_controlled_api_error_without_import(
+    client, monkeypatch, tmp_path
+):
+    from pathlib import Path
+
+    empty_path = tmp_path / "empty-path"
+    empty_path.mkdir(mode=0o700)
+    monkeypatch.setenv("PATH", str(empty_path))
+    fixture = (
+        Path(__file__).resolve().parents[2]
+        / "evals"
+        / "phase2"
+        / "sources"
+        / "utility_emergency_log_scanned.pdf"
+    )
+    exercise = client.post(
+        "/api/exercises",
+        json={
+            "id": "OCR-UNAVAILABLE-01",
+            "title": "Fictional OCR dependency unavailable",
+            "scenario": "A local synthetic OCR dependency failure check.",
+            "exercise_date": "2026-11-13",
+            "duration_minutes": 30,
+            "objectives": [{"id": "O1", "text": "Review synthetic source evidence."}],
+        },
+    )
+    assert exercise.status_code == 201
+
+    response = client.post(
+        "/api/exercises/OCR-UNAVAILABLE-01/evidence",
+        files={"files": (fixture.name, fixture.read_bytes(), "application/pdf")},
+    )
+
+    assert response.status_code == 503
+    assert response.json()["detail"]["code"] == "OCR_UNAVAILABLE"
+    detail = client.get("/api/exercises/OCR-UNAVAILABLE-01").json()
+    assert detail["sources"] == []
+    assert detail["timeline"] == []
+
+
 def test_file_size_limit_rejects_large_synthetic_upload(client):
     created = client.post(
         "/api/exercises",
@@ -644,3 +690,50 @@ def test_request_body_limit_rejects_declared_oversize_before_reading():
 
     assert response_messages[0]["status"] == 413
     assert b"REQUEST_TOO_LARGE" in response_messages[1]["body"]
+
+
+@pytest.mark.skipif(os.name != "posix", reason="Parser process groups require POSIX.")
+def test_cancelled_pdf_parser_stops_its_ocr_subprocess(monkeypatch, tmp_path):
+    executable = tmp_path / "tesseract"
+    marker = tmp_path / "ocr-started"
+    completed = tmp_path / "ocr-completed"
+    executable.write_text(
+        "#!/bin/sh\n"
+        'case "$1" in\n'
+        "  --version) echo 'tesseract 5';;\n"
+        "  --list-langs) echo 'eng';;\n"
+        f"  stdin) touch '{marker}'; sleep 2; touch '{completed}';;\n"
+        "esac\n"
+    )
+    executable.chmod(0o700)
+    monkeypatch.setenv("PATH", f"{tmp_path}:{os.environ['PATH']}")
+    fixture = (
+        Path(__file__).resolve().parents[2]
+        / "evals/phase2/sources/utility_emergency_log_scanned.pdf"
+    )
+    cancellation = threading.Event()
+
+    def cancel_when_ocr_starts():
+        for _ in range(300):
+            if marker.exists():
+                cancellation.set()
+                return
+            time.sleep(0.02)
+
+    canceller = threading.Thread(target=cancel_when_ocr_starts)
+    canceller.start()
+    try:
+        with pytest.raises(UploadCancelled):
+            process_upload_isolated(
+                fixture.name,
+                "application/pdf",
+                fixture.read_bytes(),
+                date(2026, 11, 20),
+                timeout_seconds=10,
+                cancellation_event=cancellation,
+            )
+    finally:
+        canceller.join(timeout=7)
+    assert marker.is_file()
+    time.sleep(2.1)
+    assert not completed.exists()

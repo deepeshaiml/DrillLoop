@@ -112,7 +112,7 @@ Do not run tests against a demo or deployment database.
 
 ## Supported evidence and known limitations
 
-- Supported inputs: UTF-8 TXT/MD/LOG, CSV, JSON event/transcript records, and selectable-text PDFs. OCR is not implemented.
+- Supported inputs: UTF-8 TXT/MD/LOG, CSV, JSON event/transcript records, and PDFs. The [OCR walkthrough](docs/operations/SCANNED_PDF_OCR.md) covers scanned and mixed PDFs with local Tesseract.
 - File limit is 15 MB each, ten files and 30 MB aggregate per upload batch; structured evidence is limited to 10,000 rows/segments; PDFs are limited to 250 pages and 2 million extracted characters.
 - Parser timeouts/process isolation and an ingress-level request-body limit are not implemented. Do not expose the upload endpoint to untrusted networks.
 - Deterministic analysis supports explicitly configured elapsed-time, reported-duration, event-presence, and required-field rules. Phrase matching is exact substring logic and needs evaluator-authored rule terms. Ambiguous, missing, or conflicting evidence remains in a needs-review/unknown state.

@@ -1,0 +1,2 @@
+Platform observer recorded Gate A open at 09:11; control desk log records Gate A opened at 09:04. The Gate A opening time remains unresolved.
+No matching acknowledgement entry was found in the paper dispatcher sheet.

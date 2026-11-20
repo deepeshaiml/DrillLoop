@@ -1,0 +1,81 @@
+{
+  "schema_version": "drillloop-evaluation/v1",
+  "dataset_id": "phase1-fictional-transit-station-smoke-response",
+  "revision": 1,
+  "fictional": true,
+  "labeling": {
+    "labelers": ["DrillLoop developer, Phase 1 baseline author"],
+    "independent_reviewed": false,
+    "method": "Expected labels were authored by manually reviewing the fictional source records before running the application. The fixture is closed for the listed observations, expected findings, and finding citations; no domain expert adjudication was performed.",
+    "adjudication_record": null,
+    "finding_labels_complete": true,
+    "observation_labels_complete": true,
+    "citation_labels_complete": true,
+    "citation_scope": "Exhaustive for this fictional exercise; no finding is expected while its timing conflict and missing acknowledgement evidence remain unresolved."
+  },
+  "exercise": {
+    "id": "PH1-TRANSIT-2026-01",
+    "title": "Concourse Smoke Response (fictional Phase 1 case)",
+    "scenario": "A wholly fictional transit station exercise reviews evacuation gate timing, contradictory source times, and missing unit acknowledgement evidence.",
+    "date": "2026-11-11",
+    "duration_minutes": 60,
+    "objectives": [
+      {
+        "id": "TRN-OBJ-01",
+        "text": "Open Gate A within five minutes of the concourse smoke alarm.",
+        "evaluation_rule": {
+          "type": "elapsed_time",
+          "threshold_seconds": 300,
+          "start_terms": ["smoke alarm activated on the concourse"],
+          "completion_terms": ["gate a opened for the evacuation route"],
+          "completion_claim_terms": ["gate a open"],
+          "finding_code": "GATE_A_OPENING_TIME_UNRESOLVED",
+          "finding_title": "Gate A opening time needs evaluator review"
+        },
+        "expected_finding_codes": []
+      },
+      {
+        "id": "TRN-OBJ-02",
+        "text": "Record an acknowledgement from every concourse unit within two minutes of the smoke alarm.",
+        "evaluation_rule": {
+          "type": "event_presence",
+          "terms": ["all concourse units acknowledged the smoke alert"],
+          "finding_code": "CONCOURSE_UNIT_ACKNOWLEDGEMENT_RECORDED",
+          "finding_title": "Concourse unit acknowledgement recorded"
+        },
+        "expected_finding_codes": []
+      }
+    ]
+  },
+  "sources": [
+    {
+      "path": "evals/phase1/sources/transit_control_log.csv",
+      "sha256": "5229bb1cf64a8e24355d4bd6d0f5e5248b7ba19b09cee4dd889d14ac4ab19dd8"
+    },
+    {
+      "path": "evals/phase1/sources/fictional_dispatcher_notes.txt",
+      "sha256": "c4a65bc7165a23c03564a6c7d3136f1aa82fadb95086c16523fa6db549793af0"
+    }
+  ],
+  "expected": {
+    "observations": [
+      {"source": "transit_control_log.csv", "locator": "row 2", "wording": "Smoke alarm activated on the concourse.", "timestamp": "2026-11-11T09:00:00", "time_confidence": "medium"},
+      {"source": "transit_control_log.csv", "locator": "row 3", "wording": "Gate A opened for the evacuation route.", "timestamp": "2026-11-11T09:04:00", "time_confidence": "medium"},
+      {"source": "transit_control_log.csv", "locator": "row 4", "wording": "Paper dispatcher sheet was checked after the alarm.", "timestamp": "2026-11-11T09:12:00", "time_confidence": "medium"},
+      {"source": "fictional_dispatcher_notes.txt", "locator": "line 1", "wording": "Platform observer recorded Gate A open at 09:11; control desk log records Gate A opened at 09:04. The Gate A opening time remains unresolved.", "timestamp": null, "time_confidence": "unknown"},
+      {"source": "fictional_dispatcher_notes.txt", "locator": "line 2", "wording": "No matching acknowledgement entry was found in the paper dispatcher sheet.", "timestamp": null, "time_confidence": "unknown"}
+    ],
+    "findings": [],
+    "unknowns": [
+      {"source": "fictional_dispatcher_notes.txt", "locator": "line 1", "expected": "Competing 09:04 and 09:11 gate-opening claims are not resolved to one source-supported event time."},
+      {"source": "fictional_dispatcher_notes.txt", "locator": "line 2", "expected": "No source-matched unit acknowledgement event or timestamp is available."}
+    ],
+    "conflicts": [
+      {"source": "fictional_dispatcher_notes.txt", "locators": ["line 1"], "expected": "Gate A opening is explicitly marked unresolved between 09:04 and 09:11."}
+    ],
+    "objective_assessments": [
+      {"objective_id": "TRN-OBJ-01", "state": "conflicting_evidence", "elapsed_seconds": [240, 660], "threshold_seconds": 300},
+      {"objective_id": "TRN-OBJ-02", "state": "insufficient_information"}
+    ]
+  }
+}

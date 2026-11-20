@@ -1,0 +1,315 @@
+{
+  "schema_version": "drillloop-ocr-phase3/v1",
+  "exercise_date": "2026-11-19",
+  "fictional": true,
+  "labeling_note": "Expected source wording, times, page numbers, overlaps, and challenge factors were initially defined from the fictional sources before OCR. After the initial extraction run, a source-driven audit corrected the unknown-time category: the explicit 15:17 repeat is timed, while the no-time and 15:2? rows are unknown. The correction was based on source content, not OCR output. Labels are developer-authored and have not been independently adjudicated.",
+  "label_audit_after_initial_ocr_run": true,
+  "initial_labels_written_before_ocr": true,
+  "labels_authored_from_source_content": true,
+  "independently_adjudicated": false,
+  "documents": [
+    {
+      "filename": "phase3_same_page_mixed_water_log.pdf",
+      "variant": "same_page_native_plus_scanned_image",
+      "pages": [
+        {
+          "page": 1,
+          "method": "native_text_plus_ocr",
+          "source_lines": [
+            "FICTIONAL UTILITY EXERCISE - SYNTHETIC ONLY",
+            "Water utility control room shift log",
+            "14:00 Low-pressure alarm activated at Station B.",
+            "14:04 Dispatcher acknowledged the alarm.",
+            "14:11 Station B pump restored; pressure stable."
+          ],
+          "native_source_lines": [
+            "FICTIONAL UTILITY EXERCISE - SYNTHETIC ONLY",
+            "Water utility control room shift log",
+            "14:00 Low-pressure alarm activated at Station B.",
+            "14:04 Dispatcher acknowledged the alarm."
+          ],
+          "image_source_lines": [
+            "14:04 Dispatcher acknowledged the alarm.",
+            "14:11 Station B pump restored; pressure stable."
+          ],
+          "overlap_source_lines": [
+            "14:04 Dispatcher acknowledged the alarm."
+          ]
+        },
+        {
+          "page": 2,
+          "method": "native_text",
+          "source_lines": [
+            "FICTIONAL EXERCISE HANDOVER SUMMARY",
+            "14:11 Station B pump restored; pressure stable.",
+            "14:16 Field supervisor reported service stable."
+          ],
+          "native_source_lines": [
+            "FICTIONAL EXERCISE HANDOVER SUMMARY",
+            "14:11 Station B pump restored; pressure stable.",
+            "14:16 Field supervisor reported service stable."
+          ],
+          "image_source_lines": [],
+          "overlap_source_lines": []
+        }
+      ],
+      "repeated_event_groups": [
+        {
+          "event_key": "station_b_pump_restored",
+          "source_lines": [
+            {
+              "page": 1,
+              "text": "14:11 Station B pump restored; pressure stable."
+            },
+            {
+              "page": 2,
+              "text": "14:11 Station B pump restored; pressure stable."
+            }
+          ],
+          "should_remain_separate_by_page": true
+        }
+      ],
+      "required_citations": [
+        {
+          "page": 1,
+          "source_line": "14:11 Station B pump restored; pressure stable.",
+          "required": true
+        }
+      ],
+      "path": "evals/phase3/sources/phase3_same_page_mixed_water_log.pdf",
+      "sha256": "4714b783bf3a2ba60a00dba3e2b1f46a49893c5a691035b4d8931b8efb66b70f",
+      "bytes": 42007
+    },
+    {
+      "filename": "phase3_two_column_low_resolution_scan.pdf",
+      "variant": "two_column_low_resolution_blurred_skewed_scan",
+      "pages": [
+        {
+          "page": 1,
+          "method": "ocr",
+          "source_lines": [
+            "FICTIONAL EXERCISE FIELD SHEET - COPY",
+            "Column A: Control room",
+            "13:52 Alarm logged at Booster 4.",
+            "13:54 Call-out issued to crew 0-1.",
+            "14:03 Crew 0-1 arrived at Booster 4.",
+            "The source code O1 is visually similar to 01; verify against the original.",
+            "Column B: Field team",
+            "14:07 Isolation switch I-01 verified open.",
+            "14:13 Flow measured at 42 L/s.",
+            "14:18 Shift lead declared the exercise complete."
+          ],
+          "native_source_lines": [],
+          "image_source_lines": [
+            "FICTIONAL EXERCISE FIELD SHEET - COPY",
+            "Column A: Control room",
+            "13:52 Alarm logged at Booster 4.",
+            "13:54 Call-out issued to crew 0-1.",
+            "14:03 Crew 0-1 arrived at Booster 4.",
+            "The source code O1 is visually similar to 01; verify against the original.",
+            "Column B: Field team",
+            "14:07 Isolation switch I-01 verified open.",
+            "14:13 Flow measured at 42 L/s.",
+            "14:18 Shift lead declared the exercise complete."
+          ],
+          "overlap_source_lines": []
+        }
+      ],
+      "challenge_factors": [
+        "two columns",
+        "small font",
+        "low resolution",
+        "blur",
+        "1.15 degree skew",
+        "0/O and 1/I glyphs"
+      ],
+      "path": "evals/phase3/sources/phase3_two_column_low_resolution_scan.pdf",
+      "sha256": "de9a7ebd5c80cb1244937c695700914afd1459cb5b1954e413eee4b7565e0124",
+      "bytes": 5153049
+    },
+    {
+      "filename": "phase3_two_page_valve_event_table_scan.pdf",
+      "variant": "two_page_scanned_table_with_repeated_and_ambiguous_events",
+      "pages": [
+        {
+          "page": 1,
+          "method": "ocr",
+          "source_lines": [
+            "FICTIONAL WATER EXERCISE - EVENT REGISTER",
+            "Record 1 of 2 · synthetic evaluation copy",
+            "TIME LOCATION SOURCE WORDING",
+            "15:02 Gate 0 Isolation test initiated.",
+            "15:17 Valve V-10 Closed; pressure held.",
+            "15:20 Gate 1 Controller announced the stop."
+          ],
+          "native_source_lines": [],
+          "image_source_lines": [
+            "FICTIONAL WATER EXERCISE - EVENT REGISTER",
+            "Record 1 of 2 · synthetic evaluation copy",
+            "TIME LOCATION SOURCE WORDING",
+            "15:02 Gate 0 Isolation test initiated.",
+            "15:17 Valve V-10 Closed; pressure held.",
+            "15:20 Gate 1 Controller announced the stop."
+          ],
+          "overlap_source_lines": []
+        },
+        {
+          "page": 2,
+          "method": "ocr",
+          "source_lines": [
+            "FICTIONAL WATER EXERCISE - EVENT REGISTER",
+            "Record 2 of 2 · synthetic evaluation copy",
+            "TIME LOCATION SOURCE WORDING",
+            "15:17 Valve V-10 Closed; pressure held.",
+            "No time Compressor C-1 Noise was reported; time not recorded.",
+            "15:2? Pump P-10 The handwritten minute digit is unreadable."
+          ],
+          "native_source_lines": [],
+          "image_source_lines": [
+            "FICTIONAL WATER EXERCISE - EVENT REGISTER",
+            "Record 2 of 2 · synthetic evaluation copy",
+            "TIME LOCATION SOURCE WORDING",
+            "15:17 Valve V-10 Closed; pressure held.",
+            "No time Compressor C-1 Noise was reported; time not recorded.",
+            "15:2? Pump P-10 The handwritten minute digit is unreadable."
+          ],
+          "overlap_source_lines": []
+        }
+      ],
+      "challenge_factors": [
+        "table",
+        "two pages",
+        "repeated event",
+        "small font",
+        "ambiguous minute digit",
+        "missing time"
+      ],
+      "expected_unknown_source_lines": [
+        {
+          "page": 2,
+          "text": "No time Compressor C-1 Noise was reported; time not recorded."
+        },
+        {
+          "page": 2,
+          "text": "15:2? Pump P-10 The handwritten minute digit is unreadable."
+        }
+      ],
+      "path": "evals/phase3/sources/phase3_two_page_valve_event_table_scan.pdf",
+      "sha256": "af4f0a81aaa19b43566aa9cf38aa020cab0228068da434acadedfdf4229b2ad2",
+      "bytes": 6767663
+    },
+    {
+      "filename": "phase3_conflicting_dispatch_memo.pdf",
+      "variant": "native_dispatch_memo_with_cross_source_conflict",
+      "pages": [
+        {
+          "page": 1,
+          "method": "native_text",
+          "source_lines": [
+            "FICTIONAL RADIO CLARIFICATION - SYNTHETIC ONLY",
+            "Typed dispatch memorandum",
+            "14:12 Station B pump restored; pressure stable.",
+            "15:19 Valve V-10 closed; pressure held.",
+            "The controller did not resolve the different reported times."
+          ],
+          "native_source_lines": [
+            "FICTIONAL RADIO CLARIFICATION - SYNTHETIC ONLY",
+            "Typed dispatch memorandum",
+            "14:12 Station B pump restored; pressure stable.",
+            "15:19 Valve V-10 closed; pressure held.",
+            "The controller did not resolve the different reported times."
+          ],
+          "image_source_lines": [],
+          "overlap_source_lines": []
+        }
+      ],
+      "challenge_factors": [
+        "independent memo layout",
+        "time claims conflict with table scan"
+      ],
+      "path": "evals/phase3/sources/phase3_conflicting_dispatch_memo.pdf",
+      "sha256": "c8dcb4d32a819ee4f55763453b1d15cfdae0ef189742535dca4ade457adc0792",
+      "bytes": 1779
+    },
+    {
+      "filename": "phase3_unreadable_damaged_field_note.pdf",
+      "variant": "damaged_scan_with_no_recoverable_text",
+      "expected_processing_error": "EMPTY_PDF",
+      "pages": [
+        {
+          "page": 1,
+          "method": "ocr",
+          "source_lines": [
+            "FICTIONAL EXERCISE FIELD NOTE - SYNTHETIC ONLY",
+            "15:36 Crew 0-1 reported the north valve condition.",
+            "No second time or action is recoverable from this damaged copy."
+          ],
+          "native_source_lines": [],
+          "image_source_lines": [],
+          "overlap_source_lines": [],
+          "recoverable": false,
+          "recognition_metrics_available": false
+        }
+      ],
+      "challenge_factors": [
+        "downsampled to 28 by 36 pixels then blurred; intended wording retained in labels"
+      ],
+      "expected_unsupported_observations": 0,
+      "recognition_metrics_available": false,
+      "path": "evals/phase3/sources/phase3_unreadable_damaged_field_note.pdf",
+      "sha256": "a1e0d65fd5d71554b4c0012f2cc7b9e58967b89a48a0874ed02a9d9c925c937d",
+      "bytes": 50721
+    }
+  ],
+  "cross_source_conflicts": [
+    {
+      "event_key": "station_b_pump_restored",
+      "claims": [
+        {
+          "filename": "phase3_same_page_mixed_water_log.pdf",
+          "page": 1,
+          "time": "14:11"
+        },
+        {
+          "filename": "phase3_conflicting_dispatch_memo.pdf",
+          "page": 1,
+          "time": "14:12"
+        }
+      ]
+    },
+    {
+      "event_key": "valve_v10_closed",
+      "claims": [
+        {
+          "filename": "phase3_two_page_valve_event_table_scan.pdf",
+          "page": 1,
+          "time": "15:17"
+        },
+        {
+          "filename": "phase3_conflicting_dispatch_memo.pdf",
+          "page": 1,
+          "time": "15:19"
+        }
+      ]
+    }
+  ],
+  "objective_labels": [
+    {
+      "objective_id": "OBJ-STATION-B-RESTORED",
+      "event_key": "station_b_pump_restored",
+      "expected_finding_code": "STATION_B_PUMP_RESTORED",
+      "expected_finding_status": "proposed",
+      "expected_review_decision": null,
+      "expected_required_citation": {
+        "source": "phase3_same_page_mixed_water_log.pdf",
+        "locator": "page 1"
+      }
+    }
+  ],
+  "measurements_not_available": [
+    "Production OCR accuracy: all Phase 3 PDFs and labels are fictional and developer-authored.",
+    "Calibrated word confidence: OCR confidence is not calibrated for this application.",
+    "Text character error rate for the intentionally unrecoverable page: no OCR transcription target is available for scoring; intended source wording is retained separately in labels.",
+    "Pixel-level PDF highlighting accuracy: the application exposes page-level citations only."
+  ]
+}

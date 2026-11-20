@@ -4,6 +4,7 @@ import multiprocessing
 import os
 import re
 import shutil
+import signal
 import socket
 import stat
 import struct
@@ -456,6 +457,8 @@ def _parser_worker(
         }
 
     try:
+        if os.name == "posix":
+            os.setsid()
         try:
             import resource
 
@@ -550,7 +553,16 @@ def _run_isolated_worker(
         parent.close()
         child.close()
         if worker.is_alive():
-            worker.terminate()
+            # The parser can be blocked waiting on Tesseract when the upload times
+            # out or is cancelled. Terminate the worker and subprocess together.
+            if target is _parser_worker and os.name == "posix" and worker.pid is not None:
+                try:
+                    if os.getpgid(worker.pid) == worker.pid:
+                        os.killpg(worker.pid, signal.SIGKILL)
+                except ProcessLookupError:
+                    pass
+            if worker.is_alive():
+                worker.terminate()
             worker.join(timeout=2)
             if worker.is_alive() and hasattr(worker, "kill"):
                 worker.kill()
