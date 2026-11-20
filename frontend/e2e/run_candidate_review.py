@@ -1,0 +1,151 @@
+"""Run the fictional candidate browser test against a fresh migrated local database."""
+
+from __future__ import annotations
+
+import argparse
+import json
+import os
+import secrets
+import socket
+import subprocess
+import sys
+import tempfile
+import threading
+import time
+from collections.abc import Iterator
+from contextlib import asynccontextmanager, contextmanager
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT))
+
+from scripts.isolated_runtime import configure  # noqa: E402
+
+WORDING = "No matching handoff entry was found in the fictional dispatch notebook."
+EXCERPT = "matching handoff entry was found in the fictional dispatch notebook"
+
+
+class FictionalProvider:
+    async def generate(self, _system: str, evidence: str, _schema: dict):
+        from app.ai_evaluation import ProviderReply
+
+        context = json.loads(evidence)
+        record = next(item["record"] for item in context["records"] if item["text"] == WORDING)
+        return ProviderReply(
+            json.dumps(
+                {
+                    "suggestions": [
+                        {
+                            "objective_id": objective_id,
+                            "kind": "insufficient_evidence",
+                            "citations": []
+                            if objective_id == "OBJ-UNSOURCED"
+                            else [{"record": record, "excerpt": EXCERPT}],
+                            "missing_information": ["completion_record"],
+                        }
+                        for objective_id in context["objectives"]
+                    ]
+                }
+            )
+        )
+
+
+@contextmanager
+def serve(app, *, port: int = 0) -> Iterator[int]:
+    import uvicorn
+
+    with socket.socket() as listener:
+        listener.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        listener.bind(("127.0.0.1", port))
+        port = listener.getsockname()[1]
+        server = uvicorn.Server(uvicorn.Config(app, log_level="warning", access_log=False))
+        thread = threading.Thread(target=server.run, kwargs={"sockets": [listener]}, daemon=True)
+        thread.start()
+        try:
+            deadline = time.monotonic() + 10
+            while not server.started and thread.is_alive() and time.monotonic() < deadline:
+                time.sleep(0.05)
+            if not server.started:
+                raise RuntimeError("The disposable candidate browser server did not start.")
+            yield port
+        finally:
+            server.should_exit = True
+            thread.join(timeout=10)
+            if thread.is_alive():
+                raise RuntimeError("The disposable candidate browser server did not stop.")
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--screenshots", type=Path)
+    parser.add_argument("--axe-script", type=Path, help="Optional local axe-core minified script.")
+    args = parser.parse_args()
+    if not (ROOT / "frontend" / "dist" / "index.html").is_file():
+        parser.error("Build the production frontend before running the browser test.")
+    if args.axe_script and not args.axe_script.is_file():
+        parser.error("The selected axe-core script does not exist.")
+
+    configure()
+    os.environ["DRILLLOOP_AI_ENABLED"] = "0"
+    from app import db
+    from app.ai_evaluation import AiService, AiSettings
+    from app.auth import hash_password
+    from app.main import app
+
+    password = secrets.token_urlsafe(24)
+    users = [
+        ("candidate-admin", "Fictional Evaluation Lead", "admin"),
+        ("candidate-reviewer", "Fictional Independent Reviewer", "reviewer"),
+        ("candidate-viewer", "Fictional Exercise Viewer", "viewer"),
+        ("candidate-evaluator", "Fictional Exercise Evaluator", "evaluator"),
+    ]
+    os.environ["DRILLLOOP_USERS_JSON"] = json.dumps(
+        [
+            {
+                "id": username,
+                "username": username,
+                "name": name,
+                "role": role,
+                "organization_id": "synthetic-evaluation",
+                "password_hash": hash_password(password),
+            }
+            for username, name, role in users
+        ]
+    )
+    db.migrate_database()
+    original_lifespan = app.router.lifespan_context
+
+    @asynccontextmanager
+    async def with_fictional_provider(application):
+        async with original_lifespan(application):
+            application.state.ai_evaluation = AiService(
+                AiSettings("http://127.0.0.1:11434", "fictional-provider:test", 5, 12_000, 1024, 1),
+                FictionalProvider(),
+            )
+            yield
+
+    screenshots = (
+        args.screenshots or Path(tempfile.mkdtemp(prefix="drillloop-candidate-screenshots-"))
+    ).resolve()
+    screenshots.mkdir(parents=True, exist_ok=True)
+    browser_env = {
+        **os.environ,
+        "DRILLLOOP_CANDIDATE_E2E_PASSWORD": password,
+        "DRILLLOOP_CANDIDATE_E2E_SCREENSHOTS": str(screenshots),
+        "DRILLLOOP_CANDIDATE_E2E_AXE": str(args.axe_script.resolve()) if args.axe_script else "",
+    }
+    command = ["node", "frontend/e2e/candidate-review-workflow.mjs"]
+    try:
+        app.router.lifespan_context = with_fictional_provider
+        with serve(app) as port:
+            browser_env["DRILLLOOP_E2E_BASE_URL"] = f"http://127.0.0.1:{port}"
+            subprocess.run([*command, "review"], cwd=ROOT, env=browser_env, check=True)
+    finally:
+        app.router.lifespan_context = original_lifespan
+
+    with serve(app, port=port):
+        subprocess.run([*command, "ai-disabled"], cwd=ROOT, env=browser_env, check=True)
+
+
+if __name__ == "__main__":
+    main()

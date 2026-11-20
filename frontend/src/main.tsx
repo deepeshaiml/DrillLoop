@@ -6,6 +6,7 @@ import './design-system.css'
 import './exercises.css'
 import './evidence-timeline.css'
 import './findings-actions.css'
+import './candidate-review.css'
 import './reports.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
