@@ -26,12 +26,14 @@ const detail = id => page.evaluate(async exerciseId => {
   return response.json()
 }, id)
 
-async function uploadAndAnalyze(id, filename, fixture, findingCode) {
+async function uploadAndAnalyze(id, fixtures, findingCode) {
   await page.locator('#exercise-picker').selectOption(id)
   await tab('Evidence').click()
-  await page.locator('.et-select-files input[type=file]').setInputFiles(resolve(project, fixture))
-  await page.getByRole('button', { name: 'Upload 1 file', exact: true }).click()
-  await page.locator('.et-source-card').filter({ hasText: filename }).waitFor()
+  await page.locator('.et-select-files input[type=file]').setInputFiles(fixtures.map(fixture => resolve(project, fixture)))
+  await page.getByRole('button', { name: fixtures.length === 1 ? 'Upload 1 file' : `Upload ${fixtures.length} files`, exact: true }).click()
+  for (const fixture of fixtures) {
+    await page.locator('.et-source-card').filter({ hasText: fixture.split('/').at(-1) }).waitFor()
+  }
   await tab('Overview').click()
   await page.getByRole('button', { name: 'Run evidence analysis' }).click()
   await page.getByRole('button', { name: 'Analysis already run' }).waitFor()
@@ -58,7 +60,7 @@ async function infer(id) {
   assert.ok(result.input_tokens > 0 && result.output_tokens > 0)
   await generate.waitFor()
   await aiPanel.getByText('AI-generated suggestions — not reviewed or approved.').waitFor()
-  assert.equal(await aiPanel.getByRole('button', { name: /approve|reject/i }).count(), 0)
+  assert.equal(await aiPanel.getByRole('button', { name: /^(approve|reject)( finding)?$/i }).count(), 0)
   assert.deepEqual(await detail(id), before, 'AI leaves exercise detail, findings and actions unchanged')
   return result
 }
@@ -72,7 +74,7 @@ try {
 
   const narrativeId = 'PH4A-FICTIONAL-NARRATIVE'
   const notes = 'fictional_reception_notes.txt'
-  await uploadAndAnalyze(narrativeId, notes, `evals/phase4a/${notes}`, 'RECEPTION_POINT_OPEN')
+  await uploadAndAnalyze(narrativeId, [`evals/phase4a/${notes}`], 'RECEPTION_POINT_OPEN')
   const narrative = await infer(narrativeId)
   await aiPanel.getByRole('heading', { name: 'Insufficient evidence' }).waitFor()
   const noteCitation = aiPanel.getByRole('button', { name: new RegExp(notes) }).first()
@@ -85,7 +87,7 @@ try {
 
   const ocrId = 'PH4A-FICTIONAL-OCR'
   const pdf = 'utility_emergency_log_scanned.pdf'
-  await uploadAndAnalyze(ocrId, pdf, `evals/phase2/sources/${pdf}`)
+  await uploadAndAnalyze(ocrId, [`evals/phase2/sources/${pdf}`])
   assert.equal(await aiPanel.getByRole('button', { name: new RegExp(notes) }).count(), 0)
   const ocr = await infer(ocrId)
   const ocrCitation = aiPanel.getByRole('button', { name: /page 1.*Source time uncertain/ }).first()
@@ -113,12 +115,51 @@ try {
     assert.equal(await generate.isEnabled(), true)
   }
 
+  const facilitiesId = 'PH4B-FICTIONAL-FACILITIES'
+  const facilitiesFixtures = ['fictional_facilities_log.txt', 'fictional_facilities_observer.txt']
+  let relationshipResults = []
+  if (await page.locator(`#exercise-picker option[value="${facilitiesId}"]`).count()) {
+    await page.setViewportSize({ width: 1440, height: 1120 })
+    await uploadAndAnalyze(facilitiesId, facilitiesFixtures.map(file => `evals/phase4b/${file}`))
+    const facilities = await infer(facilitiesId)
+    // The paired evaluation scores interpretation quality. This workflow checks what the live
+    // API returned, renders each label, and follows both original files.
+    const headings = {
+      relevant_observation: 'Relevant observation',
+      corroboration: 'Possible corroboration',
+      contradiction: 'Possible contradiction',
+      different_response_phases: 'Different response phases',
+      unknown: 'Uncertain relationship or outcome',
+      insufficient_evidence: 'Insufficient evidence',
+    }
+    assert.ok(facilities.suggestions.length > 0)
+    const citations = []
+    for (const item of facilities.suggestions) {
+      assert.ok(headings[item.kind], `Unexpected relationship ${item.kind}`)
+      const card = aiPanel.getByRole('article').filter({ has: page.getByRole('heading', { name: new RegExp(`^${item.objective_id} · `) }) })
+      await card.getByRole('heading', { name: headings[item.kind], exact: true }).waitFor()
+      citations.push(...[...item.evidence, ...item.counterevidence].map(citation => ({ citation, card })))
+    }
+    for (const filename of facilitiesFixtures) {
+      const match = citations.find(({ citation }) => citation.source_filename === filename)
+      assert.ok(match, `Expected a live citation to ${filename}`)
+      const { citation, card } = match
+      await card.getByRole('button', { name: new RegExp(filename) }).first().click()
+      const source = page.getByRole('dialog', { name: filename })
+      await source.getByText(citation.source_locator, { exact: true }).first().waitFor()
+      await source.getByRole('button', { name: 'Close source details' }).click()
+    }
+    await page.screenshot({ path: resolve(screenshots, 'evidence-relationships.png'), fullPage: true })
+    relationshipResults = facilities.suggestions.map(({ objective_id, kind, assessment }) => ({ objective_id, kind, assessment }))
+  }
+
   assert.deepEqual(pageErrors, [])
   console.log(JSON.stringify({
     result: 'PASS',
     real_local_model: narrative.model,
     narrative_suggestions: narrative.suggestions.length,
     ocr_suggestions: ocr.suggestions.length,
+    evidence_relationships: relationshipResults,
     screenshots,
     browser_errors: pageErrors,
   }, null, 2))

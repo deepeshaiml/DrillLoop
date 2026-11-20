@@ -1,0 +1,5 @@
+[10:02] For incident DR-21, Dock 2 alarm sounded during the facilities exercise.
+[10:05] For incident DR-21, the Dock 2 response team isolated the loading bay.
+[10:11] For incident DR-21, the facilities lead reset the Dock 2 alarm after inspection.
+[10:15] For drill DR-22, the control desk recorded the north barrier locked at checkpoint C2.
+[10:22] For incident DR-23, a failed radio check was followed by a delayed dispatch.

@@ -21,7 +21,7 @@ OCR_PATH = (
 )
 
 
-def create(client, identifier="fictional-ai", *, objectives=True) -> str:
+def create(client, identifier="fictional-ai", *, objectives=True, timing=False) -> str:
     reply = client.post(
         EXERCISES,
         json={
@@ -35,6 +35,13 @@ def create(client, identifier="fictional-ai", *, objectives=True) -> str:
                     "id": "PUMP",
                     "text": "Confirm stable pressure after switching pumps.",
                     "evaluation_rule": {
+                        "type": "elapsed_time",
+                        "threshold_seconds": 600,
+                        "start_terms": ["low-pressure alarm activated"],
+                        "completion_terms": ["backup pump reached stable pressure"],
+                    }
+                    if timing
+                    else {
                         "type": "event_presence",
                         "terms": ["backup pump reached stable pressure"],
                         "finding_code": "PUMP_CONFIRMED",
@@ -54,12 +61,11 @@ def upload(client, base, content, filename="fictional-log.txt", mime="text/plain
     assert response.status_code == 201, response.text
 
 
-def suggestion(record: int = 1, excerpt: str = NORMAL, **changes) -> dict:
+def suggestion(record: int = 1, excerpt: str = NORMAL, *, citations=None, **changes) -> dict:
     return {
         "objective_id": "PUMP",
         "kind": "relevant_observation",
-        "evidence": [{"record": record, "excerpt": excerpt}],
-        "counterevidence": [],
+        "citations": [{"record": record, "excerpt": excerpt}] if citations is None else citations,
         "missing_information": [],
         **changes,
     }
@@ -127,9 +133,12 @@ def test_grounded_response_quarantines_invalid_citations_and_leaves_detail_uncha
                 suggestion(record=42),
                 suggestion(objective_id="UNRELATED"),
                 suggestion(
-                    counterevidence=[{"record": 1, "excerpt": "Fabricated counterevidence."}]
+                    citations=[
+                        {"record": 1, "excerpt": NORMAL},
+                        {"record": 1, "excerpt": "Fabricated excerpt."},
+                    ]
                 ),
-                suggestion(kind="possible_cross_source_match"),
+                suggestion(kind="contradiction"),
                 suggestion(),
             ]
         }
@@ -149,7 +158,11 @@ def test_grounded_response_quarantines_invalid_citations_and_leaves_detail_uncha
     assert citation["source_locator"] == "line 1"
     assert ai_client.get(base).json() == before
     assert provider.inputs[0]["records"][0]["record"] == 1
-    assert "source_id" not in provider.inputs[0]["records"][0]
+    assert provider.inputs[0]["records"][0]["source_id"] == citation["source_id"]
+    assert provider.inputs[0]["records"][0]["locator"] == citation["source_locator"]
+    assert provider.inputs[0]["sources"][citation["source_id"]] == {
+        "filename": citation["source_filename"]
+    }
     assert "observation_id" not in provider.inputs[0]["records"][0]
 
 
@@ -183,10 +196,10 @@ def test_abstention_requires_missing_information(ai_client):
     fake(
         lambda _: {
             "suggestions": [
-                suggestion(kind="insufficient_evidence", evidence=[]),
+                suggestion(kind="insufficient_evidence", citations=[]),
                 suggestion(
                     kind="insufficient_evidence",
-                    evidence=[],
+                    citations=[],
                     missing_information=["independent_confirmation"],
                 ),
             ]
@@ -195,6 +208,7 @@ def test_abstention_requires_missing_information(ai_client):
     result = ai_client.post(AI).json()
     assert result["rejected_suggestion_count"] == 1
     assert result["suggestions"][0]["kind"] == "insufficient_evidence"
+    assert result["suggestions"][0]["assessment"] == "abstained"
     assert result["suggestions"][0]["evidence"] == []
     assert result["suggestions"][0]["unknowns"]
 
@@ -207,19 +221,17 @@ def test_counterevidence_must_be_grounded_and_distinct(ai_client):
         lambda data: {
             "suggestions": [
                 suggestion(
-                    record=next(row["record"] for row in data["records"] if row["text"] == NORMAL),
-                    kind="conflicting_accounts",
-                    counterevidence=[
+                    kind="contradiction",
+                    citations=[
                         {"record": row["record"], "excerpt": row["text"]}
-                        for row in data["records"]
-                        if row["text"] != NORMAL
+                        for row in sorted(data["records"], key=lambda row: row["text"] != NORMAL)
                     ],
                 )
             ]
         }
     )
     item = ai_client.post(AI).json()["suggestions"][0]
-    assert item["kind"] == "conflicting_accounts"
+    assert item["kind"] == "contradiction" and item["assessment"] == "advisory"
     assert item["counterevidence"][0]["source_filename"] == "fictional-opposing.txt"
     assert "counterevidence" in item["uncertainty"]
 
@@ -305,13 +317,158 @@ def test_objectives_and_extracted_evidence_required(ai_client):
         pytest.param(b"Short line.\n" * (MAX_RECORDS + 1), id="record-limit"),
     ],
 )
-def test_oversized_context_rejected_before_provider(ai_client, content):
+def test_oversized_context_abstains_before_provider(ai_client, content):
     upload(ai_client, create(ai_client), content)
     provider = fake(lambda _: {"suggestions": []})
     response = ai_client.post(AI)
-    assert response.status_code == 413
-    assert response.json()["detail"]["code"] == "AI_INPUT_TOO_LARGE"
+    assert response.status_code == 200
+    result = response.json()
+    assert result["context_limited"]
+    assert result["unassessed_objective_ids"] == ["PUMP"]
+    assert not result["suggestions"] and result["input_tokens"] is None
     assert not provider.inputs
+
+
+def test_prompt_preserves_numeric_locator_order_within_a_source(ai_client):
+    base = create(ai_client)
+    upload(ai_client, base, b"\n".join(f"Observation {i}.".encode() for i in range(1, 13)))
+    provider = fake(lambda _: {"suggestions": []})
+    assert ai_client.post(AI).status_code == 200
+    records = provider.inputs[0]["records"]
+    assert [record["locator"] for record in records] == [f"line {i}" for i in range(1, 13)]
+
+
+def test_relationships_keep_citations_and_distinguish_phases_from_corroboration(ai_client):
+    base = create(ai_client)
+    upload(
+        ai_client,
+        base,
+        b"The Dock 2 alarm went off.\nThe team later isolated Dock 2.",
+        "control.txt",
+    )
+    upload(ai_client, base, b"I heard the alarm at Dock 2.", "observer.txt")
+
+    def respond(data, kind, excerpts):
+        citations = [
+            {"record": row["record"], "excerpt": row["text"]}
+            for row in data["records"]
+            if row["text"] in excerpts
+        ]
+        return {"suggestions": [suggestion(kind=kind, citations=citations)]}
+
+    fake(
+        lambda data: respond(
+            data, "corroboration", {"The Dock 2 alarm went off.", "I heard the alarm at Dock 2."}
+        )
+    )
+    corroborated = ai_client.post(AI).json()["suggestions"][0]
+    assert corroborated["kind"] == "corroboration" and corroborated["assessment"] == "advisory"
+    assert len({cite["source_id"] for cite in corroborated["evidence"]}) == 2
+
+    fake(
+        lambda data: respond(
+            data,
+            "different_response_phases",
+            {"The Dock 2 alarm went off.", "The team later isolated Dock 2."},
+        )
+    )
+    phases = ai_client.post(AI).json()["suggestions"][0]
+    assert phases["kind"] == "different_response_phases" and phases["assessment"] == "abstained"
+    assert len(phases["evidence"]) == 2 and phases["counterevidence"] == []
+
+
+@pytest.mark.parametrize("count", [1, 2])
+def test_corroboration_without_distinct_sources_keeps_relevant_context(ai_client, count):
+    base = create(ai_client)
+    upload(ai_client, base, b"The alarm went off.\nThe team isolated the bay.")
+
+    def respond(data):
+        return {
+            "suggestions": [
+                suggestion(
+                    kind="corroboration",
+                    citations=[
+                        {"record": row["record"], "excerpt": row["text"]}
+                        for row in data["records"][:count]
+                    ],
+                )
+            ]
+        }
+
+    fake(respond)
+    item = ai_client.post(AI).json()["suggestions"][0]
+    assert item["kind"] == "relevant_observation" and item["assessment"] == "advisory"
+    assert len(item["evidence"]) == count and not item["counterevidence"]
+    assert item["unknowns"] == ["Independent confirmation of the reported observation."]
+
+
+@pytest.mark.parametrize("copy_document", [True, False])
+def test_duplicate_source_or_repeated_observation_cannot_corroborate(ai_client, copy_document):
+    base = create(ai_client)
+    upload(ai_client, base, NORMAL.encode(), "original.txt")
+    second = NORMAL if copy_document else f"{NORMAL}\nAdditional source wording."
+    upload(ai_client, base, second.encode(), "second.txt")
+
+    def respond(data):
+        copies = [source for source in data["sources"].values() if "byte_identical_to" in source]
+        assert len(copies) == int(copy_document)
+        if copies:
+            assert copies[0]["byte_identical_to"] in data["sources"]
+        return {
+            "suggestions": [
+                suggestion(
+                    kind="corroboration",
+                    citations=[
+                        {"record": row["record"], "excerpt": row["text"]}
+                        for row in data["records"]
+                        if row["text"] == NORMAL
+                    ],
+                )
+            ]
+        }
+
+    fake(respond)
+    item = ai_client.post(AI).json()["suggestions"][0]
+    assert item["kind"] == "unknown" and item["assessment"] == "abstained"
+    assert len(item["evidence"]) == 2 and item["unknowns"] == [
+        "Independent confirmation of the reported observation."
+    ]
+
+
+@pytest.mark.parametrize("kind", ["relevant_observation", "contradiction"])
+def test_uncertain_ocr_timing_cannot_pass_as_a_conflict_or_timing_assessment(ai_client, kind):
+    base = create(ai_client, timing=True)
+    upload(ai_client, base, OCR_PATH.read_bytes(), OCR_PATH.name, "application/pdf")
+    native = "Backup pump P-7 reached stable pressure at 09:14."
+    upload(ai_client, base, native.encode())
+
+    def respond(data):
+        ocr = next(
+            row
+            for row in data["records"]
+            if "P-7 reached stable" in row["text"] and row["extraction"] == "ocr"
+        )
+        other = next(row for row in data["records"] if row["text"] == native)
+        opposing = (
+            [{"record": other["record"], "excerpt": native}] if kind == "contradiction" else []
+        )
+        assert data["timing_objective_ids"] == ["PUMP"]
+        return {
+            "suggestions": [
+                suggestion(
+                    kind=kind,
+                    citations=[{"record": ocr["record"], "excerpt": ocr["text"]}, *opposing],
+                )
+            ]
+        }
+
+    fake(respond)
+    item = ai_client.post(AI).json()["suggestions"][0]
+    assert item["kind"] == "insufficient_evidence" and item["assessment"] == "abstained"
+    assert item["counterevidence"] == []
+    assert (
+        item["evidence"][0]["event_time_raw"] == "09:12" and "original page" in item["uncertainty"]
+    )
 
 
 def test_concurrent_requests_bounded_and_slot_recovers_on_timeout(ai_client):

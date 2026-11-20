@@ -2,6 +2,15 @@
 
 Updated: 20 November 2026
 
+## V2 Phase 4B — AI evidence quality (20 November 2026)
+
+- The archived false conflict paired the alarm with the later stabilization at the west header. The old prompt placed conflicts first without requiring the same stage and attribute. Phase 4A also treated an absent acknowledgement entry as useful narrative evidence in some runs, and did not distinguish identical copies from independent sources. The original labels scored the historical rerun 8/9. It still missed the cross-source match, and the missing acknowledgement abstention varied across runs.
+- The Phase 4B advisory path includes scoped source IDs, original locators, and time provenance, with records grouped in source order. The backend validates exact excerpts and comparison pairs, checks duplicate file hashes and repeated observations, and marks uncertain OCR timing for review. Known input overflow produces a context-limit abstention before the provider is called. The response schema and server-authored wording keep relationship judgments, factual excerpts, and remaining unknowns distinct.
+- Three paired live Ollama runs per version improved target behavior from 18/51 to 45/51, corroboration from 0/6 to 6/6, abstention recall from 6/33 to 30/33, and false conflicts from 12/45 to 3/45. Exact citation validation was 75/75 and 74/74. True conflict detection declined from 6/6 to 3/6. The candidate overlooked the transit timing discrepancy and still misclassified the dispatch acknowledgement gap in each repeat. All 42 real requests preserved complete exercise detail. See the [evaluation and evidence](evals/phase4b/README.md).
+- The fresh hashed-lock Python environment passed 161 backend tests, with the local ClamAV integration skipped. Ruff lint and formatting, the TypeScript production build, browser script syntax and Git diff checks passed.
+- The real Ollama Chromium demo passed with corroboration, a possible contradiction, different response phases, and an abstention on the causal objective. It opened both original TXT sources and the scanned PDF page, checked mobile rendering and transient exercise switching, and exercised timeout and unavailable feedback.
+- Phase 4B local verification uses disposable SQLite and fictional evidence. The deterministic, OCR, and mixed-page OCR Chromium workflows passed, including report exports, human review, evidence-based action closure, and viewer access boundaries. The Python and npm dependency audits found no known vulnerabilities. The isolated Python environment installed from the hashed lock.
+
 ## V2 Phase 4A — Hybrid AI assistance (20 November 2026)
 
 - Added opt-in local Ollama narrative review in Findings. Administrators and evaluators with an exercise grant can request transient advisory interpretations. The server checks the exercise and objective, resolves citations to the request's original extracted records, and withholds invalid suggestions. OCR-derived times retain uncertainty and remain outside deterministic elapsed-time decisions. Existing finding and action review uses its original authorization and data path.

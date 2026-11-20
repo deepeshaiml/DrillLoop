@@ -12,7 +12,7 @@ import uuid
 from pathlib import Path
 
 
-def configure() -> Path:
+def configure(backend: Path | None = None) -> Path:
     root = Path(tempfile.mkdtemp(prefix="drillloop-eval-"))
     root.chmod(0o700)
     token = secrets.token_hex(32)
@@ -20,7 +20,7 @@ def configure() -> Path:
     marker.write_text(token, encoding="utf-8")
     marker.chmod(0o600)
 
-    backend = Path(__file__).resolve().parents[1] / "backend"
+    backend = backend or Path(__file__).resolve().parents[1] / "backend"
     sys.path.insert(0, str(backend))
     os.environ["DRILLLOOP_TEST_MODE"] = "1"
     os.environ["DRILLLOOP_ENVIRONMENT"] = "test"

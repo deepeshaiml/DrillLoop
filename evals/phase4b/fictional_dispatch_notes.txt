@@ -1,0 +1,3 @@
+A cart stopped in the service corridor. The witness did not record its number or dispatch ticket.
+For D-43, no acknowledgement entry was found in the dispatcher sheet.
+For D-44, the inspection appendix was missing from the exercise packet.

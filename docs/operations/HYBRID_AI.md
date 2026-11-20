@@ -1,4 +1,4 @@
-# Phase 4A hybrid AI assistance
+# Hybrid AI assistance
 
 Findings shows AI assistance for administrators and evaluators with a grant to the selected exercise. The existing **Run evidence analysis** action runs the deterministic rules and creates proposed findings. **Generate AI suggestions** separately reviews extracted narrative records and shows temporary suggestions with source links. Only the existing human review workflow can change findings or actions.
 
@@ -24,7 +24,7 @@ export DRILLLOOP_AI_MODEL='<installed-name:tag>'
 | Variable | Default | Details |
 | --- | --- | --- |
 | `DRILLLOOP_AI_ENABLED` | `0` | Set to `1` to enable |
-| `DRILLLOOP_AI_PROVIDER` | `ollama` | Phase 4A provider |
+| `DRILLLOOP_AI_PROVIDER` | `ollama` | Local provider |
 | `DRILLLOOP_AI_MODEL` | Empty | Exact locally installed tag, without a registry prefix |
 | `DRILLLOOP_AI_ENDPOINT` | `http://127.0.0.1:11434` | HTTP origin using `127.0.0.1` or `[::1]` and an explicit port |
 | `DRILLLOOP_AI_TIMEOUT_SECONDS` | `60` | End-to-end provider request deadline, 1–180 seconds |
@@ -34,7 +34,7 @@ export DRILLLOOP_AI_MODEL='<installed-name:tag>'
 
 The provider checks the daemon’s cloud-disabled status and installed model inventory before sending exercise data. A missing status route, enabled cloud features, a missing tag, or a remote-model alias leaves AI unavailable. Proxy settings and redirects are disabled for provider requests. Keep daemon request-body logging disabled.
 
-The selected exercise must have objectives and extracted observations. Phase 4A limits each request to 128 observations and at most 12 results. The API rejects oversized context instead of dropping potentially conflicting records. It identifies objectives that received no accepted suggestion. Ollama sees request-local record and source numbers, objective text, observation wording, and extraction/time metadata. The backend reattaches filenames, original locators, and source IDs after matching every excerpt to its exact extracted text.
+The selected exercise must have objectives and extracted observations. A request is limited to 128 observations and at most 12 model results. If the complete context exceeds either input limit, the API reports an evidence-limit abstention for the exercise without calling Ollama. Provider errors and objectives that received no valid result have separate messages. Ollama sees exercise-scoped source IDs, filenames, original locators, request-local record numbers, objective text, observation wording, and extraction and time metadata. The backend resolves exact excerpts to their original records before returning citations.
 
 ## Fictional demo
 
@@ -44,10 +44,10 @@ The selected exercise must have objectives and extracted observations. Phase 4A 
 4. Open **Findings**, select **Generate AI suggestions**, and follow the line 1 citation to its original source. Read the separate proposed deterministic finding and the AI result for the missing signed register. The dataset intentionally includes a fictional instruction in line 2.
 5. For the OCR case, select **Fictional scanned pump restoration exercise** and upload `evals/phase2/sources/utility_emergency_log_scanned.pdf`. Generate suggestions and inspect the page citation and uncertain time.
 
-With the demo server running, `frontend/e2e/hybrid-ai-workflow.mjs` automates both examples against the live API. Set `DRILLLOOP_E2E_USERNAME`, `DRILLLOOP_E2E_PASSWORD`, and optionally `DRILLLOOP_E2E_BASE_URL`. Screenshots default to a new temporary directory.
+Pass `--suite phase4b --serve` to include the fictional facilities exercise. Upload both `fictional_facilities_*.txt` files from `evals/phase4b/` and generate suggestions to inspect possible corroboration, a discrepancy, different response phases, and a causal evidence gap. With the demo server running, `frontend/e2e/hybrid-ai-workflow.mjs` automates these examples against the live API. Set `DRILLLOOP_E2E_USERNAME`, `DRILLLOOP_E2E_PASSWORD`, and optionally `DRILLLOOP_E2E_BASE_URL`. Screenshots default to a new temporary directory.
 
-To repeat the four-case model evaluation on a fresh database, run `.venv/bin/python scripts/evaluate_hybrid_ai.py --output /tmp/drillloop-phase4a-run.json`. The runner compares the exercise detail before and after AI assistance and stages fictional Phase 1 narratives, an OCR fixture, and the Phase 4A reception notes. The developer labels in `evals/phase4a/cases.json` are synthetic and have no independent adjudication.
+To repeat the current evaluation on disposable SQLite storage, run `.venv/bin/python scripts/evaluate_hybrid_ai.py --suite phase4b --repeat 3 --output /tmp/drillloop-phase4b-run.json`. To compare with the merged Phase 4A backend, use the same command with `--backend-root /path/to/phase4a-checkout` and a fresh output path. The paired runner pins the requested Ollama context to 8,192 tokens for both versions. Normal product requests size context from their prompt. Developer labels cover fictional evidence and have no independent adjudication. See the [Phase 4B evaluation](../../evals/phase4b/README.md).
 
 ## Review limits
 
-The model chooses an interpretation category, exact excerpts, and missing-information categories. The server renders the advisory wording. Exact excerpt validation verifies what the source record says and where it came from. Assessing whether the selected records actually corroborate, contradict, or address an objective still requires evaluator review. OCR-derived times keep their source uncertainty. Suggestions are discarded when the Findings panel closes or reloads. Results are absent from reports and workflow history.
+The model chooses an interpretation category, exact excerpts, and missing-information categories. The server renders the advisory wording, resolves comparison citations to distinct observations, and displays the two sides of a possible contradiction. Possible corroboration requires a pair from different source IDs. A model-proposed match without that pair can still return verified excerpts for relevance review. Byte-identical sources or repeated observation wording with the same reported time produce an uncertain result. A proposed contradiction that uses an uncertain OCR time becomes an abstention, as does a positive timing advisory on a configured elapsed-time objective using an uncertain OCR citation. Reviewers still judge whether the sources are independent, concern the same event, and support the suggested relationship. Suggestions are temporary and disappear when the Findings panel closes or reloads.

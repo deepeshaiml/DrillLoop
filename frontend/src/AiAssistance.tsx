@@ -16,9 +16,19 @@ export type AiCitation = {
   time_confidence: string
   event_time_raw: string | null
 }
+const interpretationLabels = {
+  relevant_observation: 'Relevant observation',
+  corroboration: 'Possible corroboration',
+  contradiction: 'Possible contradiction',
+  different_response_phases: 'Different response phases',
+  unknown: 'Uncertain relationship or outcome',
+  insufficient_evidence: 'Insufficient evidence',
+} as const
+
 type Suggestion = {
   objective_id: string
-  kind: string
+  kind: keyof typeof interpretationLabels
+  assessment: 'advisory' | 'abstained'
   evidence: AiCitation[]
   counterevidence: AiCitation[]
   interpretation: string
@@ -30,6 +40,7 @@ export type AiResult = {
   suggestions: Suggestion[]
   unassessed_objective_ids: string[]
   rejected_suggestion_count: number
+  context_limited: boolean
 }
 type Props = {
   capability: AiCapability
@@ -107,8 +118,10 @@ export default function AiAssistance({ capability, objectives, assessments, gene
     {error && <p className="fa-uncertainty needs-attention" role="alert">{error}</p>}
     {result && <div className="fa-ai-results">
       {result.rejected_suggestion_count > 0 && <p role="status">{result.rejected_suggestion_count} AI {result.rejected_suggestion_count === 1 ? 'result was' : 'results were'} withheld because validation failed.</p>}
-      {result.suggestions.length === 0 && <p>No AI suggestions passed validation.</p>}
-      {result.unassessed_objective_ids.length > 0 && <p>AI review incomplete for {result.unassessed_objective_ids.join(', ')}.</p>}
+      {result.context_limited
+        ? <p role="status">AI abstained because the complete evidence exceeds the review limit.</p>
+        : result.suggestions.length === 0 && <p>No AI suggestions are available.</p>}
+      {!result.context_limited && result.unassessed_objective_ids.length > 0 && <p>AI review incomplete for {result.unassessed_objective_ids.join(', ')}.</p>}
       {ruleConflicts.length > 0 && <section className="fa-uncertainty needs-attention">
         <h4>Conflicts from deterministic analysis</h4>
         <ul>{ruleConflicts.flatMap(item => item.conflicts.map(value => <li key={`${item.objective_id}-${value}`}>{item.objective_id && <strong>{item.objective_id} · </strong>}{value}</li>))}</ul>
@@ -117,11 +130,15 @@ export default function AiAssistance({ capability, objectives, assessments, gene
         const objective = objectives.find(value => value.id === item.objective_id)
         const assessment = assessments.find(value => value.objective_id === item.objective_id)
         const deterministicNotes = assessment?.unknowns ?? []
+        const evidenceTitle = item.kind === 'corroboration' ? 'Potentially corroborating records'
+          : item.kind === 'contradiction' ? 'First account'
+          : item.kind === 'different_response_phases' ? 'Records from different stages'
+          : item.assessment === 'abstained' ? 'Relevant excerpts' : 'Supporting excerpts'
         return <article className="fa-analysis-card fa-ai-result" key={item.objective_id}>
           <h3>{item.objective_id}{objective && ` · ${objective.text}`}</h3>
-          <AiCitations title="Supporting excerpts" citations={item.evidence} onEvidence={onEvidence} />
-          <AiCitations title="Counterevidence" citations={item.counterevidence} onEvidence={onEvidence} />
-          <h4>{item.kind === 'insufficient_evidence' ? 'Insufficient evidence' : 'Suggested interpretation'}</h4>
+          <AiCitations title={evidenceTitle} citations={item.evidence} onEvidence={onEvidence} />
+          <AiCitations title="Potentially contradictory account" citations={item.counterevidence} onEvidence={onEvidence} />
+          <h4>{interpretationLabels[item.kind]}</h4>
           <p>{item.interpretation}</p>
           <section className="fa-uncertainty needs-attention">
             <h4>Uncertainty and missing information</h4>
