@@ -11,6 +11,12 @@ Updated: 20 November 2026
 - Chromium passed the real narrative and OCR demo, showing two narrative suggestions and one OCR suggestion. It opened the original line/page records, checked mobile overflow and transient exercise switching, and exercised timeout/unavailable UI feedback with injected HTTP failures. The existing live browser review workflow and mixed-page OCR browser regression passed with zero unexpected runtime errors. The checks used disposable SQLite databases and fictional sources. See the [setup and demo](docs/operations/HYBRID_AI.md).
 - The first hosted run stopped at the oversized-reply case. Pytest used the entire 128 KiB fixture as the generated test ID, which also becomes part of the test process environment. Assigned short IDs to the oversized input and response cases and retained their original payloads and assertions.
 
+## PR #4 independent Phase 4A review (20 November 2026)
+
+- Merged the OCR merge commit from main into the existing AI branch, retaining both original AI commits. PR #4 now targets main. The original 22-file AI patch matched the integrated patch, including its exact added and removed lines. OCR code, fixtures and the deterministic pipeline matched main.
+- Local verification on the integrated tree passed with 153 backend tests and one optional ClamAV integration skip. The backend tests exercised default-disabled operation, exact excerpt and scope checks, fictional injected instructions, authorization and CSRF, and provider timeout and concurrency controls. Ruff, the production frontend build, dependency and secret scans, locked installs and the fresh SQLite migration check passed. Chromium passed the full deterministic review workflow, mixed-page OCR and real local Ollama narrative and OCR assistance.
+- With Ollama 0.40.16 and the installed `qwen3.6:35b-a3b-coding-nvfp4` model, the four fictional cases matched 9/9 exact excerpts and 7/9 target behaviors. One of two expected abstentions and zero of one expected cross-source matches met their labels. All advisory classifications in this run were supported under the developer labels. A separate run on the original AI head matched 6/9 target behaviors and had two unsupported classifications, so the integrated result does not establish general accuracy. All four integrated AI requests left exercise detail identical. The Phase 1 rule-only outcomes, source locators and elapsed times matched OCR-only main.
+
 ## Delivery status
 
 - [x] Inspected the empty starter workspace; created `AGENTS.md` and `EXECUTION_PLAN.md`.
