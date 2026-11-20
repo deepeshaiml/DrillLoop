@@ -1,0 +1,541 @@
+{
+  "fictional": true,
+  "method": "The same scripted responses and exact captured OCR model replies were replayed through original PR head 00d680e and the Phase 4B.2 validator. Captured raw replies remain in the mode-700 temporary directory and are not committed.",
+  "cases": [
+    {
+      "case": "partial_negation_relevant_observation",
+      "same_captured_response": true,
+      "original_validator": {
+        "response_validation": "accepted_schema",
+        "citations_attempted": 1,
+        "citations_matched": 1,
+        "rejected_suggestion_count": 0,
+        "kind_assessment": [
+          [
+            "relevant_observation",
+            "advisory"
+          ]
+        ],
+        "returned_citations": [
+          "handoff entry was found in the notebook."
+        ],
+        "unassessed_objective_ids": []
+      },
+      "phase4b2_validator": {
+        "response_validation": "accepted_schema",
+        "citations_attempted": 1,
+        "citations_matched": 1,
+        "rejected_suggestion_count": 0,
+        "kind_assessment": [
+          [
+            "relevant_observation",
+            "advisory"
+          ]
+        ],
+        "returned_citations": [
+          "No matching handoff entry was found in the notebook."
+        ],
+        "unassessed_objective_ids": []
+      },
+      "changed": true
+    },
+    {
+      "case": "partial_negation_corroboration",
+      "same_captured_response": true,
+      "original_validator": {
+        "response_validation": "accepted_schema",
+        "citations_attempted": 2,
+        "citations_matched": 2,
+        "rejected_suggestion_count": 0,
+        "kind_assessment": [
+          [
+            "corroboration",
+            "advisory"
+          ]
+        ],
+        "returned_citations": [
+          "handoff entry was found in the notebook.",
+          "The supervisor acknowledged the handoff."
+        ],
+        "unassessed_objective_ids": []
+      },
+      "phase4b2_validator": {
+        "response_validation": "accepted_schema",
+        "citations_attempted": 2,
+        "citations_matched": 2,
+        "rejected_suggestion_count": 0,
+        "kind_assessment": [
+          [
+            "insufficient_evidence",
+            "abstained"
+          ]
+        ],
+        "returned_citations": [
+          "No matching handoff entry was found in the notebook.",
+          "The supervisor acknowledged the handoff."
+        ],
+        "unassessed_objective_ids": []
+      },
+      "changed": true
+    },
+    {
+      "case": "partial_negation_contradiction",
+      "same_captured_response": true,
+      "original_validator": {
+        "response_validation": "accepted_schema",
+        "citations_attempted": 2,
+        "citations_matched": 2,
+        "rejected_suggestion_count": 0,
+        "kind_assessment": [
+          [
+            "insufficient_evidence",
+            "abstained"
+          ]
+        ],
+        "returned_citations": [
+          "No matching handoff entry was found in the notebook.",
+          "The supervisor acknowledged the handoff."
+        ],
+        "unassessed_objective_ids": []
+      },
+      "phase4b2_validator": {
+        "response_validation": "accepted_schema",
+        "citations_attempted": 2,
+        "citations_matched": 2,
+        "rejected_suggestion_count": 0,
+        "kind_assessment": [
+          [
+            "insufficient_evidence",
+            "abstained"
+          ]
+        ],
+        "returned_citations": [
+          "No matching handoff entry was found in the notebook.",
+          "The supervisor acknowledged the handoff."
+        ],
+        "unassessed_objective_ids": []
+      },
+      "changed": false
+    },
+    {
+      "case": "partial_negation_different_response_phases",
+      "same_captured_response": true,
+      "original_validator": {
+        "response_validation": "accepted_schema",
+        "citations_attempted": 2,
+        "citations_matched": 2,
+        "rejected_suggestion_count": 0,
+        "kind_assessment": [
+          [
+            "insufficient_evidence",
+            "abstained"
+          ]
+        ],
+        "returned_citations": [
+          "No matching handoff entry was found in the notebook.",
+          "The supervisor acknowledged the handoff."
+        ],
+        "unassessed_objective_ids": []
+      },
+      "phase4b2_validator": {
+        "response_validation": "accepted_schema",
+        "citations_attempted": 2,
+        "citations_matched": 2,
+        "rejected_suggestion_count": 0,
+        "kind_assessment": [
+          [
+            "insufficient_evidence",
+            "abstained"
+          ]
+        ],
+        "returned_citations": [
+          "No matching handoff entry was found in the notebook.",
+          "The supervisor acknowledged the handoff."
+        ],
+        "unassessed_objective_ids": []
+      },
+      "changed": false
+    },
+    {
+      "case": "partial_negation_unknown",
+      "same_captured_response": true,
+      "original_validator": {
+        "response_validation": "accepted_schema",
+        "citations_attempted": 1,
+        "citations_matched": 1,
+        "rejected_suggestion_count": 0,
+        "kind_assessment": [
+          [
+            "insufficient_evidence",
+            "abstained"
+          ]
+        ],
+        "returned_citations": [
+          "No matching handoff entry was found in the notebook."
+        ],
+        "unassessed_objective_ids": []
+      },
+      "phase4b2_validator": {
+        "response_validation": "accepted_schema",
+        "citations_attempted": 1,
+        "citations_matched": 1,
+        "rejected_suggestion_count": 0,
+        "kind_assessment": [
+          [
+            "insufficient_evidence",
+            "abstained"
+          ]
+        ],
+        "returned_citations": [
+          "No matching handoff entry was found in the notebook."
+        ],
+        "unassessed_objective_ids": []
+      },
+      "changed": false
+    },
+    {
+      "case": "partial_negation_insufficient_evidence",
+      "same_captured_response": true,
+      "original_validator": {
+        "response_validation": "accepted_schema",
+        "citations_attempted": 1,
+        "citations_matched": 1,
+        "rejected_suggestion_count": 0,
+        "kind_assessment": [
+          [
+            "insufficient_evidence",
+            "abstained"
+          ]
+        ],
+        "returned_citations": [
+          "No matching handoff entry was found in the notebook."
+        ],
+        "unassessed_objective_ids": []
+      },
+      "phase4b2_validator": {
+        "response_validation": "accepted_schema",
+        "citations_attempted": 1,
+        "citations_matched": 1,
+        "rejected_suggestion_count": 0,
+        "kind_assessment": [
+          [
+            "insufficient_evidence",
+            "abstained"
+          ]
+        ],
+        "returned_citations": [
+          "No matching handoff entry was found in the notebook."
+        ],
+        "unassessed_objective_ids": []
+      },
+      "changed": false
+    },
+    {
+      "case": "valid_negative_outcome",
+      "same_captured_response": true,
+      "original_validator": {
+        "response_validation": "accepted_schema",
+        "citations_attempted": 1,
+        "citations_matched": 1,
+        "rejected_suggestion_count": 0,
+        "kind_assessment": [
+          [
+            "relevant_observation",
+            "advisory"
+          ]
+        ],
+        "returned_citations": [
+          "The emergency gate did not open."
+        ],
+        "unassessed_objective_ids": []
+      },
+      "phase4b2_validator": {
+        "response_validation": "accepted_schema",
+        "citations_attempted": 1,
+        "citations_matched": 1,
+        "rejected_suggestion_count": 0,
+        "kind_assessment": [
+          [
+            "relevant_observation",
+            "advisory"
+          ]
+        ],
+        "returned_citations": [
+          "The emergency gate did not open."
+        ],
+        "unassessed_objective_ids": []
+      },
+      "changed": false
+    },
+    {
+      "case": "fabricated_quotation",
+      "same_captured_response": true,
+      "original_validator": {
+        "response_validation": "accepted_schema",
+        "citations_attempted": 1,
+        "citations_matched": 0,
+        "rejected_suggestion_count": 1,
+        "kind_assessment": [],
+        "returned_citations": [],
+        "unassessed_objective_ids": [
+          "OBJECTIVE"
+        ]
+      },
+      "phase4b2_validator": {
+        "response_validation": "accepted_schema",
+        "citations_attempted": 1,
+        "citations_matched": 0,
+        "rejected_suggestion_count": 1,
+        "kind_assessment": [],
+        "returned_citations": [],
+        "unassessed_objective_ids": [
+          "OBJECTIVE"
+        ]
+      },
+      "changed": false
+    },
+    {
+      "case": "long_observation",
+      "same_captured_response": true,
+      "original_validator": {
+        "response_validation": "accepted_schema",
+        "citations_attempted": 1,
+        "citations_matched": 1,
+        "rejected_suggestion_count": 0,
+        "kind_assessment": [
+          [
+            "relevant_observation",
+            "advisory"
+          ]
+        ],
+        "returned_citations": [
+          "The pump was reported operational."
+        ],
+        "unassessed_objective_ids": []
+      },
+      "phase4b2_validator": {
+        "response_validation": "accepted_schema",
+        "citations_attempted": 1,
+        "citations_matched": 0,
+        "rejected_suggestion_count": 1,
+        "kind_assessment": [],
+        "returned_citations": [],
+        "unassessed_objective_ids": [
+          "OBJECTIVE"
+        ]
+      },
+      "changed": true
+    },
+    {
+      "case": "baseline_captured_ocr_reply_1",
+      "same_captured_response": true,
+      "original_validator": {
+        "response_validation": "accepted_schema",
+        "citations_attempted": 2,
+        "citations_matched": 2,
+        "rejected_suggestion_count": 0,
+        "kind_assessment": [
+          [
+            "insufficient_evidence",
+            "abstained"
+          ]
+        ],
+        "returned_citations": [
+          "Trolley M-3 reached marker F in drill TR-9.",
+          "For drill TR-9 the desk recorded Trolley M-3 reaching marker F."
+        ],
+        "unassessed_objective_ids": []
+      },
+      "phase4b2_validator": {
+        "response_validation": "accepted_schema",
+        "citations_attempted": 2,
+        "citations_matched": 2,
+        "rejected_suggestion_count": 0,
+        "kind_assessment": [
+          [
+            "insufficient_evidence",
+            "abstained"
+          ]
+        ],
+        "returned_citations": [
+          "Trolley M-3 reached marker F in drill TR-9.",
+          "For drill TR-9 the desk recorded Trolley M-3 reaching marker F."
+        ],
+        "unassessed_objective_ids": []
+      },
+      "changed": false
+    },
+    {
+      "case": "baseline_captured_ocr_reply_2",
+      "same_captured_response": true,
+      "original_validator": {
+        "response_validation": "accepted_schema",
+        "citations_attempted": 2,
+        "citations_matched": 0,
+        "rejected_suggestion_count": 1,
+        "kind_assessment": [],
+        "returned_citations": [],
+        "unassessed_objective_ids": [
+          "SCAN-TIME"
+        ]
+      },
+      "phase4b2_validator": {
+        "response_validation": "accepted_schema",
+        "citations_attempted": 2,
+        "citations_matched": 0,
+        "rejected_suggestion_count": 1,
+        "kind_assessment": [],
+        "returned_citations": [],
+        "unassessed_objective_ids": [
+          "SCAN-TIME"
+        ]
+      },
+      "changed": false
+    },
+    {
+      "case": "baseline_captured_ocr_reply_3",
+      "same_captured_response": true,
+      "original_validator": {
+        "response_validation": "accepted_schema",
+        "citations_attempted": 2,
+        "citations_matched": 0,
+        "rejected_suggestion_count": 1,
+        "kind_assessment": [],
+        "returned_citations": [],
+        "unassessed_objective_ids": [
+          "SCAN-TIME"
+        ]
+      },
+      "phase4b2_validator": {
+        "response_validation": "accepted_schema",
+        "citations_attempted": 2,
+        "citations_matched": 0,
+        "rejected_suggestion_count": 1,
+        "kind_assessment": [],
+        "returned_citations": [],
+        "unassessed_objective_ids": [
+          "SCAN-TIME"
+        ]
+      },
+      "changed": false
+    },
+    {
+      "case": "candidate_captured_ocr_reply_1",
+      "same_captured_response": true,
+      "original_validator": {
+        "response_validation": "accepted_schema",
+        "citations_attempted": 2,
+        "citations_matched": 2,
+        "rejected_suggestion_count": 0,
+        "kind_assessment": [
+          [
+            "insufficient_evidence",
+            "abstained"
+          ]
+        ],
+        "returned_citations": [
+          "Trolley M-3 reached marker F in drill TR-9.",
+          "For drill TR-9 the desk recorded Trolley M-3 reaching marker F."
+        ],
+        "unassessed_objective_ids": []
+      },
+      "phase4b2_validator": {
+        "response_validation": "accepted_schema",
+        "citations_attempted": 2,
+        "citations_matched": 2,
+        "rejected_suggestion_count": 0,
+        "kind_assessment": [
+          [
+            "insufficient_evidence",
+            "abstained"
+          ]
+        ],
+        "returned_citations": [
+          "Trolley M-3 reached marker F in drill TR-9.",
+          "For drill TR-9 the desk recorded Trolley M-3 reaching marker F."
+        ],
+        "unassessed_objective_ids": []
+      },
+      "changed": false
+    },
+    {
+      "case": "candidate_captured_ocr_reply_2",
+      "same_captured_response": true,
+      "original_validator": {
+        "response_validation": "accepted_schema",
+        "citations_attempted": 2,
+        "citations_matched": 2,
+        "rejected_suggestion_count": 0,
+        "kind_assessment": [
+          [
+            "insufficient_evidence",
+            "abstained"
+          ]
+        ],
+        "returned_citations": [
+          "Trolley M-3 reached marker F in drill TR-9.",
+          "For drill TR-9 the desk recorded Trolley M-3 reaching marker F."
+        ],
+        "unassessed_objective_ids": []
+      },
+      "phase4b2_validator": {
+        "response_validation": "accepted_schema",
+        "citations_attempted": 2,
+        "citations_matched": 2,
+        "rejected_suggestion_count": 0,
+        "kind_assessment": [
+          [
+            "insufficient_evidence",
+            "abstained"
+          ]
+        ],
+        "returned_citations": [
+          "Trolley M-3 reached marker F in drill TR-9.",
+          "For drill TR-9 the desk recorded Trolley M-3 reaching marker F."
+        ],
+        "unassessed_objective_ids": []
+      },
+      "changed": false
+    },
+    {
+      "case": "candidate_captured_ocr_reply_3",
+      "same_captured_response": true,
+      "original_validator": {
+        "response_validation": "accepted_schema",
+        "citations_attempted": 2,
+        "citations_matched": 2,
+        "rejected_suggestion_count": 0,
+        "kind_assessment": [
+          [
+            "insufficient_evidence",
+            "abstained"
+          ]
+        ],
+        "returned_citations": [
+          "Trolley M-3 reached marker F in drill TR-9.",
+          "For drill TR-9 the desk recorded Trolley M-3 reaching marker F."
+        ],
+        "unassessed_objective_ids": []
+      },
+      "phase4b2_validator": {
+        "response_validation": "accepted_schema",
+        "citations_attempted": 2,
+        "citations_matched": 2,
+        "rejected_suggestion_count": 0,
+        "kind_assessment": [
+          [
+            "insufficient_evidence",
+            "abstained"
+          ]
+        ],
+        "returned_citations": [
+          "Trolley M-3 reached marker F in drill TR-9.",
+          "For drill TR-9 the desk recorded Trolley M-3 reaching marker F."
+        ],
+        "unassessed_objective_ids": []
+      },
+      "changed": false
+    }
+  ],
+  "application_state_check": "The pure validator replay has no database handle and cannot mutate exercise state. The AI API regression confirms exercise detail is identical before and after suggestions; human review/action authorization tests pass."
+}

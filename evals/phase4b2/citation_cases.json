@@ -1,0 +1,17 @@
+{
+  "description": "Fictional source quotations and developer-authored expected complete observations; no independent adjudication.",
+  "cases": [
+    {"id": "negation", "source": "No matching handoff entry was found in the notebook.", "excerpt": "handoff entry was found in the notebook.", "expected": "No matching handoff entry was found in the notebook."},
+    {"id": "denial", "source": "The emergency gate did not open.", "excerpt": "emergency gate did not open.", "expected": "The emergency gate did not open."},
+    {"id": "documentation", "source": "The handoff was requested, but no completion record was available.", "excerpt": "The handoff was requested", "expected": "The handoff was requested, but no completion record was available."},
+    {"id": "uncertainty", "source": "The backup pump may have started, but this was not confirmed.", "excerpt": "backup pump may have started", "expected": "The backup pump may have started, but this was not confirmed."},
+    {"id": "attribution", "source": "An observer reported that the gate opened at 09:11; the log recorded 09:04.", "excerpt": "gate opened at 09:11", "expected": "An observer reported that the gate opened at 09:11; the log recorded 09:04."},
+    {"id": "hypothesis", "source": "Investigators suspected sensor failure, but the cause remained unverified.", "excerpt": "sensor failure", "expected": "Investigators suspected sensor failure, but the cause remained unverified."},
+    {"id": "conditional", "source": "If the alarm is acknowledged, dispatch will begin.", "excerpt": "dispatch will begin", "expected": "If the alarm is acknowledged, dispatch will begin."},
+    {"id": "positive", "source": "The backup generator started successfully at 08:05.", "excerpt": "generator started successfully at 08:05", "expected": "The backup generator started successfully at 08:05."},
+    {"id": "unicode", "source": "Witness wrote “valve open”; later she clarified: “not verified”.", "excerpt": "“valve open”; later", "expected": "Witness wrote “valve open”; later she clarified: “not verified”."},
+    {"id": "repeated", "source": "Pump running was requested; pump running was never observed.", "excerpt": "pump running was", "expected": "Pump running was requested; pump running was never observed."},
+    {"id": "cross_sentence", "source": "The pressure recovered. This report was later withdrawn.", "excerpt": "The pressure recovered.", "expected": "The pressure recovered. This report was later withdrawn."},
+    {"id": "ocr_error", "source": "0bserver rep0rted pressure stable; time illegib1e.", "excerpt": "pressure stable", "expected": "0bserver rep0rted pressure stable; time illegib1e."}
+  ]
+}

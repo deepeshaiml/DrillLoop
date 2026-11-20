@@ -23,6 +23,7 @@ from app.models import Exercise, Observation, Source
 
 MAX_RECORDS = 128
 MAX_REPLY_BYTES = 131_072
+MAX_CITATION_CHARS = 360
 _DOCUMENT_NOUN = r"(?:entr(?:y|ies)|records?|appendix|documentation)"
 _DOCUMENTATION_GAP = re.compile(
     rf"\bno\s+(?:[\w-]+\s+){{0,7}}{_DOCUMENT_NOUN}\s+"
@@ -647,14 +648,12 @@ def _explicit_timing_dispute(
                 claims[value] = (clause, reporting_prefix)
     if len(claims) != 2 or control_time not in claims:
         return []
-    alternative, reporting_prefix = next(
-        claim for value, claim in claims.items() if value != control_time
-    )
+    _, reporting_prefix = next(claim for value, claim in claims.items() if value != control_time)
     if reporting_prefix == claims[control_time][1]:
         return []
-    if len(alternative) > 360:
+    if len(report.text) > MAX_CITATION_CHARS:
         return []
-    return [control, report.model_copy(update={"text": alternative})]
+    return [control, report]
 
 
 def _corroborated_start(
@@ -741,6 +740,12 @@ def _documentation_excerpt(text: str, excerpt: str) -> str | None:
 
 
 def _resolve_citations(context: AiContext, references: list[ModelCitation]) -> list[Citation]:
+    """Return complete scoped observations, never a model-selected fragment.
+
+    A sentence or clause splitter cannot reliably detect a qualification in a
+    neighboring sentence, so withhold an observation that exceeds the limit.
+    Exact excerpt validation remains required even though the full text is shown.
+    """
     citations = []
     for ref in references:
         if ref.record > len(context.records):
@@ -750,8 +755,9 @@ def _resolve_citations(context: AiContext, references: list[ModelCitation]) -> l
             ref.excerpt == ref.excerpt.strip()
             and len(ref.excerpt) >= min(12, len(original.text.strip()))
             and ref.excerpt in original.text
+            and len(original.text) <= MAX_CITATION_CHARS
         ):
-            citations.append(original.model_copy(update={"text": ref.excerpt}))
+            citations.append(original)
     return citations
 
 
@@ -769,10 +775,56 @@ def _duplicate_pair(context: AiContext, first: Citation, second: Citation) -> bo
     return same_file_copy or same_wording_and_time
 
 
+def _select_suggestion(candidates: list[Suggestion]) -> Suggestion:
+    """Select after validation; conflicting relationship labels require review."""
+    kinds = {candidate.kind for candidate in candidates}
+    if kinds == {"relevant_observation", "contradiction"}:
+        candidates = [candidate for candidate in candidates if candidate.kind == "contradiction"]
+        kinds = {"contradiction"}
+
+    def key(item: Suggestion) -> tuple:
+        return (
+            tuple(c.observation_id for c in item.evidence),
+            tuple(c.observation_id for c in item.counterevidence),
+            tuple(item.unknowns),
+        )
+
+    if len(kinds) == 1:
+        return min(candidates, key=key)
+
+    # Keep all cited records when possible so that the reviewer can resolve the
+    # competing interpretations. The model may return no more than 12 results.
+    by_observation = {
+        cite.observation_id: cite
+        for candidate in candidates
+        for cite in candidate.evidence + candidate.counterevidence
+    }
+    selected = min(candidates, key=lambda item: (item.kind, key(item)))
+    uncertainty = "Competing interpretations require evaluator review of the original sources."
+    if any(cite.extraction_method == "ocr" for cite in by_observation.values()):
+        uncertainty += " Verify OCR wording and any source times against the original page."
+    if len(by_observation) > 4:
+        uncertainty += " Some cited records are omitted; inspect all original evidence."
+    return selected.model_copy(
+        update={
+            "kind": "unknown",
+            "assessment": "abstained",
+            "evidence": [by_observation[key] for key in sorted(by_observation)[:4]],
+            "counterevidence": [],
+            "interpretation": INTERPRETATIONS["unknown"],
+            "unknowns": sorted(
+                {word for candidate in candidates for word in candidate.unknowns}
+                | {"The model returned competing interpretations; review the original records."}
+            ),
+            "uncertainty": uncertainty,
+        }
+    )
+
+
 def _validate_suggestions(
     context: AiContext, answer: ModelAnswer, reply: ProviderReply, model: str, elapsed_ms: int
 ) -> AiResult:
-    suggestions: dict[str, Suggestion] = {}
+    candidates: dict[str, list[Suggestion]] = {}
     attempted = matched = 0
     comparisons = _completion_comparisons(context)
     for item in answer.suggestions:
@@ -828,16 +880,19 @@ def _validate_suggestions(
                 kind = "insufficient_evidence"
         if kind in {
             "contradiction",
+            "corroboration",
             "different_response_phases",
             "insufficient_evidence",
             "unknown",
         }:
-            for index, (ref, cite) in enumerate(zip(item.citations, related)):
-                gap = _documentation_excerpt(context.records[ref.record - 1].text, cite.text)
-                if gap:
-                    related[index] = cite.model_copy(update={"text": gap})
+            for cite in related:
+                if _DOCUMENTATION_GAP.search(cite.text):
                     kind = "insufficient_evidence"
                     unknowns.add("completion_record")
+        elif kind == "relevant_observation" and any(
+            _DOCUMENTATION_GAP.search(cite.text) for cite in related
+        ):
+            unknowns.add("completion_record")
         if kind in {"unknown", "insufficient_evidence"} and not unknowns:
             continue
         if kind in {"relevant_observation", "corroboration"} and (
@@ -863,11 +918,6 @@ def _validate_suggestions(
             if matched_start:
                 kind = "corroboration"
                 related = matched_start
-        previous = suggestions.get(item.objective_id)
-        if previous is not None and not (
-            previous.kind == "relevant_observation" and kind == "contradiction"
-        ):
-            continue
         evidence, opposing = (
             (related[:1], related[1:]) if kind == "contradiction" else (related, [])
         )
@@ -876,7 +926,7 @@ def _validate_suggestions(
             uncertainty = "Review the cited counterevidence before drawing any conclusion."
         if any(citation.extraction_method == "ocr" for citation in related):
             uncertainty += " Verify OCR wording and any source times against the original page."
-        suggestions[item.objective_id] = Suggestion(
+        candidate = Suggestion(
             evidence=evidence,
             counterevidence=opposing,
             objective_id=item.objective_id,
@@ -887,6 +937,8 @@ def _validate_suggestions(
             uncertainty=uncertainty,
             review_reason="An evaluator must check the original sources and decide how they relate to the objective.",
         )
+        candidates.setdefault(item.objective_id, []).append(candidate)
+    suggestions = {objective: _select_suggestion(items) for objective, items in candidates.items()}
     return AiResult(
         provider="ollama",
         model=model,

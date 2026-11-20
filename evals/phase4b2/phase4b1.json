@@ -1,0 +1,1938 @@
+{
+  "fictional": true,
+  "labeling": {
+    "version": "phase4b1-heldout-v1",
+    "independent_reviewed": false,
+    "method": "Developer-authored from original fictional records before implementation tuning. No independent adjudication."
+  },
+  "real_inference": true,
+  "cases": [
+    {
+      "exercise_id": "PH4B1-FICTIONAL-HATCH",
+      "provider": "ollama",
+      "model": "qwen3.6:35b-a3b-coding-nvfp4",
+      "http_status": 200,
+      "error_code": null,
+      "context_limited": false,
+      "deterministic": {
+        "latency_ms": 4,
+        "finding_codes": [],
+        "matches_phase1_finding_labels": null,
+        "objective_states": {
+          "HATCH-TIME": "needs_review"
+        },
+        "entire_exercise_detail_unchanged_after_ai_request": true
+      },
+      "hybrid": {
+        "latency_ms": 2185,
+        "input_tokens": 796,
+        "output_tokens": 160,
+        "citations_attempted": 2,
+        "citations_matched": 2,
+        "rejected_suggestion_count": 0,
+        "unassessed_objective_ids": []
+      },
+      "developer_label_comparison": [
+        {
+          "objective_id": "HATCH-TIME",
+          "challenge": "attributed_timing_disagreement",
+          "kind": "contradiction",
+          "target_met": true,
+          "expected_abstention": false,
+          "abstained": false,
+          "cross_source_target": false,
+          "expected_conflict": true,
+          "ocr_expected": false,
+          "ocr_preserved": true,
+          "classified_conflict": true,
+          "unsupported_claim": false,
+          "advisory_returned": true,
+          "citation_examples": [
+            {
+              "observation_id": "4339ecce-bbd7-4d6d-85c6-1b2c24f17608",
+              "source_id": "cbc57dfe-6f59-4681-ba6b-6a2430263660",
+              "source_filename": "fictional_hatch_control.csv",
+              "source_locator": "row 2 \u00b7 HX-8",
+              "text": "Hatch K finished closing in cycle HX-8.",
+              "extraction_method": "parser",
+              "time_confidence": "medium",
+              "event_time_raw": "14:16"
+            },
+            {
+              "observation_id": "71ac601a-2453-4d37-b398-86ff8b9d722a",
+              "source_id": "cd0a20e2-6e95-4ce6-badf-f54aa81f6f62",
+              "source_filename": "fictional_hatch_witness.txt",
+              "source_locator": "line 1",
+              "text": "For HX-8 I saw Hatch K finish closing at 14:23. The desk later reported 14:16 for the same closure.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            }
+          ],
+          "unknowns": [
+            "Confirmation of which event the wording refers to."
+          ]
+        }
+      ]
+    },
+    {
+      "exercise_id": "PH4B1-FICTIONAL-RADIO",
+      "provider": "ollama",
+      "model": "qwen3.6:35b-a3b-coding-nvfp4",
+      "http_status": 200,
+      "error_code": null,
+      "context_limited": false,
+      "deterministic": {
+        "latency_ms": 3,
+        "finding_codes": [],
+        "matches_phase1_finding_labels": null,
+        "objective_states": {
+          "RADIO-TIME": "needs_review"
+        },
+        "entire_exercise_detail_unchanged_after_ai_request": true
+      },
+      "hybrid": {
+        "latency_ms": 2132,
+        "input_tokens": 793,
+        "output_tokens": 156,
+        "citations_attempted": 2,
+        "citations_matched": 2,
+        "rejected_suggestion_count": 0,
+        "unassessed_objective_ids": []
+      },
+      "developer_label_comparison": [
+        {
+          "objective_id": "RADIO-TIME",
+          "challenge": "compatible_paraphrased_accounts",
+          "kind": "corroboration",
+          "target_met": true,
+          "expected_abstention": false,
+          "abstained": false,
+          "cross_source_target": true,
+          "expected_conflict": false,
+          "ocr_expected": false,
+          "ocr_preserved": true,
+          "classified_conflict": false,
+          "unsupported_claim": false,
+          "advisory_returned": true,
+          "citation_examples": [
+            {
+              "observation_id": "3295e8e9-e5e4-4c32-bd73-3efb69c09ec8",
+              "source_id": "b4158507-8058-47d0-bc4d-c579866544e2",
+              "source_filename": "fictional_radio_ledger.txt",
+              "source_locator": "line 1",
+              "text": "During run RC-9 the communications desk enabled repeater 4.",
+              "extraction_method": "parser",
+              "time_confidence": "medium",
+              "event_time_raw": "07:31"
+            },
+            {
+              "observation_id": "7008888c-4a46-4ab6-bdd4-c3b0f08b1964",
+              "source_id": "fd159e2a-20ce-404a-86b7-e2dbf56e7a39",
+              "source_filename": "fictional_radio_observer.txt",
+              "source_locator": "line 1",
+              "text": "In exercise run RC-9 I watched the operator bring repeater 4 online at 07:31.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            }
+          ],
+          "unknowns": [
+            "Confirmation of which event the wording refers to."
+          ]
+        }
+      ]
+    },
+    {
+      "exercise_id": "PH4B1-FICTIONAL-COOLING",
+      "provider": "ollama",
+      "model": "qwen3.6:35b-a3b-coding-nvfp4",
+      "http_status": 200,
+      "error_code": null,
+      "context_limited": false,
+      "deterministic": {
+        "latency_ms": 3,
+        "finding_codes": [],
+        "matches_phase1_finding_labels": null,
+        "objective_states": {
+          "COOLING-STAGES": "needs_review"
+        },
+        "entire_exercise_detail_unchanged_after_ai_request": true
+      },
+      "hybrid": {
+        "latency_ms": 1200,
+        "input_tokens": 781,
+        "output_tokens": 80,
+        "citations_attempted": 2,
+        "citations_matched": 2,
+        "rejected_suggestion_count": 0,
+        "unassessed_objective_ids": []
+      },
+      "developer_label_comparison": [
+        {
+          "objective_id": "COOLING-STAGES",
+          "challenge": "different_phases",
+          "kind": "different_response_phases",
+          "target_met": true,
+          "expected_abstention": true,
+          "abstained": true,
+          "cross_source_target": false,
+          "expected_conflict": false,
+          "ocr_expected": false,
+          "ocr_preserved": true,
+          "classified_conflict": false,
+          "unsupported_claim": false,
+          "advisory_returned": true,
+          "citation_examples": [
+            {
+              "observation_id": "7bcebdd3-2cea-4b80-993c-cd80df411cce",
+              "source_id": "5b76021a-e4ea-4c68-80fc-37c4e812ecc8",
+              "source_filename": "fictional_cooling_control.txt",
+              "source_locator": "line 1",
+              "text": "In session CP-8 maintenance stopped coolant flow to inspect the loop.",
+              "extraction_method": "parser",
+              "time_confidence": "medium",
+              "event_time_raw": "15:10"
+            },
+            {
+              "observation_id": "a0544337-9d1c-49be-b71a-301a5f2567b2",
+              "source_id": "be80fabd-f183-4e77-a5c9-439573e5fe7e",
+              "source_filename": "fictional_cooling_observer.txt",
+              "source_locator": "line 1",
+              "text": "In session CP-8 maintenance restored coolant flow after replacing the filter.",
+              "extraction_method": "parser",
+              "time_confidence": "medium",
+              "event_time_raw": "15:25"
+            }
+          ],
+          "unknowns": []
+        }
+      ]
+    },
+    {
+      "exercise_id": "PH4B1-FICTIONAL-FORM",
+      "provider": "ollama",
+      "model": "qwen3.6:35b-a3b-coding-nvfp4",
+      "http_status": 200,
+      "error_code": null,
+      "context_limited": false,
+      "deterministic": {
+        "latency_ms": 3,
+        "finding_codes": [],
+        "matches_phase1_finding_labels": null,
+        "objective_states": {
+          "FORM-ACK": "needs_review"
+        },
+        "entire_exercise_detail_unchanged_after_ai_request": true
+      },
+      "hybrid": {
+        "latency_ms": 1966,
+        "input_tokens": 787,
+        "output_tokens": 140,
+        "citations_attempted": 2,
+        "citations_matched": 2,
+        "rejected_suggestion_count": 0,
+        "unassessed_objective_ids": []
+      },
+      "developer_label_comparison": [
+        {
+          "objective_id": "FORM-ACK",
+          "challenge": "missing_acknowledgement",
+          "kind": "insufficient_evidence",
+          "target_met": true,
+          "expected_abstention": true,
+          "abstained": true,
+          "cross_source_target": false,
+          "expected_conflict": false,
+          "ocr_expected": false,
+          "ocr_preserved": true,
+          "classified_conflict": false,
+          "unsupported_claim": false,
+          "advisory_returned": false,
+          "citation_examples": [
+            {
+              "observation_id": "3d86967e-dc2d-495b-8d03-1cc75990e6cc",
+              "source_id": "93f1357d-318c-4d81-95b0-9bf3a4830794",
+              "source_filename": "fictional_receipt_control.txt",
+              "source_locator": "line 1",
+              "text": "For dispatch U-14, the scene lead asked Logistics to acknowledge receipt of the staging plan.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            },
+            {
+              "observation_id": "31e6f9ca-984f-41ae-bd37-dea4e0d8569a",
+              "source_id": "f8f1f291-b6b5-4728-8ab7-4af6955a91d2",
+              "source_filename": "fictional_receipt_review.txt",
+              "source_locator": "line 1",
+              "text": "The exercise file for U-14 contains no acknowledgement entry for the staging plan.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            }
+          ],
+          "unknowns": [
+            "A reliable record of when the event occurred.",
+            "A record that confirms the expected outcome occurred."
+          ]
+        }
+      ]
+    },
+    {
+      "exercise_id": "PH4B1-FICTIONAL-DENIAL",
+      "provider": "ollama",
+      "model": "qwen3.6:35b-a3b-coding-nvfp4",
+      "http_status": 200,
+      "error_code": null,
+      "context_limited": false,
+      "deterministic": {
+        "latency_ms": 3,
+        "finding_codes": [],
+        "matches_phase1_finding_labels": null,
+        "objective_states": {
+          "DENIAL-ACK": "needs_review"
+        },
+        "entire_exercise_detail_unchanged_after_ai_request": true
+      },
+      "hybrid": {
+        "latency_ms": 1891,
+        "input_tokens": 790,
+        "output_tokens": 133,
+        "citations_attempted": 2,
+        "citations_matched": 2,
+        "rejected_suggestion_count": 0,
+        "unassessed_objective_ids": []
+      },
+      "developer_label_comparison": [
+        {
+          "objective_id": "DENIAL-ACK",
+          "challenge": "explicit_denial",
+          "kind": "contradiction",
+          "target_met": true,
+          "expected_abstention": false,
+          "abstained": false,
+          "cross_source_target": false,
+          "expected_conflict": true,
+          "ocr_expected": false,
+          "ocr_preserved": true,
+          "classified_conflict": true,
+          "unsupported_claim": false,
+          "advisory_returned": true,
+          "citation_examples": [
+            {
+              "observation_id": "e1c0fd74-c8ed-4736-993a-1cdceb0eb768",
+              "source_id": "280e37b7-957b-482e-b4b9-969465fda89e",
+              "source_filename": "fictional_receipt_affirmation.txt",
+              "source_locator": "line 1",
+              "text": "For bulletin H-6, the field desk reported that Transport acknowledged the bulletin over radio.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            },
+            {
+              "observation_id": "af31aeea-aa7c-4ee3-a003-0a3a3a783d9f",
+              "source_id": "4c0ebe83-86e8-494c-993c-6b84c7228b9f",
+              "source_filename": "fictional_receipt_denial.txt",
+              "source_locator": "line 1",
+              "text": "I was the Transport lead for H-6. We never acknowledged that bulletin over radio.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            }
+          ],
+          "unknowns": [
+            "Confirmation of which event the wording refers to."
+          ]
+        }
+      ]
+    },
+    {
+      "exercise_id": "PH4B1-FICTIONAL-ROOM",
+      "provider": "ollama",
+      "model": "qwen3.6:35b-a3b-coding-nvfp4",
+      "http_status": 200,
+      "error_code": null,
+      "context_limited": false,
+      "deterministic": {
+        "latency_ms": 3,
+        "finding_codes": [],
+        "matches_phase1_finding_labels": null,
+        "objective_states": {
+          "ROOM-ID": "needs_review"
+        },
+        "entire_exercise_detail_unchanged_after_ai_request": true
+      },
+      "hybrid": {
+        "latency_ms": 1196,
+        "input_tokens": 865,
+        "output_tokens": 76,
+        "citations_attempted": 2,
+        "citations_matched": 2,
+        "rejected_suggestion_count": 0,
+        "unassessed_objective_ids": []
+      },
+      "developer_label_comparison": [
+        {
+          "objective_id": "ROOM-ID",
+          "challenge": "same_location_multiple_incidents",
+          "kind": "relevant_observation",
+          "target_met": false,
+          "expected_abstention": true,
+          "abstained": false,
+          "cross_source_target": false,
+          "expected_conflict": false,
+          "ocr_expected": false,
+          "ocr_preserved": true,
+          "classified_conflict": false,
+          "unsupported_claim": true,
+          "advisory_returned": true,
+          "citation_examples": [
+            {
+              "observation_id": "c2ad478e-e473-4c9b-9ecc-f6ccddf2ecd2",
+              "source_id": "bc09cc57-fe6f-4e0b-b908-7804e5b11e7e",
+              "source_filename": "fictional_room_ledger.txt",
+              "source_locator": "line 1",
+              "text": "Event L-21: Studio C was released to Logistics after the first check.",
+              "extraction_method": "parser",
+              "time_confidence": "medium",
+              "event_time_raw": "16:02"
+            },
+            {
+              "observation_id": "757119a2-2523-4f2b-86cb-14401ae3cb71",
+              "source_id": "bc09cc57-fe6f-4e0b-b908-7804e5b11e7e",
+              "source_filename": "fictional_room_ledger.txt",
+              "source_locator": "line 2",
+              "text": "Event L-22: Studio C was released to Facilities after the second check.",
+              "extraction_method": "parser",
+              "time_confidence": "medium",
+              "event_time_raw": "16:09"
+            }
+          ],
+          "unknowns": [
+            "Independent confirmation of the reported observation."
+          ]
+        }
+      ]
+    },
+    {
+      "exercise_id": "PH4B1-FICTIONAL-SCAN",
+      "provider": "ollama",
+      "model": "qwen3.6:35b-a3b-coding-nvfp4",
+      "http_status": 200,
+      "error_code": null,
+      "context_limited": false,
+      "deterministic": {
+        "latency_ms": 3,
+        "finding_codes": [],
+        "matches_phase1_finding_labels": null,
+        "objective_states": {
+          "SCAN-TIME": "needs_review"
+        },
+        "entire_exercise_detail_unchanged_after_ai_request": true
+      },
+      "hybrid": {
+        "latency_ms": 1948,
+        "input_tokens": 868,
+        "output_tokens": 137,
+        "citations_attempted": 2,
+        "citations_matched": 0,
+        "rejected_suggestion_count": 1,
+        "unassessed_objective_ids": [
+          "SCAN-TIME"
+        ]
+      },
+      "developer_label_comparison": [
+        {
+          "objective_id": "SCAN-TIME",
+          "challenge": "uncertain_ocr_timestamp",
+          "kind": null,
+          "target_met": false,
+          "expected_abstention": true,
+          "abstained": false,
+          "cross_source_target": false,
+          "expected_conflict": false,
+          "ocr_expected": true,
+          "ocr_preserved": false,
+          "classified_conflict": false,
+          "unsupported_claim": false,
+          "advisory_returned": false,
+          "citation_examples": [],
+          "unknowns": []
+        }
+      ]
+    },
+    {
+      "exercise_id": "PH4B1-FICTIONAL-LIFT",
+      "provider": "ollama",
+      "model": "qwen3.6:35b-a3b-coding-nvfp4",
+      "http_status": 200,
+      "error_code": null,
+      "context_limited": false,
+      "deterministic": {
+        "latency_ms": 3,
+        "finding_codes": [],
+        "matches_phase1_finding_labels": null,
+        "objective_states": {
+          "LIFT-CAUSE": "needs_review",
+          "LIFT-RESULT": "needs_review"
+        },
+        "entire_exercise_detail_unchanged_after_ai_request": true
+      },
+      "hybrid": {
+        "latency_ms": 2871,
+        "input_tokens": 959,
+        "output_tokens": 207,
+        "citations_attempted": 2,
+        "citations_matched": 2,
+        "rejected_suggestion_count": 0,
+        "unassessed_objective_ids": []
+      },
+      "developer_label_comparison": [
+        {
+          "objective_id": "LIFT-CAUSE",
+          "challenge": "unsupported_causal_hypothesis",
+          "kind": "insufficient_evidence",
+          "target_met": true,
+          "expected_abstention": true,
+          "abstained": true,
+          "cross_source_target": false,
+          "expected_conflict": false,
+          "ocr_expected": false,
+          "ocr_preserved": true,
+          "classified_conflict": false,
+          "unsupported_claim": false,
+          "advisory_returned": false,
+          "citation_examples": [
+            {
+              "observation_id": "2237bbea-e813-40d3-babe-947d5f9e8963",
+              "source_id": "a447cbbd-f9c6-481c-a041-a531b68bfdb7",
+              "source_filename": "fictional_lift_notes.txt",
+              "source_locator": "line 1",
+              "text": "For AP-17 the floor lead suspected the handheld battery caused the stalled queue but did not test that explanation.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            }
+          ],
+          "unknowns": [
+            "Evidence that establishes what caused the reported outcome."
+          ]
+        },
+        {
+          "objective_id": "LIFT-RESULT",
+          "challenge": "incomplete_outcome",
+          "kind": "insufficient_evidence",
+          "target_met": true,
+          "expected_abstention": true,
+          "abstained": true,
+          "cross_source_target": false,
+          "expected_conflict": false,
+          "ocr_expected": false,
+          "ocr_preserved": true,
+          "classified_conflict": false,
+          "unsupported_claim": false,
+          "advisory_returned": false,
+          "citation_examples": [
+            {
+              "observation_id": "2f5fa22c-ee0b-41fc-8e07-eedb01025fb4",
+              "source_id": "a447cbbd-f9c6-481c-a041-a531b68bfdb7",
+              "source_filename": "fictional_lift_notes.txt",
+              "source_locator": "line 2",
+              "text": "For AP-18 the final door sensor result was never entered on the form.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            }
+          ],
+          "unknowns": [
+            "A record that confirms the expected outcome occurred."
+          ]
+        }
+      ]
+    },
+    {
+      "exercise_id": "PH4B1-FICTIONAL-HATCH",
+      "provider": "ollama",
+      "model": "qwen3.6:35b-a3b-coding-nvfp4",
+      "http_status": 200,
+      "error_code": null,
+      "context_limited": false,
+      "deterministic": {
+        "latency_ms": 4,
+        "finding_codes": [],
+        "matches_phase1_finding_labels": null,
+        "objective_states": {
+          "HATCH-TIME": "needs_review"
+        },
+        "entire_exercise_detail_unchanged_after_ai_request": true
+      },
+      "hybrid": {
+        "latency_ms": 1918,
+        "input_tokens": 796,
+        "output_tokens": 148,
+        "citations_attempted": 2,
+        "citations_matched": 2,
+        "rejected_suggestion_count": 0,
+        "unassessed_objective_ids": []
+      },
+      "developer_label_comparison": [
+        {
+          "objective_id": "HATCH-TIME",
+          "challenge": "attributed_timing_disagreement",
+          "kind": "contradiction",
+          "target_met": true,
+          "expected_abstention": false,
+          "abstained": false,
+          "cross_source_target": false,
+          "expected_conflict": true,
+          "ocr_expected": false,
+          "ocr_preserved": true,
+          "classified_conflict": true,
+          "unsupported_claim": false,
+          "advisory_returned": true,
+          "citation_examples": [
+            {
+              "observation_id": "4339ecce-bbd7-4d6d-85c6-1b2c24f17608",
+              "source_id": "cbc57dfe-6f59-4681-ba6b-6a2430263660",
+              "source_filename": "fictional_hatch_control.csv",
+              "source_locator": "row 2 \u00b7 HX-8",
+              "text": "Hatch K finished closing in cycle HX-8.",
+              "extraction_method": "parser",
+              "time_confidence": "medium",
+              "event_time_raw": "14:16"
+            },
+            {
+              "observation_id": "71ac601a-2453-4d37-b398-86ff8b9d722a",
+              "source_id": "cd0a20e2-6e95-4ce6-badf-f54aa81f6f62",
+              "source_filename": "fictional_hatch_witness.txt",
+              "source_locator": "line 1",
+              "text": "For HX-8 I saw Hatch K finish closing at 14:23. The desk later reported 14:16 for the same closure.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            }
+          ],
+          "unknowns": []
+        }
+      ]
+    },
+    {
+      "exercise_id": "PH4B1-FICTIONAL-RADIO",
+      "provider": "ollama",
+      "model": "qwen3.6:35b-a3b-coding-nvfp4",
+      "http_status": 200,
+      "error_code": null,
+      "context_limited": false,
+      "deterministic": {
+        "latency_ms": 3,
+        "finding_codes": [],
+        "matches_phase1_finding_labels": null,
+        "objective_states": {
+          "RADIO-TIME": "needs_review"
+        },
+        "entire_exercise_detail_unchanged_after_ai_request": true
+      },
+      "hybrid": {
+        "latency_ms": 1905,
+        "input_tokens": 793,
+        "output_tokens": 148,
+        "citations_attempted": 2,
+        "citations_matched": 2,
+        "rejected_suggestion_count": 0,
+        "unassessed_objective_ids": []
+      },
+      "developer_label_comparison": [
+        {
+          "objective_id": "RADIO-TIME",
+          "challenge": "compatible_paraphrased_accounts",
+          "kind": "corroboration",
+          "target_met": true,
+          "expected_abstention": false,
+          "abstained": false,
+          "cross_source_target": true,
+          "expected_conflict": false,
+          "ocr_expected": false,
+          "ocr_preserved": true,
+          "classified_conflict": false,
+          "unsupported_claim": false,
+          "advisory_returned": true,
+          "citation_examples": [
+            {
+              "observation_id": "3295e8e9-e5e4-4c32-bd73-3efb69c09ec8",
+              "source_id": "b4158507-8058-47d0-bc4d-c579866544e2",
+              "source_filename": "fictional_radio_ledger.txt",
+              "source_locator": "line 1",
+              "text": "During run RC-9 the communications desk enabled repeater 4.",
+              "extraction_method": "parser",
+              "time_confidence": "medium",
+              "event_time_raw": "07:31"
+            },
+            {
+              "observation_id": "7008888c-4a46-4ab6-bdd4-c3b0f08b1964",
+              "source_id": "fd159e2a-20ce-404a-86b7-e2dbf56e7a39",
+              "source_filename": "fictional_radio_observer.txt",
+              "source_locator": "line 1",
+              "text": "In exercise run RC-9 I watched the operator bring repeater 4 online at 07:31.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            }
+          ],
+          "unknowns": []
+        }
+      ]
+    },
+    {
+      "exercise_id": "PH4B1-FICTIONAL-COOLING",
+      "provider": "ollama",
+      "model": "qwen3.6:35b-a3b-coding-nvfp4",
+      "http_status": 200,
+      "error_code": null,
+      "context_limited": false,
+      "deterministic": {
+        "latency_ms": 3,
+        "finding_codes": [],
+        "matches_phase1_finding_labels": null,
+        "objective_states": {
+          "COOLING-STAGES": "needs_review"
+        },
+        "entire_exercise_detail_unchanged_after_ai_request": true
+      },
+      "hybrid": {
+        "latency_ms": 1905,
+        "input_tokens": 781,
+        "output_tokens": 147,
+        "citations_attempted": 2,
+        "citations_matched": 2,
+        "rejected_suggestion_count": 0,
+        "unassessed_objective_ids": []
+      },
+      "developer_label_comparison": [
+        {
+          "objective_id": "COOLING-STAGES",
+          "challenge": "different_phases",
+          "kind": "different_response_phases",
+          "target_met": true,
+          "expected_abstention": true,
+          "abstained": true,
+          "cross_source_target": false,
+          "expected_conflict": false,
+          "ocr_expected": false,
+          "ocr_preserved": true,
+          "classified_conflict": false,
+          "unsupported_claim": false,
+          "advisory_returned": true,
+          "citation_examples": [
+            {
+              "observation_id": "7bcebdd3-2cea-4b80-993c-cd80df411cce",
+              "source_id": "5b76021a-e4ea-4c68-80fc-37c4e812ecc8",
+              "source_filename": "fictional_cooling_control.txt",
+              "source_locator": "line 1",
+              "text": "In session CP-8 maintenance stopped coolant flow to inspect the loop.",
+              "extraction_method": "parser",
+              "time_confidence": "medium",
+              "event_time_raw": "15:10"
+            },
+            {
+              "observation_id": "a0544337-9d1c-49be-b71a-301a5f2567b2",
+              "source_id": "be80fabd-f183-4e77-a5c9-439573e5fe7e",
+              "source_filename": "fictional_cooling_observer.txt",
+              "source_locator": "line 1",
+              "text": "In session CP-8 maintenance restored coolant flow after replacing the filter.",
+              "extraction_method": "parser",
+              "time_confidence": "medium",
+              "event_time_raw": "15:25"
+            }
+          ],
+          "unknowns": [
+            "Confirmation of which event the wording refers to."
+          ]
+        }
+      ]
+    },
+    {
+      "exercise_id": "PH4B1-FICTIONAL-FORM",
+      "provider": "ollama",
+      "model": "qwen3.6:35b-a3b-coding-nvfp4",
+      "http_status": 200,
+      "error_code": null,
+      "context_limited": false,
+      "deterministic": {
+        "latency_ms": 3,
+        "finding_codes": [],
+        "matches_phase1_finding_labels": null,
+        "objective_states": {
+          "FORM-ACK": "needs_review"
+        },
+        "entire_exercise_detail_unchanged_after_ai_request": true
+      },
+      "hybrid": {
+        "latency_ms": 1821,
+        "input_tokens": 787,
+        "output_tokens": 141,
+        "citations_attempted": 2,
+        "citations_matched": 2,
+        "rejected_suggestion_count": 0,
+        "unassessed_objective_ids": []
+      },
+      "developer_label_comparison": [
+        {
+          "objective_id": "FORM-ACK",
+          "challenge": "missing_acknowledgement",
+          "kind": "insufficient_evidence",
+          "target_met": true,
+          "expected_abstention": true,
+          "abstained": true,
+          "cross_source_target": false,
+          "expected_conflict": false,
+          "ocr_expected": false,
+          "ocr_preserved": true,
+          "classified_conflict": false,
+          "unsupported_claim": false,
+          "advisory_returned": false,
+          "citation_examples": [
+            {
+              "observation_id": "3d86967e-dc2d-495b-8d03-1cc75990e6cc",
+              "source_id": "93f1357d-318c-4d81-95b0-9bf3a4830794",
+              "source_filename": "fictional_receipt_control.txt",
+              "source_locator": "line 1",
+              "text": "For dispatch U-14, the scene lead asked Logistics to acknowledge receipt of the staging plan.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            },
+            {
+              "observation_id": "31e6f9ca-984f-41ae-bd37-dea4e0d8569a",
+              "source_id": "f8f1f291-b6b5-4728-8ab7-4af6955a91d2",
+              "source_filename": "fictional_receipt_review.txt",
+              "source_locator": "line 1",
+              "text": "The exercise file for U-14 contains no acknowledgement entry for the staging plan.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            }
+          ],
+          "unknowns": [
+            "Confirmation of which event the wording refers to.",
+            "A record that confirms the expected outcome occurred."
+          ]
+        }
+      ]
+    },
+    {
+      "exercise_id": "PH4B1-FICTIONAL-DENIAL",
+      "provider": "ollama",
+      "model": "qwen3.6:35b-a3b-coding-nvfp4",
+      "http_status": 200,
+      "error_code": null,
+      "context_limited": false,
+      "deterministic": {
+        "latency_ms": 3,
+        "finding_codes": [],
+        "matches_phase1_finding_labels": null,
+        "objective_states": {
+          "DENIAL-ACK": "needs_review"
+        },
+        "entire_exercise_detail_unchanged_after_ai_request": true
+      },
+      "hybrid": {
+        "latency_ms": 1700,
+        "input_tokens": 790,
+        "output_tokens": 133,
+        "citations_attempted": 2,
+        "citations_matched": 2,
+        "rejected_suggestion_count": 0,
+        "unassessed_objective_ids": []
+      },
+      "developer_label_comparison": [
+        {
+          "objective_id": "DENIAL-ACK",
+          "challenge": "explicit_denial",
+          "kind": "contradiction",
+          "target_met": true,
+          "expected_abstention": false,
+          "abstained": false,
+          "cross_source_target": false,
+          "expected_conflict": true,
+          "ocr_expected": false,
+          "ocr_preserved": true,
+          "classified_conflict": true,
+          "unsupported_claim": false,
+          "advisory_returned": true,
+          "citation_examples": [
+            {
+              "observation_id": "e1c0fd74-c8ed-4736-993a-1cdceb0eb768",
+              "source_id": "280e37b7-957b-482e-b4b9-969465fda89e",
+              "source_filename": "fictional_receipt_affirmation.txt",
+              "source_locator": "line 1",
+              "text": "For bulletin H-6, the field desk reported that Transport acknowledged the bulletin over radio.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            },
+            {
+              "observation_id": "af31aeea-aa7c-4ee3-a003-0a3a3a783d9f",
+              "source_id": "4c0ebe83-86e8-494c-993c-6b84c7228b9f",
+              "source_filename": "fictional_receipt_denial.txt",
+              "source_locator": "line 1",
+              "text": "I was the Transport lead for H-6. We never acknowledged that bulletin over radio.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            }
+          ],
+          "unknowns": [
+            "Confirmation of which event the wording refers to."
+          ]
+        }
+      ]
+    },
+    {
+      "exercise_id": "PH4B1-FICTIONAL-ROOM",
+      "provider": "ollama",
+      "model": "qwen3.6:35b-a3b-coding-nvfp4",
+      "http_status": 200,
+      "error_code": null,
+      "context_limited": false,
+      "deterministic": {
+        "latency_ms": 3,
+        "finding_codes": [],
+        "matches_phase1_finding_labels": null,
+        "objective_states": {
+          "ROOM-ID": "needs_review"
+        },
+        "entire_exercise_detail_unchanged_after_ai_request": true
+      },
+      "hybrid": {
+        "latency_ms": 982,
+        "input_tokens": 865,
+        "output_tokens": 75,
+        "citations_attempted": 2,
+        "citations_matched": 2,
+        "rejected_suggestion_count": 0,
+        "unassessed_objective_ids": []
+      },
+      "developer_label_comparison": [
+        {
+          "objective_id": "ROOM-ID",
+          "challenge": "same_location_multiple_incidents",
+          "kind": "relevant_observation",
+          "target_met": false,
+          "expected_abstention": true,
+          "abstained": false,
+          "cross_source_target": false,
+          "expected_conflict": false,
+          "ocr_expected": false,
+          "ocr_preserved": true,
+          "classified_conflict": false,
+          "unsupported_claim": true,
+          "advisory_returned": true,
+          "citation_examples": [
+            {
+              "observation_id": "c2ad478e-e473-4c9b-9ecc-f6ccddf2ecd2",
+              "source_id": "bc09cc57-fe6f-4e0b-b908-7804e5b11e7e",
+              "source_filename": "fictional_room_ledger.txt",
+              "source_locator": "line 1",
+              "text": "Event L-21: Studio C was released to Logistics after the first check.",
+              "extraction_method": "parser",
+              "time_confidence": "medium",
+              "event_time_raw": "16:02"
+            },
+            {
+              "observation_id": "757119a2-2523-4f2b-86cb-14401ae3cb71",
+              "source_id": "bc09cc57-fe6f-4e0b-b908-7804e5b11e7e",
+              "source_filename": "fictional_room_ledger.txt",
+              "source_locator": "line 2",
+              "text": "Event L-22: Studio C was released to Facilities after the second check.",
+              "extraction_method": "parser",
+              "time_confidence": "medium",
+              "event_time_raw": "16:09"
+            }
+          ],
+          "unknowns": [
+            "Independent confirmation of the reported observation."
+          ]
+        }
+      ]
+    },
+    {
+      "exercise_id": "PH4B1-FICTIONAL-SCAN",
+      "provider": "ollama",
+      "model": "qwen3.6:35b-a3b-coding-nvfp4",
+      "http_status": 200,
+      "error_code": null,
+      "context_limited": false,
+      "deterministic": {
+        "latency_ms": 3,
+        "finding_codes": [],
+        "matches_phase1_finding_labels": null,
+        "objective_states": {
+          "SCAN-TIME": "needs_review"
+        },
+        "entire_exercise_detail_unchanged_after_ai_request": true
+      },
+      "hybrid": {
+        "latency_ms": 1637,
+        "input_tokens": 868,
+        "output_tokens": 128,
+        "citations_attempted": 2,
+        "citations_matched": 0,
+        "rejected_suggestion_count": 1,
+        "unassessed_objective_ids": [
+          "SCAN-TIME"
+        ]
+      },
+      "developer_label_comparison": [
+        {
+          "objective_id": "SCAN-TIME",
+          "challenge": "uncertain_ocr_timestamp",
+          "kind": null,
+          "target_met": false,
+          "expected_abstention": true,
+          "abstained": false,
+          "cross_source_target": false,
+          "expected_conflict": false,
+          "ocr_expected": true,
+          "ocr_preserved": false,
+          "classified_conflict": false,
+          "unsupported_claim": false,
+          "advisory_returned": false,
+          "citation_examples": [],
+          "unknowns": []
+        }
+      ]
+    },
+    {
+      "exercise_id": "PH4B1-FICTIONAL-LIFT",
+      "provider": "ollama",
+      "model": "qwen3.6:35b-a3b-coding-nvfp4",
+      "http_status": 200,
+      "error_code": null,
+      "context_limited": false,
+      "deterministic": {
+        "latency_ms": 3,
+        "finding_codes": [],
+        "matches_phase1_finding_labels": null,
+        "objective_states": {
+          "LIFT-CAUSE": "needs_review",
+          "LIFT-RESULT": "needs_review"
+        },
+        "entire_exercise_detail_unchanged_after_ai_request": true
+      },
+      "hybrid": {
+        "latency_ms": 2605,
+        "input_tokens": 959,
+        "output_tokens": 207,
+        "citations_attempted": 2,
+        "citations_matched": 2,
+        "rejected_suggestion_count": 0,
+        "unassessed_objective_ids": []
+      },
+      "developer_label_comparison": [
+        {
+          "objective_id": "LIFT-CAUSE",
+          "challenge": "unsupported_causal_hypothesis",
+          "kind": "insufficient_evidence",
+          "target_met": true,
+          "expected_abstention": true,
+          "abstained": true,
+          "cross_source_target": false,
+          "expected_conflict": false,
+          "ocr_expected": false,
+          "ocr_preserved": true,
+          "classified_conflict": false,
+          "unsupported_claim": false,
+          "advisory_returned": false,
+          "citation_examples": [
+            {
+              "observation_id": "2237bbea-e813-40d3-babe-947d5f9e8963",
+              "source_id": "a447cbbd-f9c6-481c-a041-a531b68bfdb7",
+              "source_filename": "fictional_lift_notes.txt",
+              "source_locator": "line 1",
+              "text": "For AP-17 the floor lead suspected the handheld battery caused the stalled queue but did not test that explanation.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            }
+          ],
+          "unknowns": [
+            "Evidence that establishes what caused the reported outcome."
+          ]
+        },
+        {
+          "objective_id": "LIFT-RESULT",
+          "challenge": "incomplete_outcome",
+          "kind": "insufficient_evidence",
+          "target_met": true,
+          "expected_abstention": true,
+          "abstained": true,
+          "cross_source_target": false,
+          "expected_conflict": false,
+          "ocr_expected": false,
+          "ocr_preserved": true,
+          "classified_conflict": false,
+          "unsupported_claim": false,
+          "advisory_returned": false,
+          "citation_examples": [
+            {
+              "observation_id": "2f5fa22c-ee0b-41fc-8e07-eedb01025fb4",
+              "source_id": "a447cbbd-f9c6-481c-a041-a531b68bfdb7",
+              "source_filename": "fictional_lift_notes.txt",
+              "source_locator": "line 2",
+              "text": "For AP-18 the final door sensor result was never entered on the form.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            }
+          ],
+          "unknowns": [
+            "A record that confirms the expected outcome occurred."
+          ]
+        }
+      ]
+    },
+    {
+      "exercise_id": "PH4B1-FICTIONAL-HATCH",
+      "provider": "ollama",
+      "model": "qwen3.6:35b-a3b-coding-nvfp4",
+      "http_status": 200,
+      "error_code": null,
+      "context_limited": false,
+      "deterministic": {
+        "latency_ms": 4,
+        "finding_codes": [],
+        "matches_phase1_finding_labels": null,
+        "objective_states": {
+          "HATCH-TIME": "needs_review"
+        },
+        "entire_exercise_detail_unchanged_after_ai_request": true
+      },
+      "hybrid": {
+        "latency_ms": 1865,
+        "input_tokens": 796,
+        "output_tokens": 148,
+        "citations_attempted": 2,
+        "citations_matched": 2,
+        "rejected_suggestion_count": 0,
+        "unassessed_objective_ids": []
+      },
+      "developer_label_comparison": [
+        {
+          "objective_id": "HATCH-TIME",
+          "challenge": "attributed_timing_disagreement",
+          "kind": "contradiction",
+          "target_met": true,
+          "expected_abstention": false,
+          "abstained": false,
+          "cross_source_target": false,
+          "expected_conflict": true,
+          "ocr_expected": false,
+          "ocr_preserved": true,
+          "classified_conflict": true,
+          "unsupported_claim": false,
+          "advisory_returned": true,
+          "citation_examples": [
+            {
+              "observation_id": "4339ecce-bbd7-4d6d-85c6-1b2c24f17608",
+              "source_id": "cbc57dfe-6f59-4681-ba6b-6a2430263660",
+              "source_filename": "fictional_hatch_control.csv",
+              "source_locator": "row 2 \u00b7 HX-8",
+              "text": "Hatch K finished closing in cycle HX-8.",
+              "extraction_method": "parser",
+              "time_confidence": "medium",
+              "event_time_raw": "14:16"
+            },
+            {
+              "observation_id": "71ac601a-2453-4d37-b398-86ff8b9d722a",
+              "source_id": "cd0a20e2-6e95-4ce6-badf-f54aa81f6f62",
+              "source_filename": "fictional_hatch_witness.txt",
+              "source_locator": "line 1",
+              "text": "For HX-8 I saw Hatch K finish closing at 14:23. The desk later reported 14:16 for the same closure.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            }
+          ],
+          "unknowns": []
+        }
+      ]
+    },
+    {
+      "exercise_id": "PH4B1-FICTIONAL-RADIO",
+      "provider": "ollama",
+      "model": "qwen3.6:35b-a3b-coding-nvfp4",
+      "http_status": 200,
+      "error_code": null,
+      "context_limited": false,
+      "deterministic": {
+        "latency_ms": 3,
+        "finding_codes": [],
+        "matches_phase1_finding_labels": null,
+        "objective_states": {
+          "RADIO-TIME": "needs_review"
+        },
+        "entire_exercise_detail_unchanged_after_ai_request": true
+      },
+      "hybrid": {
+        "latency_ms": 1872,
+        "input_tokens": 793,
+        "output_tokens": 148,
+        "citations_attempted": 2,
+        "citations_matched": 2,
+        "rejected_suggestion_count": 0,
+        "unassessed_objective_ids": []
+      },
+      "developer_label_comparison": [
+        {
+          "objective_id": "RADIO-TIME",
+          "challenge": "compatible_paraphrased_accounts",
+          "kind": "corroboration",
+          "target_met": true,
+          "expected_abstention": false,
+          "abstained": false,
+          "cross_source_target": true,
+          "expected_conflict": false,
+          "ocr_expected": false,
+          "ocr_preserved": true,
+          "classified_conflict": false,
+          "unsupported_claim": false,
+          "advisory_returned": true,
+          "citation_examples": [
+            {
+              "observation_id": "3295e8e9-e5e4-4c32-bd73-3efb69c09ec8",
+              "source_id": "b4158507-8058-47d0-bc4d-c579866544e2",
+              "source_filename": "fictional_radio_ledger.txt",
+              "source_locator": "line 1",
+              "text": "During run RC-9 the communications desk enabled repeater 4.",
+              "extraction_method": "parser",
+              "time_confidence": "medium",
+              "event_time_raw": "07:31"
+            },
+            {
+              "observation_id": "7008888c-4a46-4ab6-bdd4-c3b0f08b1964",
+              "source_id": "fd159e2a-20ce-404a-86b7-e2dbf56e7a39",
+              "source_filename": "fictional_radio_observer.txt",
+              "source_locator": "line 1",
+              "text": "In exercise run RC-9 I watched the operator bring repeater 4 online at 07:31.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            }
+          ],
+          "unknowns": []
+        }
+      ]
+    },
+    {
+      "exercise_id": "PH4B1-FICTIONAL-COOLING",
+      "provider": "ollama",
+      "model": "qwen3.6:35b-a3b-coding-nvfp4",
+      "http_status": 200,
+      "error_code": null,
+      "context_limited": false,
+      "deterministic": {
+        "latency_ms": 3,
+        "finding_codes": [],
+        "matches_phase1_finding_labels": null,
+        "objective_states": {
+          "COOLING-STAGES": "needs_review"
+        },
+        "entire_exercise_detail_unchanged_after_ai_request": true
+      },
+      "hybrid": {
+        "latency_ms": 1026,
+        "input_tokens": 781,
+        "output_tokens": 80,
+        "citations_attempted": 2,
+        "citations_matched": 2,
+        "rejected_suggestion_count": 0,
+        "unassessed_objective_ids": []
+      },
+      "developer_label_comparison": [
+        {
+          "objective_id": "COOLING-STAGES",
+          "challenge": "different_phases",
+          "kind": "different_response_phases",
+          "target_met": true,
+          "expected_abstention": true,
+          "abstained": true,
+          "cross_source_target": false,
+          "expected_conflict": false,
+          "ocr_expected": false,
+          "ocr_preserved": true,
+          "classified_conflict": false,
+          "unsupported_claim": false,
+          "advisory_returned": true,
+          "citation_examples": [
+            {
+              "observation_id": "7bcebdd3-2cea-4b80-993c-cd80df411cce",
+              "source_id": "5b76021a-e4ea-4c68-80fc-37c4e812ecc8",
+              "source_filename": "fictional_cooling_control.txt",
+              "source_locator": "line 1",
+              "text": "In session CP-8 maintenance stopped coolant flow to inspect the loop.",
+              "extraction_method": "parser",
+              "time_confidence": "medium",
+              "event_time_raw": "15:10"
+            },
+            {
+              "observation_id": "a0544337-9d1c-49be-b71a-301a5f2567b2",
+              "source_id": "be80fabd-f183-4e77-a5c9-439573e5fe7e",
+              "source_filename": "fictional_cooling_observer.txt",
+              "source_locator": "line 1",
+              "text": "In session CP-8 maintenance restored coolant flow after replacing the filter.",
+              "extraction_method": "parser",
+              "time_confidence": "medium",
+              "event_time_raw": "15:25"
+            }
+          ],
+          "unknowns": []
+        }
+      ]
+    },
+    {
+      "exercise_id": "PH4B1-FICTIONAL-FORM",
+      "provider": "ollama",
+      "model": "qwen3.6:35b-a3b-coding-nvfp4",
+      "http_status": 200,
+      "error_code": null,
+      "context_limited": false,
+      "deterministic": {
+        "latency_ms": 3,
+        "finding_codes": [],
+        "matches_phase1_finding_labels": null,
+        "objective_states": {
+          "FORM-ACK": "needs_review"
+        },
+        "entire_exercise_detail_unchanged_after_ai_request": true
+      },
+      "hybrid": {
+        "latency_ms": 1780,
+        "input_tokens": 787,
+        "output_tokens": 141,
+        "citations_attempted": 2,
+        "citations_matched": 2,
+        "rejected_suggestion_count": 0,
+        "unassessed_objective_ids": []
+      },
+      "developer_label_comparison": [
+        {
+          "objective_id": "FORM-ACK",
+          "challenge": "missing_acknowledgement",
+          "kind": "insufficient_evidence",
+          "target_met": true,
+          "expected_abstention": true,
+          "abstained": true,
+          "cross_source_target": false,
+          "expected_conflict": false,
+          "ocr_expected": false,
+          "ocr_preserved": true,
+          "classified_conflict": false,
+          "unsupported_claim": false,
+          "advisory_returned": false,
+          "citation_examples": [
+            {
+              "observation_id": "3d86967e-dc2d-495b-8d03-1cc75990e6cc",
+              "source_id": "93f1357d-318c-4d81-95b0-9bf3a4830794",
+              "source_filename": "fictional_receipt_control.txt",
+              "source_locator": "line 1",
+              "text": "For dispatch U-14, the scene lead asked Logistics to acknowledge receipt of the staging plan.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            },
+            {
+              "observation_id": "31e6f9ca-984f-41ae-bd37-dea4e0d8569a",
+              "source_id": "f8f1f291-b6b5-4728-8ab7-4af6955a91d2",
+              "source_filename": "fictional_receipt_review.txt",
+              "source_locator": "line 1",
+              "text": "The exercise file for U-14 contains no acknowledgement entry for the staging plan.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            }
+          ],
+          "unknowns": [
+            "Confirmation of which event the wording refers to.",
+            "A record that confirms the expected outcome occurred."
+          ]
+        }
+      ]
+    },
+    {
+      "exercise_id": "PH4B1-FICTIONAL-DENIAL",
+      "provider": "ollama",
+      "model": "qwen3.6:35b-a3b-coding-nvfp4",
+      "http_status": 200,
+      "error_code": null,
+      "context_limited": false,
+      "deterministic": {
+        "latency_ms": 3,
+        "finding_codes": [],
+        "matches_phase1_finding_labels": null,
+        "objective_states": {
+          "DENIAL-ACK": "needs_review"
+        },
+        "entire_exercise_detail_unchanged_after_ai_request": true
+      },
+      "hybrid": {
+        "latency_ms": 1695,
+        "input_tokens": 790,
+        "output_tokens": 133,
+        "citations_attempted": 2,
+        "citations_matched": 2,
+        "rejected_suggestion_count": 0,
+        "unassessed_objective_ids": []
+      },
+      "developer_label_comparison": [
+        {
+          "objective_id": "DENIAL-ACK",
+          "challenge": "explicit_denial",
+          "kind": "contradiction",
+          "target_met": true,
+          "expected_abstention": false,
+          "abstained": false,
+          "cross_source_target": false,
+          "expected_conflict": true,
+          "ocr_expected": false,
+          "ocr_preserved": true,
+          "classified_conflict": true,
+          "unsupported_claim": false,
+          "advisory_returned": true,
+          "citation_examples": [
+            {
+              "observation_id": "e1c0fd74-c8ed-4736-993a-1cdceb0eb768",
+              "source_id": "280e37b7-957b-482e-b4b9-969465fda89e",
+              "source_filename": "fictional_receipt_affirmation.txt",
+              "source_locator": "line 1",
+              "text": "For bulletin H-6, the field desk reported that Transport acknowledged the bulletin over radio.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            },
+            {
+              "observation_id": "af31aeea-aa7c-4ee3-a003-0a3a3a783d9f",
+              "source_id": "4c0ebe83-86e8-494c-993c-6b84c7228b9f",
+              "source_filename": "fictional_receipt_denial.txt",
+              "source_locator": "line 1",
+              "text": "I was the Transport lead for H-6. We never acknowledged that bulletin over radio.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            }
+          ],
+          "unknowns": [
+            "Confirmation of which event the wording refers to."
+          ]
+        }
+      ]
+    },
+    {
+      "exercise_id": "PH4B1-FICTIONAL-ROOM",
+      "provider": "ollama",
+      "model": "qwen3.6:35b-a3b-coding-nvfp4",
+      "http_status": 200,
+      "error_code": null,
+      "context_limited": false,
+      "deterministic": {
+        "latency_ms": 3,
+        "finding_codes": [],
+        "matches_phase1_finding_labels": null,
+        "objective_states": {
+          "ROOM-ID": "needs_review"
+        },
+        "entire_exercise_detail_unchanged_after_ai_request": true
+      },
+      "hybrid": {
+        "latency_ms": 970,
+        "input_tokens": 865,
+        "output_tokens": 75,
+        "citations_attempted": 2,
+        "citations_matched": 2,
+        "rejected_suggestion_count": 0,
+        "unassessed_objective_ids": []
+      },
+      "developer_label_comparison": [
+        {
+          "objective_id": "ROOM-ID",
+          "challenge": "same_location_multiple_incidents",
+          "kind": "relevant_observation",
+          "target_met": false,
+          "expected_abstention": true,
+          "abstained": false,
+          "cross_source_target": false,
+          "expected_conflict": false,
+          "ocr_expected": false,
+          "ocr_preserved": true,
+          "classified_conflict": false,
+          "unsupported_claim": true,
+          "advisory_returned": true,
+          "citation_examples": [
+            {
+              "observation_id": "c2ad478e-e473-4c9b-9ecc-f6ccddf2ecd2",
+              "source_id": "bc09cc57-fe6f-4e0b-b908-7804e5b11e7e",
+              "source_filename": "fictional_room_ledger.txt",
+              "source_locator": "line 1",
+              "text": "Event L-21: Studio C was released to Logistics after the first check.",
+              "extraction_method": "parser",
+              "time_confidence": "medium",
+              "event_time_raw": "16:02"
+            },
+            {
+              "observation_id": "757119a2-2523-4f2b-86cb-14401ae3cb71",
+              "source_id": "bc09cc57-fe6f-4e0b-b908-7804e5b11e7e",
+              "source_filename": "fictional_room_ledger.txt",
+              "source_locator": "line 2",
+              "text": "Event L-22: Studio C was released to Facilities after the second check.",
+              "extraction_method": "parser",
+              "time_confidence": "medium",
+              "event_time_raw": "16:09"
+            }
+          ],
+          "unknowns": [
+            "Independent confirmation of the reported observation."
+          ]
+        }
+      ]
+    },
+    {
+      "exercise_id": "PH4B1-FICTIONAL-SCAN",
+      "provider": "ollama",
+      "model": "qwen3.6:35b-a3b-coding-nvfp4",
+      "http_status": 200,
+      "error_code": null,
+      "context_limited": false,
+      "deterministic": {
+        "latency_ms": 3,
+        "finding_codes": [],
+        "matches_phase1_finding_labels": null,
+        "objective_states": {
+          "SCAN-TIME": "needs_review"
+        },
+        "entire_exercise_detail_unchanged_after_ai_request": true
+      },
+      "hybrid": {
+        "latency_ms": 1724,
+        "input_tokens": 868,
+        "output_tokens": 137,
+        "citations_attempted": 2,
+        "citations_matched": 0,
+        "rejected_suggestion_count": 1,
+        "unassessed_objective_ids": [
+          "SCAN-TIME"
+        ]
+      },
+      "developer_label_comparison": [
+        {
+          "objective_id": "SCAN-TIME",
+          "challenge": "uncertain_ocr_timestamp",
+          "kind": null,
+          "target_met": false,
+          "expected_abstention": true,
+          "abstained": false,
+          "cross_source_target": false,
+          "expected_conflict": false,
+          "ocr_expected": true,
+          "ocr_preserved": false,
+          "classified_conflict": false,
+          "unsupported_claim": false,
+          "advisory_returned": false,
+          "citation_examples": [],
+          "unknowns": []
+        }
+      ]
+    },
+    {
+      "exercise_id": "PH4B1-FICTIONAL-LIFT",
+      "provider": "ollama",
+      "model": "qwen3.6:35b-a3b-coding-nvfp4",
+      "http_status": 200,
+      "error_code": null,
+      "context_limited": false,
+      "deterministic": {
+        "latency_ms": 3,
+        "finding_codes": [],
+        "matches_phase1_finding_labels": null,
+        "objective_states": {
+          "LIFT-CAUSE": "needs_review",
+          "LIFT-RESULT": "needs_review"
+        },
+        "entire_exercise_detail_unchanged_after_ai_request": true
+      },
+      "hybrid": {
+        "latency_ms": 2615,
+        "input_tokens": 959,
+        "output_tokens": 207,
+        "citations_attempted": 2,
+        "citations_matched": 2,
+        "rejected_suggestion_count": 0,
+        "unassessed_objective_ids": []
+      },
+      "developer_label_comparison": [
+        {
+          "objective_id": "LIFT-CAUSE",
+          "challenge": "unsupported_causal_hypothesis",
+          "kind": "insufficient_evidence",
+          "target_met": true,
+          "expected_abstention": true,
+          "abstained": true,
+          "cross_source_target": false,
+          "expected_conflict": false,
+          "ocr_expected": false,
+          "ocr_preserved": true,
+          "classified_conflict": false,
+          "unsupported_claim": false,
+          "advisory_returned": false,
+          "citation_examples": [
+            {
+              "observation_id": "2237bbea-e813-40d3-babe-947d5f9e8963",
+              "source_id": "a447cbbd-f9c6-481c-a041-a531b68bfdb7",
+              "source_filename": "fictional_lift_notes.txt",
+              "source_locator": "line 1",
+              "text": "For AP-17 the floor lead suspected the handheld battery caused the stalled queue but did not test that explanation.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            }
+          ],
+          "unknowns": [
+            "Evidence that establishes what caused the reported outcome."
+          ]
+        },
+        {
+          "objective_id": "LIFT-RESULT",
+          "challenge": "incomplete_outcome",
+          "kind": "insufficient_evidence",
+          "target_met": true,
+          "expected_abstention": true,
+          "abstained": true,
+          "cross_source_target": false,
+          "expected_conflict": false,
+          "ocr_expected": false,
+          "ocr_preserved": true,
+          "classified_conflict": false,
+          "unsupported_claim": false,
+          "advisory_returned": false,
+          "citation_examples": [
+            {
+              "observation_id": "2f5fa22c-ee0b-41fc-8e07-eedb01025fb4",
+              "source_id": "a447cbbd-f9c6-481c-a041-a531b68bfdb7",
+              "source_filename": "fictional_lift_notes.txt",
+              "source_locator": "line 2",
+              "text": "For AP-18 the final door sensor result was never entered on the form.",
+              "extraction_method": "parser",
+              "time_confidence": "unknown",
+              "event_time_raw": null
+            }
+          ],
+          "unknowns": [
+            "A record that confirms the expected outcome occurred."
+          ]
+        }
+      ]
+    }
+  ],
+  "run_metadata": {
+    "backend_commit": "00d680eae0f0676b5e26821eff81c131737904ca",
+    "backend_has_local_changes": true,
+    "backend_ai_sha256": "017d2227115a18e81c5eb324fd456d0a4c3d67ad01361fe75fabb77c46ade0be",
+    "ollama_version": "0.40.16",
+    "model": "qwen3.6:35b-a3b-coding-nvfp4",
+    "model_digest": "cd2692a833e66c4c98991b67e9fbaa0bb15a93285baac9240c022f2f40075b6d",
+    "prompt_version": "phase4b-v5",
+    "prompt_sha256": "6ae089f405989311112921e5a2b25dd7e117d1e7b401a56bb7024da022c2af5b",
+    "max_input_bytes": 12000,
+    "timeout_seconds": 60,
+    "inference_calls": [
+      {
+        "think": false,
+        "stream": false,
+        "temperature": 0,
+        "num_predict": 2048,
+        "num_ctx": 8192
+      },
+      {
+        "think": false,
+        "stream": false,
+        "temperature": 0,
+        "num_predict": 2048,
+        "num_ctx": 8192
+      },
+      {
+        "think": false,
+        "stream": false,
+        "temperature": 0,
+        "num_predict": 2048,
+        "num_ctx": 8192
+      },
+      {
+        "think": false,
+        "stream": false,
+        "temperature": 0,
+        "num_predict": 2048,
+        "num_ctx": 8192
+      },
+      {
+        "think": false,
+        "stream": false,
+        "temperature": 0,
+        "num_predict": 2048,
+        "num_ctx": 8192
+      },
+      {
+        "think": false,
+        "stream": false,
+        "temperature": 0,
+        "num_predict": 2048,
+        "num_ctx": 8192
+      },
+      {
+        "think": false,
+        "stream": false,
+        "temperature": 0,
+        "num_predict": 2048,
+        "num_ctx": 8192
+      },
+      {
+        "think": false,
+        "stream": false,
+        "temperature": 0,
+        "num_predict": 2048,
+        "num_ctx": 8192
+      },
+      {
+        "think": false,
+        "stream": false,
+        "temperature": 0,
+        "num_predict": 2048,
+        "num_ctx": 8192
+      },
+      {
+        "think": false,
+        "stream": false,
+        "temperature": 0,
+        "num_predict": 2048,
+        "num_ctx": 8192
+      },
+      {
+        "think": false,
+        "stream": false,
+        "temperature": 0,
+        "num_predict": 2048,
+        "num_ctx": 8192
+      },
+      {
+        "think": false,
+        "stream": false,
+        "temperature": 0,
+        "num_predict": 2048,
+        "num_ctx": 8192
+      },
+      {
+        "think": false,
+        "stream": false,
+        "temperature": 0,
+        "num_predict": 2048,
+        "num_ctx": 8192
+      },
+      {
+        "think": false,
+        "stream": false,
+        "temperature": 0,
+        "num_predict": 2048,
+        "num_ctx": 8192
+      },
+      {
+        "think": false,
+        "stream": false,
+        "temperature": 0,
+        "num_predict": 2048,
+        "num_ctx": 8192
+      },
+      {
+        "think": false,
+        "stream": false,
+        "temperature": 0,
+        "num_predict": 2048,
+        "num_ctx": 8192
+      },
+      {
+        "think": false,
+        "stream": false,
+        "temperature": 0,
+        "num_predict": 2048,
+        "num_ctx": 8192
+      },
+      {
+        "think": false,
+        "stream": false,
+        "temperature": 0,
+        "num_predict": 2048,
+        "num_ctx": 8192
+      },
+      {
+        "think": false,
+        "stream": false,
+        "temperature": 0,
+        "num_predict": 2048,
+        "num_ctx": 8192
+      },
+      {
+        "think": false,
+        "stream": false,
+        "temperature": 0,
+        "num_predict": 2048,
+        "num_ctx": 8192
+      },
+      {
+        "think": false,
+        "stream": false,
+        "temperature": 0,
+        "num_predict": 2048,
+        "num_ctx": 8192
+      },
+      {
+        "think": false,
+        "stream": false,
+        "temperature": 0,
+        "num_predict": 2048,
+        "num_ctx": 8192
+      },
+      {
+        "think": false,
+        "stream": false,
+        "temperature": 0,
+        "num_predict": 2048,
+        "num_ctx": 8192
+      },
+      {
+        "think": false,
+        "stream": false,
+        "temperature": 0,
+        "num_predict": 2048,
+        "num_ctx": 8192
+      }
+    ]
+  },
+  "repetitions": 3,
+  "metrics": {
+    "target_behavior": [
+      21,
+      27
+    ],
+    "cross_source_matching": [
+      3,
+      3
+    ],
+    "true_conflict_detection": [
+      6,
+      6
+    ],
+    "false_conflict_rate": [
+      0,
+      21
+    ],
+    "abstention_precision": [
+      12,
+      12
+    ],
+    "abstention_recall": [
+      12,
+      18
+    ],
+    "unsupported_claim_rate": [
+      3,
+      15
+    ],
+    "exact_citation_validation": [
+      42,
+      48
+    ],
+    "ocr_uncertainty_preserved": [
+      0,
+      3
+    ],
+    "deterministic_detail_preserved": [
+      24,
+      24
+    ],
+    "latency_ms": [
+      2185,
+      2132,
+      1200,
+      1966,
+      1891,
+      1196,
+      1948,
+      2871,
+      1918,
+      1905,
+      1905,
+      1821,
+      1700,
+      982,
+      1637,
+      2605,
+      1865,
+      1872,
+      1026,
+      1780,
+      1695,
+      970,
+      1724,
+      2615
+    ],
+    "input_tokens": [
+      796,
+      793,
+      781,
+      787,
+      790,
+      865,
+      868,
+      959,
+      796,
+      793,
+      781,
+      787,
+      790,
+      865,
+      868,
+      959,
+      796,
+      793,
+      781,
+      787,
+      790,
+      865,
+      868,
+      959
+    ],
+    "output_tokens": [
+      160,
+      156,
+      80,
+      140,
+      133,
+      76,
+      137,
+      207,
+      148,
+      148,
+      147,
+      141,
+      133,
+      75,
+      128,
+      207,
+      148,
+      148,
+      80,
+      141,
+      133,
+      75,
+      137,
+      207
+    ]
+  },
+  "scripted_provider_probes": null
+}
