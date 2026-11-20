@@ -594,5 +594,5 @@ def parse_evidence(
         return ParsedEvidence("pdf", content, observations, provenance)
 
     raise EvidenceError(
-        "UNSUPPORTED_EVIDENCE", "Supported files: TXT, MD, CSV, JSON transcript, and text PDF."
+        "UNSUPPORTED_EVIDENCE", "Supported files: TXT, MD, CSV, JSON transcript, and PDF."
     )
