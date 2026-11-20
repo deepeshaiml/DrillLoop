@@ -528,6 +528,26 @@ jobs:
             exit 1
           fi
           [[ "$(docker inspect --format '{{.State.Status}}' "$container_name")" == running ]]
+          docker exec -i --env PYTHONPATH=/app/backend "$container_name" python -c '
+          import sys
+          from datetime import date
+
+          from app.evidence import parse_evidence
+
+          result = parse_evidence(
+              "fictional-container-test.pdf", "application/pdf", sys.stdin.buffer.read(),
+              date(2026, 11, 13),
+          )
+          assert result.provenance["ocr_status"] == "completed"
+          assert result.provenance["ocr_pages"] == [1, 2]
+          assert len(result.observations) == 10
+          assert all(
+              item.source_locator in {"page 1", "page 2"} and item.extraction_method == "ocr"
+              for item in result.observations
+          )
+          assert any(item.time_confidence == "uncertain" for item in result.observations)
+          print("Hardened container extracted the fictional two-page scan with OCR.")
+          ' < evals/phase2/sources/utility_emergency_log_scanned.pdf
 
       - name: Upload sanitized container diagnostics
         if: ${{ failure() && steps.container_verification.outcome == 'failure' && steps.container_verification.outputs.diagnostics_dir != '' }}
