@@ -6,7 +6,9 @@ import {
   MessageSquareText, Plus, Search, ShieldCheck, Sparkles, Upload,
   MapPin, X, XCircle, Zap, CalendarDays, UserRound, History, ClipboardList,
 } from 'lucide-react'
-import AiAssistance, { type AiCapability, type AiResult } from './AiAssistance'
+import { type AiCapability, type AiResult } from './AiAssistance'
+import AiCandidateWorkspace from './AiCandidateWorkspace'
+import { createCandidateApi } from './candidateApi'
 
 type Tab = 'exercises' | 'overview' | 'objectives' | 'evidence' | 'timeline' | 'findings' | 'actions' | 'reports'
 type ReportDownloadState = { status: 'idle' | 'preparing' | 'started' | 'failed'; message?: string; filename?: string }
@@ -244,7 +246,7 @@ function ObjectiveEditor({ value, onChange, onClose, onSubmit, busy, errorMessag
   </form></section></div>
 }
 
-const api = async <T,>(path: string, options: RequestInit = {}): Promise<T> => {
+const apiResponse = async <T,>(path: string, options: RequestInit = {}): Promise<{ body: T; headers: Headers }> => {
   const url = path.startsWith('/api') ? path : `/api${path}`
   const headers = new Headers(options.headers)
   if (options.method && !['GET', 'HEAD', 'OPTIONS'].includes(options.method.toUpperCase()) && csrfTokenValue && !url.endsWith('/auth/login')) headers.set('X-CSRF-Token', csrfTokenValue)
@@ -260,9 +262,13 @@ const api = async <T,>(path: string, options: RequestInit = {}): Promise<T> => {
     if (response.status === 401 && !url.endsWith('/auth/login') && !url.endsWith('/auth/session')) window.dispatchEvent(new Event('drillloop-auth-expired'))
     throw Object.assign(new Error(message), { status: response.status, code })
   }
-  if (response.headers.get('content-type')?.includes('application/pdf')) return await response.blob() as T
-  return await response.json() as T
+  const body = response.headers.get('content-type')?.includes('application/pdf')
+    ? await response.blob() : await response.json()
+  return { body: body as T, headers: response.headers }
 }
+
+const api = async <T,>(path: string, options?: RequestInit): Promise<T> => (await apiResponse<T>(path, options)).body
+const candidateApi = createCandidateApi(apiResponse)
 
 const initials = (name: string) => name.split(' ').map(part => part[0]).join('').slice(0, 2).toUpperCase()
 const shortTime = (value: string | null) => value ? value.slice(value.indexOf('T') + 1, value.indexOf('T') + 9) : 'Time unresolved'
@@ -1387,14 +1393,17 @@ function FindingsView({ data, busy, canEdit, canReview, identityName, isSyntheti
     {isSyntheticDemo && <div className="fa-fictional"><Sparkles size={16} /><strong>Fictional synthetic demo data</strong><span>These exercise events and records are not real operational evidence.</span></div>}
     <div className={`fa-access-note ${canReview ? 'is-reviewer' : canEdit ? 'is-editor' : 'is-viewer'}`}><LockKeyhole size={17} /><span>{canReview ? <>Review decisions will be recorded as <strong>{identityName}</strong>.</> : canEdit ? 'Evaluator access · you can view findings and edit action details; a reviewer must record decisions.' : 'Viewer access · decisions and action edits are not available to this account.'}</span></div>
     <section className="fa-process-strip" aria-label="Evaluation workflow"><span className="fa-process-current"><i>1</i> Proposed finding</span><ChevronRight size={15} /><span><i>2</i> Human decision</span><ChevronRight size={15} /><span><i>3</i> Corrective action</span></section>
-    {canEdit && aiCapability && <AiAssistance
+    <AiCandidateWorkspace
       key={data.exercise.id}
-      capability={aiCapability}
+      exerciseId={data.exercise.id}
+      api={candidateApi}
+      canReview={canReview}
+      capability={canEdit ? aiCapability : undefined}
       objectives={data.exercise.objectives}
       assessments={data.objective_assessments}
       generate={signal => api<AiResult>(`/exercises/${encodeURIComponent(data.exercise.id)}/ai-suggestions`, { method: 'POST', signal })}
       onEvidence={item => onEvidence({ ...item, event_time_normalized: null })}
-    />}
+    />
     {data.findings.length > 0 && <section className="fa-toolbar" aria-label="Findings filters"><label className="fa-search"><Search size={17} /><span className="sr-only">Search findings</span><input value={query} onChange={event => setQuery(event.target.value)} placeholder="Search findings, objectives or sources" />{query && <button type="button" aria-label="Clear finding search" onClick={() => setQuery('')}><X size={15} /></button>}</label><label className="fa-filter"><span>Status</span><select value={status} onChange={event => setStatus(event.target.value)}><option value="all">All statuses</option><option value="proposed">Proposed · needs review</option><option value="approved">Approved</option><option value="rejected">Rejected</option></select></label><label className="fa-filter"><span>Objective</span><select value={objectiveId} onChange={event => setObjectiveId(event.target.value)}><option value="all">All objectives</option>{data.exercise.objectives.map(item => <option key={item.id} value={item.id}>{item.id} · {item.text}</option>)}{data.findings.some(item => !item.objective_id || !data.exercise.objectives.some(objective => objective.id === item.objective_id)) && <option value="">No objective linked</option>}</select></label><span className="fa-result-count">{visible.length} of {data.findings.length}</span></section>}
     {visible.length ? <div className="fa-finding-list">{visible.map((finding, index) => {
       const objective = data.exercise.objectives.find(item => item.id === finding.objective_id)

@@ -145,6 +145,9 @@ jobs:
       - name: Install Chromium
         run: npx --prefix frontend playwright install --with-deps chromium
 
+      - name: Candidate review browser workflow on disposable SQLite
+        run: python frontend/e2e/run_candidate_review.py
+
       - name: Browser workflow on fresh owned SQLite
         id: browser_workflow
         shell: bash
