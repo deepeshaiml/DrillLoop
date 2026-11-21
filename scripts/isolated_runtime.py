@@ -6,14 +6,19 @@ import atexit
 import json
 import os
 import secrets
+import socket
 import sys
 import tempfile
+import threading
+import time
 import uuid
+from collections.abc import Iterator
+from contextlib import contextmanager
 from pathlib import Path
 
 
-def configure(backend: Path | None = None) -> Path:
-    root = Path(tempfile.mkdtemp(prefix="drillloop-eval-"))
+def configure(backend: Path | None = None, *, retain_under: Path | None = None) -> Path:
+    root = Path(tempfile.mkdtemp(prefix="drillloop-eval-", dir=retain_under))
     root.chmod(0o700)
     token = secrets.token_hex(32)
     marker = root / ".drillloop-test-owner"
@@ -35,6 +40,7 @@ def configure(backend: Path | None = None) -> Path:
     os.environ["DRILLLOOP_DEMO_OWNER_ID"] = "evaluation-admin"
     for name in (
         "DATABASE_PASSWORD_FILE",
+        "DRILLLOOP_TEST_DB_ALLOW_EXISTING",
         "DRILLLOOP_USERS_FILE",
         "DRILLLOOP_SESSION_SECRET_FILE",
         "DRILLLOOP_TRUSTED_HOSTS",
@@ -63,5 +69,31 @@ def configure(backend: Path | None = None) -> Path:
 
             shutil.rmtree(root)
 
-    atexit.register(cleanup)
+    if retain_under is None:
+        atexit.register(cleanup)
     return root
+
+
+@contextmanager
+def serve(app, *, port: int = 0) -> Iterator[int]:
+    import uvicorn
+
+    with socket.socket() as listener:
+        listener.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        listener.bind(("127.0.0.1", port))
+        port = listener.getsockname()[1]
+        server = uvicorn.Server(uvicorn.Config(app, log_level="warning", access_log=False))
+        thread = threading.Thread(target=server.run, kwargs={"sockets": [listener]}, daemon=True)
+        thread.start()
+        try:
+            deadline = time.monotonic() + 10
+            while not server.started and thread.is_alive() and time.monotonic() < deadline:
+                time.sleep(0.05)
+            if not server.started:
+                raise RuntimeError("The isolated DrillLoop server did not start.")
+            yield port
+        finally:
+            server.should_exit = True
+            thread.join(timeout=10)
+            if thread.is_alive():
+                raise RuntimeError("The isolated DrillLoop server did not stop.")

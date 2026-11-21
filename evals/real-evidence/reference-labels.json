@@ -1,0 +1,206 @@
+{
+  "schema_version": 1,
+  "labeling": "Developer-authored, prospectively frozen before the first application run. Non-exhaustive. Independent adjudication NOT PERFORMED.",
+  "labels": [
+    {
+      "id": "RE-01",
+      "source": "LA25-PLAN",
+      "page": 11,
+      "kind": "scope",
+      "span_words": 8,
+      "span_sha256": "98a4e16a78f035593c90de276d99b5543a577ecfd5f8fa95c64bdeb7cc297a33",
+      "source_clock": null,
+      "observed_event_time": null
+    },
+    {
+      "id": "RE-02",
+      "source": "LA25-PLAN",
+      "page": 12,
+      "kind": "objective",
+      "span_words": 6,
+      "span_sha256": "e9e09b2c43482869766b699b624539d78ddcf73f3494fd886c9b8eb28ba5c298",
+      "source_clock": null,
+      "observed_event_time": null
+    },
+    {
+      "id": "RE-03",
+      "source": "LA25-PLAN",
+      "page": 12,
+      "kind": "objective",
+      "span_words": 4,
+      "span_sha256": "c29c232c10e3c1f6e4997e971fba2b7dacae7e38b1bf4baa7c017f3f85b05bce",
+      "source_clock": null,
+      "observed_event_time": null
+    },
+    {
+      "id": "RE-04",
+      "source": "LA25-PLAN",
+      "page": 12,
+      "kind": "objective",
+      "span_words": 8,
+      "span_sha256": "762401563bd822b493136c5f5368a6292296e765f8ed8e102903fb944c36f41d",
+      "source_clock": null,
+      "observed_event_time": null
+    },
+    {
+      "id": "RE-05",
+      "source": "LA25-PLAN",
+      "page": 12,
+      "kind": "objective",
+      "span_words": 9,
+      "span_sha256": "19e47f5b9aa790a9b36dc8e7d7b93fd80f659029d0a7107bfb87119443cc6883",
+      "source_clock": null,
+      "observed_event_time": null
+    },
+    {
+      "id": "RE-06",
+      "source": "LA25-PLAN",
+      "page": 23,
+      "kind": "planned_time",
+      "span_words": 3,
+      "span_sha256": "482deff0dcb2c195a52c102c6596f532e6b67cd967c20ed72c1a7e0b9e175162",
+      "source_clock": "08:00",
+      "observed_event_time": null
+    },
+    {
+      "id": "RE-07",
+      "source": "LA25-PLAN",
+      "page": 23,
+      "kind": "planned_time",
+      "span_words": 3,
+      "span_sha256": "12c7ba244d4de8a26b43809f6e2f10665e7b72dfaa463e8cfe91db3674577acc",
+      "source_clock": "11:00",
+      "observed_event_time": null
+    },
+    {
+      "id": "RE-08",
+      "source": "LA25-CEH",
+      "page": 26,
+      "kind": "planned_time",
+      "span_words": 3,
+      "span_sha256": "482deff0dcb2c195a52c102c6596f532e6b67cd967c20ed72c1a7e0b9e175162",
+      "source_clock": "08:00",
+      "observed_event_time": null
+    },
+    {
+      "id": "RE-09",
+      "source": "LA25-CEH",
+      "page": 26,
+      "kind": "planned_time",
+      "span_words": 3,
+      "span_sha256": "12c7ba244d4de8a26b43809f6e2f10665e7b72dfaa463e8cfe91db3674577acc",
+      "source_clock": "11:00",
+      "observed_event_time": null
+    },
+    {
+      "id": "RE-10",
+      "source": "LA25-EEG",
+      "page": 3,
+      "kind": "expected_action",
+      "span_words": 10,
+      "span_sha256": "3e24ecc78c44c3c22da7e22f296b5ec18cbc5ebf53c37d5751c19400dbc9e42a",
+      "source_clock": null,
+      "observed_event_time": null
+    },
+    {
+      "id": "RE-11",
+      "source": "LA25-EEG",
+      "page": 4,
+      "kind": "expected_action",
+      "span_words": 8,
+      "span_sha256": "27ee03d71d27b5989cfde24b853ee67c6dc0e79d7105fa75b9d29df262d09517",
+      "source_clock": null,
+      "observed_event_time": null
+    },
+    {
+      "id": "RE-12",
+      "source": "LA25-EEG",
+      "page": 4,
+      "kind": "expected_action",
+      "span_words": 8,
+      "span_sha256": "6775f703a0c2f89ecd3b0cef64bf865d15d6fa4dc599d682343740922d295799",
+      "source_clock": null,
+      "observed_event_time": null
+    },
+    {
+      "id": "RE-13",
+      "source": "LA25-AAR",
+      "page": 7,
+      "kind": "template",
+      "span_words": 4,
+      "span_sha256": "1fc1bdbd227b311405189888f1c5c6fa6b3d4bb4647975c7aaeb4c8e466625b0",
+      "source_clock": null,
+      "observed_event_time": null
+    },
+    {
+      "id": "RE-14",
+      "source": "NWHRN-AAR",
+      "page": 2,
+      "kind": "published_objective",
+      "span_words": 10,
+      "span_sha256": "303c41b227faacd7d58905fd4a011e06e8b79786c386cd658a3551c554016d81",
+      "source_clock": null,
+      "observed_event_time": null
+    },
+    {
+      "id": "RE-15",
+      "source": "NWHRN-AAR",
+      "page": 11,
+      "kind": "published_objective",
+      "span_words": 11,
+      "span_sha256": "f221f781572dd0f423d753c08f34422b34c38775af1bf331b5a52aa35d77876c",
+      "source_clock": null,
+      "observed_event_time": null
+    },
+    {
+      "id": "RE-16",
+      "source": "NWHRN-AAR",
+      "page": 11,
+      "kind": "published_strength",
+      "span_words": 10,
+      "span_sha256": "48b05ce4494df14d175831d7275e3f0481e89fcc9fe35b00a695a30053a9e2ef",
+      "source_clock": null,
+      "observed_event_time": null
+    },
+    {
+      "id": "RE-17",
+      "source": "NWHRN-AAR",
+      "page": 11,
+      "kind": "published_improvement",
+      "span_words": 6,
+      "span_sha256": "85480cb0cba0fcbf6006fb4bfa784171fd63aa8260a38c8135bd1d75b1667b93",
+      "source_clock": null,
+      "observed_event_time": null
+    },
+    {
+      "id": "RE-18",
+      "source": "NWHRN-AAR",
+      "page": 11,
+      "kind": "published_conclusion",
+      "span_words": 11,
+      "span_sha256": "7b111aefcd22288b4bebcd23186d7066a421c23c9abee870cc81055248e40571",
+      "source_clock": null,
+      "observed_event_time": null
+    },
+    {
+      "id": "RE-19",
+      "source": "NWHRN-AAR",
+      "page": 20,
+      "kind": "published_recommendation",
+      "span_words": 4,
+      "span_sha256": "95645873162a24aa2f658c96f224bc41da45fd1b6eb30e7199fd558e610c937f",
+      "source_clock": null,
+      "observed_event_time": null
+    },
+    {
+      "id": "RE-20",
+      "source": "NWHRN-AAR",
+      "page": 20,
+      "kind": "published_recommendation",
+      "span_words": 4,
+      "span_sha256": "116ad27851200e61e06cdd4101b4c4ea9f0022a4b1e9fdac44ef81bde235ecd2",
+      "source_clock": null,
+      "observed_event_time": null
+    }
+  ]
+}

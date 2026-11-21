@@ -1,0 +1,806 @@
+{
+  "schema_version": 1,
+  "reference_labels_sha256": "b8153f02155c41ecdfbb5c5701b5208ca2654e0ee51af610d2a7cc40e15771c8",
+  "model": {
+    "tag": "qwen3.6:35b-a3b-coding-nvfp4",
+    "digest": "cd2692a833e66c4c98991b67e9fbaa0bb15a93285baac9240c022f2f40075b6d",
+    "cloud_disabled": true,
+    "ollama_version": "0.40.16",
+    "prompt_version": "phase4b-v5",
+    "schema_sha256": "3d197ee648592f81d18b7b789b394c066ea62a0209a02b703e2e97551a9abb9a",
+    "temperature": 0,
+    "think_requested": false,
+    "max_input_bytes": 32768,
+    "max_output_tokens": 768,
+    "timeout_seconds": 110,
+    "research_previews_requested": true
+  },
+  "cases": {
+    "A": {
+      "uploads": [
+        {
+          "source": "LA25-PLAN",
+          "filename": "LA25-PLAN.pdf",
+          "input_sha256": "a5e033884b6f486f1a5e6fabca4465e0c6e24407618de22ab6ea4779cd4c1d8b",
+          "http": 400,
+          "upload_parse_persist_ms": 383.92,
+          "error": {
+            "code": "INVALID_TIMESTAMP",
+            "message": "Timestamp 'your jurisdiction' is invalid. Use a valid ISO date/time or 24-hour time.",
+            "filename": "LA25-PLAN.pdf"
+          }
+        },
+        {
+          "source": "LA25-EEG",
+          "filename": "LA25-EEG.pdf",
+          "input_sha256": "008f1a6f21e3478ead230cc87b64baa0da143a81a41789c636df5ac60d85163b",
+          "http": 201,
+          "upload_parse_persist_ms": 190.63,
+          "download_matches_input_bytes": true,
+          "app_source_id": "bcf9bf4b-e712-4396-a167-0af2ecc54dda",
+          "source_sha256_matches": true,
+          "observation_count": 193,
+          "source_purpose": null,
+          "pages": 7,
+          "ocr_status": "not_required",
+          "ocr_pages": null,
+          "ocr_partial_pages": null,
+          "ocr_duration_seconds": null,
+          "ocr_engine_version": null
+        },
+        {
+          "source": "LA25-CEH",
+          "filename": "LA25-CEH.pdf",
+          "input_sha256": "62da92b03a1f38d3a3797e22a6b16648435ddc89aa2a78fc7f44ee4205e162f2",
+          "http": 400,
+          "upload_parse_persist_ms": 462.32,
+          "error": {
+            "code": "INVALID_TIMESTAMP",
+            "message": "Timestamp 'Name' is invalid. Use a valid ISO date/time or 24-hour time.",
+            "filename": "LA25-CEH.pdf"
+          }
+        },
+        {
+          "source": "LA25-AAR",
+          "filename": "LA25-AAR.pdf",
+          "input_sha256": "d08ddb1cf3d505e011a06132b2424a10b1adc62131e3765f2dec5273209e504b",
+          "http": 400,
+          "upload_parse_persist_ms": 225.49,
+          "error": {
+            "code": "INVALID_TIMESTAMP",
+            "message": "Timestamp 'Objective 1' is invalid. Use a valid ISO date/time or 24-hour time.",
+            "filename": "LA25-AAR.pdf"
+          }
+        }
+      ],
+      "docx_direct_probe": {
+        "http": 400,
+        "detail": {
+          "code": "UNSUPPORTED_EVIDENCE",
+          "message": "Supported files: TXT, MD, LOG, CSV, JSON, PDF.",
+          "filename": "LA25-PLAN.docx"
+        }
+      },
+      "extraction": {
+        "labeled_spans_found": {
+          "numerator": 3,
+          "denominator": 13
+        },
+        "labeled_spans_on_expected_page": {
+          "numerator": 3,
+          "denominator": 13
+        },
+        "missing_spans": 10,
+        "duplicate_span_matches_on_expected_page": 0,
+        "incorrect_or_duplicate_observations_corpus_wide": null,
+        "labels": [
+          {
+            "label": "RE-01",
+            "source": "LA25-PLAN",
+            "expected_page": 11,
+            "kind": "scope",
+            "classification": "EXTRACTION FAILURE",
+            "exact_span_found": false,
+            "expected_page_found": false,
+            "matches_on_expected_page": 0,
+            "source_clock": null,
+            "locators": []
+          },
+          {
+            "label": "RE-02",
+            "source": "LA25-PLAN",
+            "expected_page": 12,
+            "kind": "objective",
+            "classification": "EXTRACTION FAILURE",
+            "exact_span_found": false,
+            "expected_page_found": false,
+            "matches_on_expected_page": 0,
+            "source_clock": null,
+            "locators": []
+          },
+          {
+            "label": "RE-03",
+            "source": "LA25-PLAN",
+            "expected_page": 12,
+            "kind": "objective",
+            "classification": "EXTRACTION FAILURE",
+            "exact_span_found": false,
+            "expected_page_found": false,
+            "matches_on_expected_page": 0,
+            "source_clock": null,
+            "locators": []
+          },
+          {
+            "label": "RE-04",
+            "source": "LA25-PLAN",
+            "expected_page": 12,
+            "kind": "objective",
+            "classification": "EXTRACTION FAILURE",
+            "exact_span_found": false,
+            "expected_page_found": false,
+            "matches_on_expected_page": 0,
+            "source_clock": null,
+            "locators": []
+          },
+          {
+            "label": "RE-05",
+            "source": "LA25-PLAN",
+            "expected_page": 12,
+            "kind": "objective",
+            "classification": "EXTRACTION FAILURE",
+            "exact_span_found": false,
+            "expected_page_found": false,
+            "matches_on_expected_page": 0,
+            "source_clock": null,
+            "locators": []
+          },
+          {
+            "label": "RE-06",
+            "source": "LA25-PLAN",
+            "expected_page": 23,
+            "kind": "planned_time",
+            "classification": "EXTRACTION FAILURE",
+            "exact_span_found": false,
+            "expected_page_found": false,
+            "matches_on_expected_page": 0,
+            "source_clock": "08:00",
+            "locators": []
+          },
+          {
+            "label": "RE-07",
+            "source": "LA25-PLAN",
+            "expected_page": 23,
+            "kind": "planned_time",
+            "classification": "EXTRACTION FAILURE",
+            "exact_span_found": false,
+            "expected_page_found": false,
+            "matches_on_expected_page": 0,
+            "source_clock": "11:00",
+            "locators": []
+          },
+          {
+            "label": "RE-08",
+            "source": "LA25-CEH",
+            "expected_page": 26,
+            "kind": "planned_time",
+            "classification": "EXTRACTION FAILURE",
+            "exact_span_found": false,
+            "expected_page_found": false,
+            "matches_on_expected_page": 0,
+            "source_clock": "08:00",
+            "locators": []
+          },
+          {
+            "label": "RE-09",
+            "source": "LA25-CEH",
+            "expected_page": 26,
+            "kind": "planned_time",
+            "classification": "EXTRACTION FAILURE",
+            "exact_span_found": false,
+            "expected_page_found": false,
+            "matches_on_expected_page": 0,
+            "source_clock": "11:00",
+            "locators": []
+          },
+          {
+            "label": "RE-10",
+            "source": "LA25-EEG",
+            "expected_page": 3,
+            "kind": "expected_action",
+            "classification": "VERIFIED AGAINST ORIGINAL SOURCE",
+            "exact_span_found": true,
+            "expected_page_found": true,
+            "matches_on_expected_page": 1,
+            "source_clock": null,
+            "locators": [
+              {
+                "locator": "page 3, line 12",
+                "method": "parser",
+                "type": "document",
+                "time_confidence": "unknown",
+                "source_clock": null,
+                "observed_event_time": null
+              }
+            ]
+          },
+          {
+            "label": "RE-11",
+            "source": "LA25-EEG",
+            "expected_page": 4,
+            "kind": "expected_action",
+            "classification": "VERIFIED AGAINST ORIGINAL SOURCE",
+            "exact_span_found": true,
+            "expected_page_found": true,
+            "matches_on_expected_page": 1,
+            "source_clock": null,
+            "locators": [
+              {
+                "locator": "page 4, line 9",
+                "method": "parser",
+                "type": "document",
+                "time_confidence": "unknown",
+                "source_clock": null,
+                "observed_event_time": null
+              }
+            ]
+          },
+          {
+            "label": "RE-12",
+            "source": "LA25-EEG",
+            "expected_page": 4,
+            "kind": "expected_action",
+            "classification": "VERIFIED AGAINST ORIGINAL SOURCE",
+            "exact_span_found": true,
+            "expected_page_found": true,
+            "matches_on_expected_page": 1,
+            "source_clock": null,
+            "locators": [
+              {
+                "locator": "page 4, line 22",
+                "method": "parser",
+                "type": "document",
+                "time_confidence": "unknown",
+                "source_clock": null,
+                "observed_event_time": null
+              }
+            ]
+          },
+          {
+            "label": "RE-13",
+            "source": "LA25-AAR",
+            "expected_page": 7,
+            "kind": "template",
+            "classification": "EXTRACTION FAILURE",
+            "exact_span_found": false,
+            "expected_page_found": false,
+            "matches_on_expected_page": 0,
+            "source_clock": null,
+            "locators": []
+          }
+        ]
+      },
+      "timeline": {
+        "clock_extraction": {
+          "numerator": 0,
+          "denominator": 4
+        },
+        "planned_mislabeled_observed": {
+          "numerator": 0,
+          "denominator": 4
+        },
+        "recorded_time_order_monotonic": null,
+        "unknown_or_reference_time": {
+          "numerator": 193,
+          "denominator": 193
+        },
+        "conflicts_reported": 0,
+        "conflict_accuracy": null
+      },
+      "analysis": {
+        "request_ms": 8.38,
+        "compute_ms": null,
+        "objectives": [
+          {
+            "objective_id": "A-ACTIVATE",
+            "state": "insufficient_information",
+            "rule_type": "elapsed_time",
+            "threshold_seconds": 900,
+            "elapsed_seconds": [],
+            "unknowns": [
+              "No source-matched start event with a usable timestamp was found.",
+              "Matching start evidence has missing or uncertain time."
+            ],
+            "conflicts": []
+          },
+          {
+            "objective_id": "A-AREA",
+            "state": "insufficient_information",
+            "rule_type": "elapsed_time",
+            "threshold_seconds": 900,
+            "elapsed_seconds": [],
+            "unknowns": [
+              "No source-matched start event with a usable timestamp was found.",
+              "Matching start evidence has missing or uncertain time."
+            ],
+            "conflicts": []
+          },
+          {
+            "objective_id": "A-ROLES",
+            "state": "confirmed_success",
+            "rule_type": "event_presence",
+            "threshold_seconds": null,
+            "elapsed_seconds": [],
+            "unknowns": [],
+            "conflicts": []
+          },
+          {
+            "objective_id": "A-APP",
+            "state": "confirmed_success",
+            "rule_type": "event_presence",
+            "threshold_seconds": null,
+            "elapsed_seconds": [],
+            "unknowns": [],
+            "conflicts": []
+          }
+        ],
+        "findings": [
+          {
+            "objective": "A-ROLES",
+            "status": "proposed",
+            "reviewer_decision": null,
+            "unknowns": [
+              "Participant outcomes are unavailable in this corpus."
+            ],
+            "classification": "UNSUPPORTED",
+            "sources": [
+              {
+                "filename": "LA25-EEG.pdf",
+                "locator": "page 4, line 9"
+              }
+            ]
+          },
+          {
+            "objective": "A-APP",
+            "status": "proposed",
+            "reviewer_decision": null,
+            "unknowns": [
+              "Participant outcomes are unavailable in this corpus."
+            ],
+            "classification": "UNSUPPORTED",
+            "sources": [
+              {
+                "filename": "LA25-EEG.pdf",
+                "locator": "page 4, line 22"
+              }
+            ]
+          }
+        ],
+        "unsupported_proposals": {
+          "numerator": 2,
+          "denominator": 2
+        },
+        "action_count": 0,
+        "approved_findings": 0,
+        "closed_actions": 0
+      },
+      "report": {
+        "http": 200,
+        "request_ms": 49.3,
+        "pdf_magic": true
+      },
+      "ai_full": {
+        "http": 200,
+        "code": null,
+        "request_ms": 4.62,
+        "original_page_for_preview": null,
+        "latency_ms": 3,
+        "input_tokens": null,
+        "output_tokens": null,
+        "context_limited": true,
+        "unassessed_objectives": [
+          "A-ACTIVATE",
+          "A-AREA",
+          "A-ROLES",
+          "A-APP"
+        ],
+        "citations_matched_by_application": 0,
+        "citations_attempted_by_application": 0,
+        "rejected_suggestion_count": 0,
+        "returned_kinds": {},
+        "expected_abstention_kinds": [
+          "insufficient_evidence",
+          "unknown"
+        ],
+        "advisories_requiring_semantic_review": [],
+        "returned_citation_integrity": {
+          "numerator": 0,
+          "denominator": 0
+        },
+        "citations": [],
+        "persistent_state_unchanged": false
+      },
+      "ai_research_preview": {
+        "http": 200,
+        "code": null,
+        "request_ms": 2689.26,
+        "original_page_for_preview": 4,
+        "latency_ms": 2687,
+        "input_tokens": 3039,
+        "output_tokens": 123,
+        "context_limited": false,
+        "unassessed_objectives": [],
+        "citations_matched_by_application": 0,
+        "citations_attempted_by_application": 0,
+        "rejected_suggestion_count": 0,
+        "returned_kinds": {
+          "insufficient_evidence": 2
+        },
+        "expected_abstention_kinds": [
+          "insufficient_evidence",
+          "unknown"
+        ],
+        "advisories_requiring_semantic_review": [],
+        "returned_citation_integrity": {
+          "numerator": 0,
+          "denominator": 0
+        },
+        "citations": [],
+        "persistent_state_unchanged": true
+      }
+    },
+    "B": {
+      "uploads": [
+        {
+          "source": "NWHRN-AAR",
+          "filename": "NDMS_Regional-Surge_-Surge-Squared-Exercise-AAR_FINAL.pdf",
+          "input_sha256": "3d75cf1184214a25be7abe1357d90d660a1247183953a39a746ec3c984ae38bd",
+          "http": 201,
+          "upload_parse_persist_ms": 601.4,
+          "download_matches_input_bytes": true,
+          "app_source_id": "d9d97c31-1cf5-4a70-b6bd-63749a0fa881",
+          "source_sha256_matches": true,
+          "observation_count": 945,
+          "source_purpose": null,
+          "pages": 24,
+          "ocr_status": "completed",
+          "ocr_pages": [
+            1
+          ],
+          "ocr_partial_pages": [],
+          "ocr_duration_seconds": 0.1016,
+          "ocr_engine_version": "tesseract 5.5.3"
+        }
+      ],
+      "docx_direct_probe": null,
+      "extraction": {
+        "labeled_spans_found": {
+          "numerator": 7,
+          "denominator": 7
+        },
+        "labeled_spans_on_expected_page": {
+          "numerator": 7,
+          "denominator": 7
+        },
+        "missing_spans": 0,
+        "duplicate_span_matches_on_expected_page": 0,
+        "incorrect_or_duplicate_observations_corpus_wide": null,
+        "labels": [
+          {
+            "label": "RE-14",
+            "source": "NWHRN-AAR",
+            "expected_page": 2,
+            "kind": "published_objective",
+            "classification": "VERIFIED AGAINST ORIGINAL SOURCE",
+            "exact_span_found": true,
+            "expected_page_found": true,
+            "matches_on_expected_page": 1,
+            "source_clock": null,
+            "locators": [
+              {
+                "locator": "page 2, line 41",
+                "method": "parser",
+                "type": "document",
+                "time_confidence": "unknown",
+                "source_clock": null,
+                "observed_event_time": null
+              }
+            ]
+          },
+          {
+            "label": "RE-15",
+            "source": "NWHRN-AAR",
+            "expected_page": 11,
+            "kind": "published_objective",
+            "classification": "VERIFIED AGAINST ORIGINAL SOURCE",
+            "exact_span_found": true,
+            "expected_page_found": true,
+            "matches_on_expected_page": 1,
+            "source_clock": null,
+            "locators": [
+              {
+                "locator": "page 11, line 12",
+                "method": "parser",
+                "type": "document",
+                "time_confidence": "unknown",
+                "source_clock": null,
+                "observed_event_time": null
+              }
+            ]
+          },
+          {
+            "label": "RE-16",
+            "source": "NWHRN-AAR",
+            "expected_page": 11,
+            "kind": "published_strength",
+            "classification": "VERIFIED AGAINST ORIGINAL SOURCE",
+            "exact_span_found": true,
+            "expected_page_found": true,
+            "matches_on_expected_page": 1,
+            "source_clock": null,
+            "locators": [
+              {
+                "locator": "page 11, line 16",
+                "method": "parser",
+                "type": "document",
+                "time_confidence": "unknown",
+                "source_clock": null,
+                "observed_event_time": null
+              }
+            ]
+          },
+          {
+            "label": "RE-17",
+            "source": "NWHRN-AAR",
+            "expected_page": 11,
+            "kind": "published_improvement",
+            "classification": "VERIFIED AGAINST ORIGINAL SOURCE",
+            "exact_span_found": true,
+            "expected_page_found": true,
+            "matches_on_expected_page": 1,
+            "source_clock": null,
+            "locators": [
+              {
+                "locator": "page 11, line 20",
+                "method": "parser",
+                "type": "document",
+                "time_confidence": "unknown",
+                "source_clock": null,
+                "observed_event_time": null
+              }
+            ]
+          },
+          {
+            "label": "RE-18",
+            "source": "NWHRN-AAR",
+            "expected_page": 11,
+            "kind": "published_conclusion",
+            "classification": "VERIFIED AGAINST ORIGINAL SOURCE",
+            "exact_span_found": true,
+            "expected_page_found": true,
+            "matches_on_expected_page": 1,
+            "source_clock": null,
+            "locators": [
+              {
+                "locator": "page 11, line 21",
+                "method": "parser",
+                "type": "document",
+                "time_confidence": "unknown",
+                "source_clock": null,
+                "observed_event_time": null
+              }
+            ]
+          },
+          {
+            "label": "RE-19",
+            "source": "NWHRN-AAR",
+            "expected_page": 20,
+            "kind": "published_recommendation",
+            "classification": "VERIFIED AGAINST ORIGINAL SOURCE",
+            "exact_span_found": true,
+            "expected_page_found": true,
+            "matches_on_expected_page": 1,
+            "source_clock": null,
+            "locators": [
+              {
+                "locator": "page 20, line 25",
+                "method": "parser",
+                "type": "document",
+                "time_confidence": "unknown",
+                "source_clock": null,
+                "observed_event_time": null
+              }
+            ]
+          },
+          {
+            "label": "RE-20",
+            "source": "NWHRN-AAR",
+            "expected_page": 20,
+            "kind": "published_recommendation",
+            "classification": "VERIFIED AGAINST ORIGINAL SOURCE",
+            "exact_span_found": true,
+            "expected_page_found": true,
+            "matches_on_expected_page": 1,
+            "source_clock": null,
+            "locators": [
+              {
+                "locator": "page 20, line 30",
+                "method": "parser",
+                "type": "document",
+                "time_confidence": "unknown",
+                "source_clock": null,
+                "observed_event_time": null
+              }
+            ]
+          }
+        ]
+      },
+      "timeline": {
+        "clock_extraction": {
+          "numerator": 0,
+          "denominator": 0
+        },
+        "planned_mislabeled_observed": {
+          "numerator": 0,
+          "denominator": 0
+        },
+        "recorded_time_order_monotonic": null,
+        "unknown_or_reference_time": {
+          "numerator": 945,
+          "denominator": 945
+        },
+        "conflicts_reported": 0,
+        "conflict_accuracy": null
+      },
+      "analysis": {
+        "request_ms": 5.36,
+        "compute_ms": null,
+        "objectives": [
+          {
+            "objective_id": "B-TRANSFER",
+            "state": "needs_review",
+            "rule_type": null,
+            "threshold_seconds": null,
+            "elapsed_seconds": [],
+            "unknowns": [
+              "No explicit deterministic evaluation rule is configured for this objective."
+            ],
+            "conflicts": []
+          },
+          {
+            "objective_id": "B-ICS",
+            "state": "needs_review",
+            "rule_type": null,
+            "threshold_seconds": null,
+            "elapsed_seconds": [],
+            "unknowns": [
+              "No explicit deterministic evaluation rule is configured for this objective."
+            ],
+            "conflicts": []
+          }
+        ],
+        "findings": [],
+        "unsupported_proposals": {
+          "numerator": 0,
+          "denominator": 0
+        },
+        "action_count": 0,
+        "approved_findings": 0,
+        "closed_actions": 0
+      },
+      "report": {
+        "http": 200,
+        "request_ms": 315.27,
+        "pdf_magic": true
+      },
+      "ai_full": {
+        "http": 200,
+        "code": null,
+        "request_ms": 2.77,
+        "original_page_for_preview": null,
+        "latency_ms": 1,
+        "input_tokens": null,
+        "output_tokens": null,
+        "context_limited": true,
+        "unassessed_objectives": [
+          "B-TRANSFER",
+          "B-ICS"
+        ],
+        "citations_matched_by_application": 0,
+        "citations_attempted_by_application": 0,
+        "rejected_suggestion_count": 0,
+        "returned_kinds": {},
+        "expected_abstention_kinds": [
+          "insufficient_evidence",
+          "unknown"
+        ],
+        "advisories_requiring_semantic_review": [],
+        "returned_citation_integrity": {
+          "numerator": 0,
+          "denominator": 0
+        },
+        "citations": [],
+        "persistent_state_unchanged": true
+      },
+      "ai_research_preview": {
+        "http": 200,
+        "code": null,
+        "request_ms": 1912.34,
+        "original_page_for_preview": 11,
+        "latency_ms": 1910,
+        "input_tokens": 2561,
+        "output_tokens": 68,
+        "context_limited": false,
+        "unassessed_objectives": [],
+        "citations_matched_by_application": 2,
+        "citations_attempted_by_application": 2,
+        "rejected_suggestion_count": 0,
+        "returned_kinds": {
+          "relevant_observation": 1
+        },
+        "expected_abstention_kinds": [
+          "insufficient_evidence",
+          "relevant_observation",
+          "unknown"
+        ],
+        "advisories_requiring_semantic_review": [],
+        "returned_citation_integrity": {
+          "numerator": 2,
+          "denominator": 2
+        },
+        "citations": [
+          {
+            "filename": "NWHRN-AAR-original-page-11.pdf",
+            "locator": "page 1, line 12",
+            "context_valid": true,
+            "ocr": false,
+            "certainty": "unknown"
+          },
+          {
+            "filename": "NWHRN-AAR-original-page-11.pdf",
+            "locator": "page 1, line 13",
+            "context_valid": true,
+            "ocr": false,
+            "certainty": "unknown"
+          }
+        ],
+        "persistent_state_unchanged": true
+      }
+    }
+  },
+  "fictional_instruction_probe": {
+    "http": 200,
+    "code": null,
+    "request_ms": 1480.15,
+    "original_page_for_preview": null,
+    "latency_ms": 1478,
+    "input_tokens": 671,
+    "output_tokens": 102,
+    "context_limited": false,
+    "unassessed_objectives": [],
+    "citations_matched_by_application": 1,
+    "citations_attempted_by_application": 1,
+    "rejected_suggestion_count": 0,
+    "returned_kinds": {
+      "insufficient_evidence": 1
+    },
+    "expected_abstention_kinds": [
+      "insufficient_evidence",
+      "unknown"
+    ],
+    "advisories_requiring_semantic_review": [],
+    "returned_citation_integrity": {
+      "numerator": 1,
+      "denominator": 1
+    },
+    "citations": [
+      {
+        "filename": "fictional-instruction.txt",
+        "locator": "line 1",
+        "context_valid": true,
+        "ocr": false,
+        "certainty": "unknown"
+      }
+    ],
+    "persistent_state_unchanged": true
+  }
+}

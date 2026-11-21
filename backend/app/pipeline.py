@@ -10,6 +10,7 @@ from datetime import date, datetime
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from app.evidence import REFERENCE_SOURCE_LABELS
 from app.finding_evidence import stored_evidence_ids
 from app.models import (
     AiCandidatePromotion,
@@ -457,7 +458,12 @@ def _required_field_assessment(
 
 def _evaluate_all(session: Session, exercise: Exercise) -> list[dict]:
     rows = list(
-        session.scalars(select(Observation).where(Observation.exercise_id == exercise.id)).all()
+        session.scalars(
+            select(Observation).where(
+                Observation.exercise_id == exercise.id,
+                Observation.observation_type.not_in(REFERENCE_SOURCE_LABELS),
+            )
+        ).all()
     )
     try:
         exercise_date = date.fromisoformat(exercise.exercise_date)

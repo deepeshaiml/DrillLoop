@@ -1,0 +1,105 @@
+{
+  "A": {
+    "exercise": {
+      "id": "A-LA25-FRC",
+      "title": "LA County 2025 Family Reunification Center \u2014 public planning records",
+      "scenario": "Public planning, evaluation guidance and template. No participant performance observations supplied.",
+      "exercise_date": "2025-07-24",
+      "duration_minutes": 180,
+      "objectives": [
+        {
+          "id": "A-ACTIVATE",
+          "text": "Activate the FIC/FRC plan within 15 minutes of notification.",
+          "evaluation_rule": {
+            "type": "elapsed_time",
+            "threshold_seconds": 900,
+            "start_terms": [
+              "received reddinet message"
+            ],
+            "completion_terms": [
+              "FIC/FRC plan was activated"
+            ]
+          }
+        },
+        {
+          "id": "A-AREA",
+          "text": "Identify a family reunification area within 15 minutes of plan activation.",
+          "evaluation_rule": {
+            "type": "elapsed_time",
+            "threshold_seconds": 900,
+            "start_terms": [
+              "FIC/FRC plan was activated"
+            ],
+            "completion_terms": [
+              "identified with 15-minutes of plan activation"
+            ]
+          }
+        },
+        {
+          "id": "A-ROLES",
+          "text": "Define the roles and responsibilities of staff assigned to the FIC/FRC area.",
+          "evaluation_rule": {
+            "type": "event_presence",
+            "terms": [
+              "Staff was assigned their FIC/FRC role and responsibility"
+            ]
+          }
+        },
+        {
+          "id": "A-APP",
+          "text": "Use the FRC application during FIC/FRC plan activation to support reunification.",
+          "evaluation_rule": {
+            "type": "event_presence",
+            "terms": [
+              "FRC end-user successfully logged into the FRC application"
+            ]
+          }
+        }
+      ]
+    },
+    "sources": {
+      "LA25-PLAN": "planning",
+      "LA25-EEG": "planning",
+      "LA25-CEH": "planning",
+      "LA25-AAR": "planning"
+    },
+    "preview": {
+      "source": "LA25-EEG",
+      "page": 4,
+      "objective_ids": [
+        "A-ROLES",
+        "A-APP"
+      ]
+    }
+  },
+  "B": {
+    "exercise": {
+      "id": "B-NWHRN-2017",
+      "title": "Regional Surge and Regional Surge Squared \u2014 completed public AAR/IP",
+      "scenario": "Published evaluator report for August 1\u20134, 2017. The record uses the first calendar day as its date-indexing window. The report spans multiple days, and its exercise duration is not scored. No primary observations supplied for independent performance scoring.",
+      "exercise_date": "2017-08-01",
+      "duration_minutes": 1440,
+      "objectives": [
+        {
+          "id": "B-TRANSFER",
+          "text": "Receive and provide care for short-notice inpatient transfers in accordance with hospital surge plans."
+        },
+        {
+          "id": "B-ICS",
+          "text": "Use an incident command or incident management system consistent with NIMS."
+        }
+      ]
+    },
+    "duration_note": "Required API duration is the first calendar day indexing window (1,440 minutes). Source provides the August 1\u20134 range and no single elapsed duration. Excluded from scoring.",
+    "sources": {
+      "NWHRN-AAR": "published_evaluation"
+    },
+    "preview": {
+      "source": "NWHRN-AAR",
+      "page": 11,
+      "objective_ids": [
+        "B-ICS"
+      ]
+    }
+  }
+}

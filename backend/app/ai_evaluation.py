@@ -18,12 +18,17 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 from starlette.concurrency import run_in_threadpool
 
-from app.evidence import TIME_RE
+from app.evidence import REFERENCE_SOURCE_LABELS, TIME_RE
 from app.models import Exercise, Observation, Source
 
 MAX_RECORDS = 128
 MAX_REPLY_BYTES = 131_072
 MAX_CITATION_CHARS = 360
+_WORKFLOW_OVERRIDE = re.compile(
+    r"\b(?:ignore|disregard|override)\s+(?:(?:all|the)\s+)?"
+    r"(?:earlier|previous|prior)\s+(?:instructions?|directions?)\b",
+    re.IGNORECASE,
+)
 _DOCUMENT_NOUN = r"(?:entr(?:y|ies)|records?|appendix|documentation)"
 _DOCUMENTATION_GAP = re.compile(
     rf"\bno\s+(?:[\w-]+\s+){{0,7}}{_DOCUMENT_NOUN}\s+"
@@ -405,7 +410,11 @@ def read_context(db: Session, exercise: Exercise, max_input_bytes: int) -> AiCon
             Observation.recognition_confidence,
         )
         .join(Source, Source.id == Observation.source_id)
-        .where(Observation.exercise_id == exercise.id, Source.exercise_id == exercise.id)
+        .where(
+            Observation.exercise_id == exercise.id,
+            Source.exercise_id == exercise.id,
+            Observation.observation_type.not_in(REFERENCE_SOURCE_LABELS),
+        )
         .order_by(Source.created_at, Source.id, Observation.created_at, Observation.id)
         .limit(MAX_RECORDS + 1)
     )
@@ -447,7 +456,7 @@ def read_context(db: Session, exercise: Exercise, max_input_bytes: int) -> AiCon
         raise AiFailure(
             422,
             "AI_EVIDENCE_REQUIRED",
-            "Upload evidence with extracted observations before requesting AI suggestions.",
+            "Upload observed performance evidence before requesting AI suggestions. Planning documents and published evaluations are reference sources.",
         )
     source_order = {source_id: index for index, source_id in enumerate(source_hashes)}
     records.sort(
@@ -771,6 +780,11 @@ def _documentation_excerpt(text: str, excerpt: str) -> str | None:
     return _DOCUMENTATION_GAP.search(clauses[0].group())[0]
 
 
+def contains_workflow_override(text: str) -> bool:
+    """Identify explicit override directives in the complete source record."""
+    return _WORKFLOW_OVERRIDE.search(text) is not None
+
+
 def _resolve_citations(context: AiContext, references: list[ModelCitation]) -> list[Citation]:
     """Return complete scoped observations, never a model-selected fragment.
 
@@ -788,6 +802,7 @@ def _resolve_citations(context: AiContext, references: list[ModelCitation]) -> l
             and len(ref.excerpt) >= min(12, len(original.text.strip()))
             and ref.excerpt in original.text
             and len(original.text) <= MAX_CITATION_CHARS
+            and not contains_workflow_override(original.text)
         ):
             citations.append(original)
     return citations
@@ -966,6 +981,10 @@ def validate_suggestions(
             if matched_start:
                 kind = "corroboration"
                 related = matched_start
+        # Timing and corroboration checks can replace the model's resolved citations.
+        if any(contains_workflow_override(cite.text) for cite in related):
+            ineligible.add(objective)
+            continue
         evidence, opposing = (
             (related[:1], related[1:]) if kind == "contradiction" else (related, [])
         )

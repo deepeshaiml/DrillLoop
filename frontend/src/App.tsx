@@ -12,6 +12,7 @@ import { createCandidateApi } from './candidateApi'
 
 type Tab = 'exercises' | 'overview' | 'objectives' | 'evidence' | 'timeline' | 'findings' | 'actions' | 'reports'
 type ReportDownloadState = { status: 'idle' | 'preparing' | 'started' | 'failed'; message?: string; filename?: string }
+type SourcePurpose = "performance" | "planning" | "published_evaluation"
 type Source = { id: string; filename: string; kind: string; mime_type: string; sha256: string; provenance: Record<string, unknown>; scan_status: string; observation_count: number }
 type Observation = { id: string; source_id: string; source_filename: string; text: string; event_time_raw: string | null; event_time_normalized: string | null; time_confidence: string; source_locator: string; observation_type: string; extraction_method: string; recognition_confidence: number | null }
 type Support = { event_time_raw?: string | null; extraction_method?: string; source_id: string; source_filename: string; observation_id: string; source_locator: string; text: string; event_time_normalized: string | null; time_confidence: string }
@@ -285,6 +286,11 @@ const eventTimeLabel = (value: string) => ({
   uncertain: 'Recognition uncertain',
   unknown: 'Event time not recorded',
 }[value] || value)
+const referencePurposeLabel = (purpose: unknown) => {
+  if (purpose === 'planning') return 'Planning document'
+  if (purpose === 'published_evaluation') return 'Published evaluation'
+  return null
+}
 const scanLabel = (value: Source['scan_status']) => value === 'clean' ? 'Upload scan passed' : value === 'not_scanned' ? 'Upload scan not performed' : `Upload scan: ${value.replace(/_/g, ' ')}`
 const pdfExtractionLabel = (source: Source) => {
   if (source.kind !== 'pdf') return null
@@ -500,13 +506,14 @@ export default function App() {
     setNotice(`${result.candidate_count} evidence-linked draft(s) prepared; ${unresolved} objective(s) need more evidence or evaluator review. ${result.model_status}`)
   })
 
-  const uploadFiles = async (files: File[]): Promise<boolean> => {
+  const uploadFiles = async (files: File[], purpose: SourcePurpose): Promise<boolean> => {
     if (!files.length || uploadLock.current) return false
     uploadLock.current = true
     setUploading(true)
     const succeeded = await withBusy(async () => {
       const form = new FormData()
       files.forEach(file => form.append('files', file))
+      form.append('source_purpose', purpose)
       let result: { message: string }
       try {
         result = await api<{ message: string }>(`/exercises/${selectedId}/evidence`, { method: 'POST', body: form })
@@ -1179,10 +1186,11 @@ function EmptyPanel({ icon, title, description, action }: { icon: React.ReactNod
   return <div className="empty-panel"><span className="empty-panel-icon">{icon}</span><strong>{title}</strong><p>{description}</p>{action && <div className="empty-panel-action">{action}</div>}</div>
 }
 
-function EvidenceView({ data, capabilities, canEdit, busy, uploading, filteredSources, sourceFilter, setSourceFilter, syntheticSourceIds, onUpload, onSource, onEvidence, onGoTimeline, onTranscribe }: { data: Detail; capabilities: Capabilities | null; canEdit: boolean; busy: boolean; uploading: boolean; filteredSources: Source[]; sourceFilter: string; setSourceFilter: (value: string) => void; syntheticSourceIds: Set<string>; onUpload: (files: File[]) => Promise<boolean>; onSource: (source: Source) => void; onEvidence: (item: Support) => void; onGoTimeline: () => void; onTranscribe: (file?: File) => void }) {
+function EvidenceView({ data, capabilities, canEdit, busy, uploading, filteredSources, sourceFilter, setSourceFilter, syntheticSourceIds, onUpload, onSource, onEvidence, onGoTimeline, onTranscribe }: { data: Detail; capabilities: Capabilities | null; canEdit: boolean; busy: boolean; uploading: boolean; filteredSources: Source[]; sourceFilter: string; setSourceFilter: (value: string) => void; syntheticSourceIds: Set<string>; onUpload: (files: File[], purpose: SourcePurpose) => Promise<boolean>; onSource: (source: Source) => void; onEvidence: (item: Support) => void; onGoTimeline: () => void; onTranscribe: (file?: File) => void }) {
   const [dragging, setDragging] = useState(false)
   const [selectedFiles, setSelectedFiles] = useState<File[]>([])
   const [selectionError, setSelectionError] = useState('')
+  const [sourcePurpose, setSourcePurpose] = useState<SourcePurpose>('performance')
   const conflictIds = new Set(data.timeline_conflicts.map(item => item.observation_id))
   const observations = [...data.timeline].sort((left, right) => (left.event_time_normalized || '9999').localeCompare(right.event_time_normalized || '9999'))
   const validateSelection = (files: File[]) => {
@@ -1199,11 +1207,13 @@ function EvidenceView({ data, capabilities, canEdit, busy, uploading, filteredSo
     const next = files ? Array.from(files) : []
     if (!next.length) return
     setSelectedFiles(next)
+    setSourcePurpose('performance')
     setSelectionError(validateSelection(next))
   }
   const submitUpload = async () => {
     if (!selectedFiles.length || selectionError || busy) return
-    if (await onUpload(selectedFiles)) {
+    if (await onUpload(selectedFiles, sourcePurpose)) {
+      setSourcePurpose('performance')
       setSelectedFiles([])
       setSelectionError('')
     }
@@ -1223,6 +1233,15 @@ function EvidenceView({ data, capabilities, canEdit, busy, uploading, filteredSo
     {selectedFiles.length > 0 && <section className="et-upload-review" aria-labelledby="selected-files-heading">
       <div className="et-upload-review-head"><div><h3 id="selected-files-heading">Selected files</h3><p>{uploading ? 'The server is checking and extracting these files.' : `${selectedFiles.length} file${selectedFiles.length === 1 ? '' : 's'} selected for review before import`}</p></div><button type="button" className="et-text-button" onClick={() => { setSelectedFiles([]); setSelectionError('') }} disabled={busy}>Clear selection</button></div>
       <ul className="et-selected-files">{selectedFiles.map((file, index) => <li key={`${file.name}-${file.size}-${index}`}><FileText size={17} /><span><strong title={file.name}>{file.name}</strong><small>{file.size === 0 ? 'Empty file' : file.size < 1024 * 1024 ? `${Math.max(1, Math.round(file.size / 1024))} KB` : `${(file.size / (1024 * 1024)).toFixed(2)} MB`}</small></span><button type="button" className="et-remove-file" aria-label={`Remove ${file.name}`} onClick={() => { const rest = selectedFiles.filter((_, fileIndex) => fileIndex !== index); setSelectedFiles(rest); setSelectionError(validateSelection(rest)) }} disabled={busy}><X size={16} /></button></li>)}</ul>
+      <label className="et-filter-control et-upload-purpose">
+        <span>Source purpose</span>
+        <select value={sourcePurpose} onChange={event => setSourcePurpose(event.target.value as SourcePurpose)} disabled={busy} aria-describedby="source-purpose-help">
+          <option value="performance">Observed performance evidence</option>
+          <option value="planning">Planning document or template</option>
+          <option value="published_evaluation">Published evaluation</option>
+        </select>
+      </label>
+      <p id="source-purpose-help" className="et-locator-help">Choose one purpose for this batch. Plans, templates, and published evaluations are retained for reference outside performance analysis.</p>
       {selectionError && <p className="et-inline-error" role="alert"><AlertTriangle size={16} />{selectionError}</p>}
       {uploading && <p className="et-upload-status" role="status"><LoaderCircle className="spin" size={16} /> {selectedFiles.some(file => /\.pdf$/i.test(file.name)) ? 'Checking the upload and extracting selectable text or scanning PDF pages for OCR. This may take a moment.' : 'Checking and extracting the selected files. This may take a moment.'}</p>}
       <div className="et-upload-review-footer"><span>No source is added until the server finishes checking and extracting the files.</span><button type="button" className="button primary" onClick={() => void submitUpload()} disabled={busy || Boolean(selectionError)}><Upload size={15} />{uploading ? 'Processing evidence…' : `Upload ${selectedFiles.length} file${selectedFiles.length === 1 ? '' : 's'}`}</button></div>
@@ -1235,7 +1254,7 @@ function EvidenceView({ data, capabilities, canEdit, busy, uploading, filteredSo
         const count = source.observation_count
         const sourceTypeIcon = source.kind === 'csv' ? <Activity size={19} /> : source.kind === 'transcript' ? <AudioLines size={19} /> : source.kind === 'pdf' ? <FileText size={19} /> : <MessageSquareText size={19} />
          return <button type="button" className="et-source-card" key={source.id} onClick={() => onSource(source)}>
-          <span className={`et-source-icon ${source.kind}`}>{sourceTypeIcon}</span><span className="et-source-card-copy"><span className="et-source-name-row"><strong title={source.filename}>{source.filename}</strong><span className="et-source-type">{source.kind}</span></span><span className="et-source-summary">{count} extracted observation{count === 1 ? '' : 's'} · SHA-256 {source.sha256.slice(0, 12)}…</span><span className="et-source-badges"><span className={`et-source-badge ${synthetic ? 'synthetic' : 'uploaded'}`}>{synthetic ? 'Fictional demo source' : 'Uploaded source'}</span><span className={`et-scan-badge ${source.scan_status}`}>{scanLabel(source.scan_status)}</span>{pdfExtractionLabel(source) && <span className={`et-source-badge ocr ${source.provenance.ocr_status === 'partial' ? 'partial' : ''}`}>{pdfExtractionLabel(source)}</span>}</span></span><ChevronRight size={18} className="et-source-chevron" aria-hidden="true" />
+          <span className={`et-source-icon ${source.kind}`}>{sourceTypeIcon}</span><span className="et-source-card-copy"><span className="et-source-name-row"><strong title={source.filename}>{source.filename}</strong><span className="et-source-type">{source.kind}</span></span><span className="et-source-summary">{count} extracted observation{count === 1 ? '' : 's'} · SHA-256 {source.sha256.slice(0, 12)}…</span><span className="et-source-badges"><span className={`et-source-badge ${synthetic ? 'synthetic' : 'uploaded'}`}>{synthetic ? 'Fictional demo source' : referencePurposeLabel(source.provenance.source_purpose) || 'Uploaded source'}</span><span className={`et-scan-badge ${source.scan_status}`}>{scanLabel(source.scan_status)}</span>{pdfExtractionLabel(source) && <span className={`et-source-badge ocr ${source.provenance.ocr_status === 'partial' ? 'partial' : ''}`}>{pdfExtractionLabel(source)}</span>}</span></span><ChevronRight size={18} className="et-source-chevron" aria-hidden="true" />
         </button>
       })}</div> : data.sources.length ? <div className="et-empty et-empty-search"><Search size={23} /><h4>No source matches “{sourceFilter}”</h4><p>Clear the search to see all {data.sources.length} source{data.sources.length === 1 ? '' : 's'}.</p><button type="button" className="button secondary" onClick={() => setSourceFilter('')}>Show all sources</button></div> : <div className="et-empty"><div className="et-empty-icon"><FolderOpen size={23} /></div><h4>Upload exercise evidence to begin</h4><p>Add notes, logs, transcripts, or selectable-text reports. DrillLoop will keep each extracted observation linked to its source location.</p></div>}
     </section>
@@ -1283,21 +1302,24 @@ function TimelineView({ data, focusObservationId, onFocusConsumed, onEvidence, o
     return !normalizedQuery || `${event.text} ${event.source_filename} ${event.source_locator} ${event.event_time_raw || ''} ${event.event_time_normalized || ''}`.toLocaleLowerCase().includes(normalizedQuery)
   }
   const filtered = data.timeline.filter(matches)
-  const conflicts = filtered.filter(event => conflictByObservation.has(event.id))
-  const chronological = filtered.filter(event => !conflictByObservation.has(event.id) && Boolean(event.event_time_normalized) && event.time_confidence !== 'unknown').sort((left, right) => (left.event_time_normalized || '').localeCompare(right.event_time_normalized || '') || left.source_filename.localeCompare(right.source_filename) || left.source_locator.localeCompare(right.source_locator))
-  const withoutTime = filtered.filter(event => !conflictByObservation.has(event.id) && (!event.event_time_normalized || event.time_confidence === 'unknown'))
+  const references = filtered.filter(event => referencePurposeLabel(event.observation_type))
+  const performance = filtered.filter(event => !referencePurposeLabel(event.observation_type))
+  const conflicts = performance.filter(event => conflictByObservation.has(event.id))
+  const chronological = performance.filter(event => !conflictByObservation.has(event.id) && Boolean(event.event_time_normalized) && event.time_confidence !== 'unknown').sort((left, right) => (left.event_time_normalized || '').localeCompare(right.event_time_normalized || '') || left.source_filename.localeCompare(right.source_filename) || left.source_locator.localeCompare(right.source_locator))
+  const withoutTime = performance.filter(event => !conflictByObservation.has(event.id) && (!event.event_time_normalized || event.time_confidence === 'unknown'))
   const activeFilters = Boolean(query || sourceId || timeFilter !== 'all')
   const resetFilters = () => { setQuery(''); setSourceId(''); setTimeFilter('all') }
   const openRecord = (event: Observation) => onEvidence({ source_id: event.source_id, source_filename: event.source_filename, observation_id: event.id, source_locator: event.source_locator, text: event.text, event_time_normalized: event.event_time_normalized, time_confidence: event.time_confidence })
-  const renderEvent = (event: Observation, kind: 'ordered' | 'conflict' | 'unknown') => {
+  const renderEvent = (event: Observation, kind: 'ordered' | 'conflict' | 'unknown' | 'reference') => {
     const conflict = conflictByObservation.get(event.id)
     const source = data.sources.find(item => item.id === event.source_id)
     const mentionedTimes = conflict ? timeMentions(event.text) : []
-    const statusText = kind === 'conflict' ? 'Timing disagreement · not ordered' : kind === 'unknown' ? 'Event time not recorded' : eventTimeLabel(event.time_confidence)
+    const referenceLabel = referencePurposeLabel(event.observation_type)
+    const statusText = kind === 'reference' ? 'Reference record' : kind === 'conflict' ? 'Timing disagreement · not ordered' : kind === 'unknown' ? 'Event time not recorded' : eventTimeLabel(event.time_confidence)
     return <article className={`et-timeline-event ${kind} ${event.time_confidence}`} id={`timeline-event-${event.id}`} tabIndex={-1} key={event.id}>
       <div className="et-event-rail" aria-hidden="true"><span className="et-event-dot" /><span className="et-event-line" /></div>
       <div className="et-event-card">
-        <div className="et-event-header"><div className="et-event-time">{kind === 'ordered' ? <><time dateTime={event.event_time_normalized || undefined}>{timelineTime(event.event_time_normalized, data.exercise.exercise_date)}</time><span>{statusText}</span></> : <><strong>{kind === 'conflict' ? 'Time disagreement' : 'No event time recorded'}</strong><span>{statusText}</span></>}</div><span className="et-event-badges"><span className={`et-event-kind ${event.observation_type}`}>{event.observation_type.replace(/_/g, ' ')}</span>{event.recognition_confidence !== null && <span className={`et-recognition ${event.recognition_confidence < .75 ? 'low' : ''}`}>Speech match {Math.round(event.recognition_confidence * 100)}%</span>}</span></div>
+        <div className="et-event-header"><div className="et-event-time">{kind === 'ordered' ? <><time dateTime={event.event_time_normalized || undefined}>{timelineTime(event.event_time_normalized, data.exercise.exercise_date)}</time><span>{statusText}</span></> : <><strong>{kind === 'reference' ? (event.event_time_raw ? `Source clock ${event.event_time_raw}` : 'Reference text') : kind === 'conflict' ? 'Time disagreement' : 'No event time recorded'}</strong><span>{statusText}</span></>}</div><span className="et-event-badges"><span className={`et-event-kind ${event.observation_type}`}>{referenceLabel || event.observation_type.replace(/_/g, ' ')}</span>{event.recognition_confidence !== null && <span className={`et-recognition ${event.recognition_confidence < .75 ? 'low' : ''}`}>Speech match {Math.round(event.recognition_confidence * 100)}%</span>}</span></div>
         <p className="et-event-text">{event.text}</p>
         {kind === 'conflict' && <div className="et-conflict-detail"><div className="et-conflict-detail-heading"><AlertTriangle size={17} /><strong>Two records report different times. Review the originals before drawing a conclusion.</strong></div><p>This source explicitly marks the event time as unresolved. DrillLoop has not selected a time or placed this observation in chronological order.</p>{mentionedTimes.length > 0 && <div className="et-times-mentioned"><span>Times mentioned in this source text</span>{mentionedTimes.map(time => <strong key={time}>{time}</strong>)}</div>}<small>Time attached to this note: {timelineTime(event.event_time_normalized, data.exercise.exercise_date)} · this is separate from the disputed event time.</small></div>}
         {kind === 'unknown' && <p className="et-unknown-note">This observation remains outside the ordered timeline because the source does not provide a reliable event time.</p>}
@@ -1307,7 +1329,7 @@ function TimelineView({ data, focusObservationId, onFocusConsumed, onEvidence, o
     </article>
   }
   return <div className="tab-page et-page">
-    <div className="et-page-head et-timeline-head"><div className="et-page-copy"><p className="et-eyebrow">EVENT SEQUENCE</p><h2 id="timeline-page-title">Timeline</h2><p>See what the records say happened and when. Disputed and missing times stay separate from the ordered events.</p></div><div className="et-timeline-counts"><span><strong>{chronological.length}</strong><small>ordered</small></span><span><strong>{conflicts.length}</strong><small>unresolved</small></span><span><strong>{withoutTime.length}</strong><small>no event time</small></span></div></div>
+    <div className="et-page-head et-timeline-head"><div className="et-page-copy"><p className="et-eyebrow">EVENT SEQUENCE</p><h2 id="timeline-page-title">Timeline</h2><p>See what the records say happened and when. Disputed and missing times stay separate from the ordered events.</p></div><div className="et-timeline-counts"><span><strong>{chronological.length}</strong><small>ordered</small></span><span><strong>{conflicts.length}</strong><small>unresolved</small></span><span><strong>{withoutTime.length}</strong><small>no event time</small></span>{references.length > 0 && <span><strong>{references.length}</strong><small>reference</small></span>}</div></div>
     <div className="et-timeline-note"><HelpCircle size={17} /><p>Only source-reported event times are used for chronology. Transcript offsets locate speech in the recording; they do not establish event time. Disputed or missing times stay unplaced.</p></div>
     {data.timeline.length === 0 ? <div className="et-empty et-timeline-empty"><div className="et-empty-icon"><Clock3 size={24} /></div><h4>Timeline starts with source evidence</h4><p>Upload an exercise log or notes. Observations will appear with their source location and any time found in the record.</p><button type="button" className="button primary" onClick={onGoEvidence}>Open evidence library</button></div> : <>
       <section className="et-timeline-toolbar" aria-label="Timeline filters"><label className="et-timeline-search"><Search size={17} /><span className="sr-only">Search timeline events and source references</span><input value={query} onChange={event => setQuery(event.target.value)} placeholder="Search events or source references" />{query && <button type="button" aria-label="Clear event search" onClick={() => setQuery('')}><X size={15} /></button>}</label><label className="et-filter-control"><span>Source</span><select value={sourceId} onChange={event => setSourceId(event.target.value)}><option value="">All sources</option>{data.sources.map(source => <option key={source.id} value={source.id}>{source.filename}</option>)}</select></label><label className="et-filter-control"><span>Timing</span><select value={timeFilter} onChange={event => setTimeFilter(event.target.value as typeof timeFilter)}><option value="all">All timing states</option><option value="recorded">Time available</option><option value="needs-review">Needs review</option><option value="missing">No event time</option></select></label>{activeFilters && <button type="button" className="et-reset-filters" onClick={resetFilters}>Show all events</button>}</section>
@@ -1315,6 +1337,7 @@ function TimelineView({ data, focusObservationId, onFocusConsumed, onEvidence, o
         {chronological.length > 0 && <section className="et-timeline-group" aria-labelledby="ordered-events-heading"><div className="et-group-heading"><div><span className="et-group-kicker">CHRONOLOGICAL</span><h3 id="ordered-events-heading">Events with a recorded time <span>{chronological.length}</span></h3></div><p>Ordered by the timestamp available in each source.</p></div><div className="et-timeline-list">{chronological.map(event => renderEvent(event, 'ordered'))}</div></section>}
         {conflicts.length > 0 && <section className="et-timeline-group et-conflict-group" aria-labelledby="conflict-events-heading"><div className="et-group-heading"><div><span className="et-group-kicker">REVIEW NEEDED</span><h3 id="conflict-events-heading">Conflicting or unresolved times <span>{conflicts.length}</span></h3></div><p>These records are kept outside the time order until reviewed.</p></div><div className="et-timeline-list">{conflicts.map(event => renderEvent(event, 'conflict'))}</div></section>}
       {withoutTime.length > 0 && <section className="et-timeline-group et-unknown-group" aria-labelledby="unknown-events-heading"><div className="et-group-heading"><div><span className="et-group-kicker">UNPLACED</span><h3 id="unknown-events-heading">No reliable event time <span>{withoutTime.length}</span></h3></div><p>Listed by source reference only; no event order is inferred.</p></div><div className="et-timeline-list">{withoutTime.map(event => renderEvent(event, 'unknown'))}</div></section>}
+        {references.length > 0 && <section className="et-timeline-group" aria-labelledby="reference-events-heading"><div className="et-group-heading"><div><h3 id="reference-events-heading">Reference documents <span>{references.length}</span></h3></div><p>Planning records and published evaluations remain available here with their source wording and locators.</p></div><div className="et-timeline-list">{references.map(event => renderEvent(event, 'reference'))}</div></section>}
       </div>}
     </>}
   </div>
@@ -1339,7 +1362,7 @@ function SourceModal({ source, data, isSynthetic, focusedObservationId, onTimeli
   return <div className="modal-shade et-modal-shade" onMouseDown={event => { if (event.target === event.currentTarget) onClose() }}><section ref={dialogRef} className="et-source-modal" role="dialog" aria-modal="true" aria-labelledby="source-detail-heading" tabIndex={-1}>
     <div className="et-modal-heading"><div className="et-modal-file-icon"><FileText size={19} /></div><div><span>SOURCE DETAILS</span><h2 id="source-detail-heading" title={source.filename}>{source.filename}</h2><small>{source.kind} · {observations.length} extracted observation{observations.length === 1 ? '' : 's'}</small></div><button type="button" className="icon-button" onClick={onClose} aria-label="Close source details"><X size={18} /></button></div>
     {isSynthetic && <div className="et-modal-fictional"><Sparkles size={16} /><strong>Fictional synthetic demo evidence</strong></div>}
-    <div className="et-source-status-row"><span className="et-source-badge uploaded">{isSynthetic ? 'Seeded demo source' : 'Uploaded source'}</span><span className={`et-scan-badge ${source.scan_status}`}>{scanLabel(source.scan_status)}</span>{pdfExtractionLabel(source) && <span className={`et-source-badge ocr ${source.provenance.ocr_status === 'partial' ? 'partial' : ''}`}>{pdfExtractionLabel(source)}</span>}<span>{observations.length} observation{observations.length === 1 ? '' : 's'} extracted</span></div>
+    <div className="et-source-status-row"><span className="et-source-badge uploaded">{isSynthetic ? 'Seeded demo source' : referencePurposeLabel(source.provenance.source_purpose) || 'Uploaded source'}</span><span className={`et-scan-badge ${source.scan_status}`}>{scanLabel(source.scan_status)}</span>{pdfExtractionLabel(source) && <span className={`et-source-badge ocr ${source.provenance.ocr_status === 'partial' ? 'partial' : ''}`}>{pdfExtractionLabel(source)}</span>}<span>{observations.length} observation{observations.length === 1 ? '' : 's'} extracted</span></div>
     <div className="et-source-modal-body"><h3>Extracted observations</h3><p>Source wording stays linked to its original filename and available row, line, page, or transcript locator. OCR wording is unverified machine recognition.</p>
       {source.kind === 'pdf' && <p className="et-locator-help">{provenance.ocr_status === 'partial' ? `OCR was partial on original PDF page${Array.isArray(provenance.ocr_partial_pages) && provenance.ocr_partial_pages.length === 1 ? '' : 's'} ${partialPages}. Readable selectable text is retained; review the listed pages and the original PDF for content that may not have been recovered.` : provenance.ocr_status === 'completed' ? `OCR processed original PDF page${Array.isArray(provenance.ocr_pages) && provenance.ocr_pages.length === 1 ? '' : 's'} ${ocrPages}, including embedded image areas where present. OCR-derived timestamps remain uncertain until checked by a reviewer. OCR citations identify the page because line positions and word confidence are unavailable.` : 'Selectable page text was extracted directly; OCR was not needed.'} The source viewer does not navigate or highlight the PDF page; use the original file download below.</p>}
       {ocrIssues.map((issue, index) => <p className="et-locator-help" key={`${issue.page}-${index}`}>Page {issue.page}: {issue.message}</p>)}

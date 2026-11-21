@@ -18,6 +18,8 @@ from reportlab.platypus import (
     TableStyle,
 )
 
+from app.evidence import REFERENCE_SOURCE_LABELS
+
 NAVY = colors.HexColor("#122a3a")
 TEAL = colors.HexColor("#0c8d8a")
 INK = colors.HexColor("#263849")
@@ -301,6 +303,14 @@ def make_report_pdf(detail: dict) -> bytes:
             prefix = f"<b>{escape(references)}</b> — " if references else ""
             story.append(Paragraph(f"{prefix}{escape(milestone_text)}", styles["DLBody"]))
     story.append(Paragraph("Exercise timeline", styles["DLHead"]))
+    if any(row.get("observation_type") in REFERENCE_SOURCE_LABELS for row in detail["timeline"]):
+        story.append(
+            Paragraph(
+                "Planning documents and published evaluations are included for reference. "
+                "Their source clocks do not establish the time of a recorded exercise event.",
+                styles["DLBody"],
+            )
+        )
     timeline = detail["timeline"]
     if timeline:
         timeline_data = [
@@ -313,9 +323,18 @@ def make_report_pdf(detail: dict) -> bytes:
             when = row["event_time_normalized"] or "Time unknown"
             snippet = row["text"][:165]
             source = f"{row['source_filename']} · {row['source_locator']}"
+            reference_label = REFERENCE_SOURCE_LABELS.get(row.get("observation_type"))
+            if reference_label:
+                source = f"{source} · {reference_label}"
+                if row.get("event_time_raw"):
+                    source = f"{source} · Source clock {row['event_time_raw']}"
+                when = "Reference"
             timeline_data.append(
                 [
-                    Paragraph(escape(when[-8:] if "T" in when else when), styles["DLTableCell"]),
+                    Paragraph(
+                        escape(when[-8:] if row["event_time_normalized"] else when),
+                        styles["DLTableCell"],
+                    ),
                     Paragraph(escape(snippet), styles["DLTableCell"]),
                     Paragraph(escape(source), styles["DLTableCell"]),
                     Paragraph(escape(row["time_confidence"]), styles["DLTableCell"]),

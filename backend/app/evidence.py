@@ -9,6 +9,13 @@ import re
 import time
 from dataclasses import dataclass
 from datetime import date, datetime
+from typing import Literal
+
+SourcePurpose = Literal["performance", "planning", "published_evaluation"]
+REFERENCE_SOURCE_LABELS = {
+    "planning": "Planning document",
+    "published_evaluation": "Published evaluation",
+}
 
 
 @dataclass
@@ -56,18 +63,21 @@ def safe_filename(value: str | None) -> str:
     return normalized[:255] or "evidence"
 
 
-def normalize_time(raw: str | None, exercise_date: date) -> tuple[str | None, str]:
+def normalize_time(
+    raw: str | None, exercise_date: date, *, explicit: bool = False
+) -> tuple[str | None, str]:
     if not raw:
         return None, "unknown"
     candidate = raw.strip()
-    try:
-        parsed = datetime.fromisoformat(candidate.replace("Z", "+00:00"))
-        if parsed.tzinfo:
-            return parsed.isoformat(timespec="seconds"), "certain"
-        return parsed.isoformat(timespec="seconds"), "medium"
-    except ValueError:
-        pass
-    match = TIME_RE.search(candidate)
+    if not explicit or re.search(r"[Tt ]\d", candidate):
+        try:
+            parsed = datetime.fromisoformat(candidate.replace("Z", "+00:00"))
+            if parsed.tzinfo:
+                return parsed.isoformat(timespec="seconds"), "certain"
+            return parsed.isoformat(timespec="seconds"), "medium"
+        except ValueError:
+            pass
+    match = TIME_RE.fullmatch(candidate) if explicit else TIME_RE.search(candidate)
     if not match:
         return None, "unknown"
     time_text = match.group(1)
@@ -567,6 +577,14 @@ def parse_evidence(
                     continue
                 match = PREFIX_TIME_RE.match(line)
                 raw_time = (match.group(1) or match.group(2)) if match else None
+                # A clock inside a bracketed instruction or example is source wording.
+                if (
+                    match
+                    and match.group(1)
+                    and normalize_time(raw_time, exercise_date, explicit=True)[0] is None
+                ):
+                    match = None
+                    raw_time = None
                 text = match.group(3) if match else line
                 observations.append(
                     _observation(

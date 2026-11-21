@@ -243,7 +243,7 @@
 
 .et-upload-review-head p {
   margin: 3px 0 0;
-  color: #73848c;
+  color: #5c707a;
   font-size: 12px;
 }
 
@@ -314,7 +314,7 @@
 }
 
 .et-selected-files small {
-  color: #7c8e96;
+  color: #5c707a;
   font-size: 11px;
 }
 
@@ -360,7 +360,7 @@
 }
 
 .et-upload-review-footer > span {
-  color: #72848b;
+  color: #5c707a;
   font-size: 12px;
   line-height: 1.45;
 }
@@ -2009,4 +2009,12 @@
   .et-dropzone {
     transition: none;
   }
+}
+
+.et-upload-purpose {
+  max-width: 22rem;
+}
+
+.et-upload-purpose select {
+  width: 100%;
 }

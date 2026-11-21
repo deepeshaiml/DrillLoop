@@ -29,3 +29,6 @@ frontend/vite.config.d.ts
 .env.*
 !.env.example
 secrets/
+
+# Private Eureka evaluation inputs, databases and browser captures
+.eureka-private/

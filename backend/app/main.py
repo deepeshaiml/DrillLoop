@@ -15,7 +15,7 @@ from contextlib import asynccontextmanager
 from datetime import date
 from pathlib import Path
 
-from fastapi import Depends, FastAPI, File, HTTPException, Request, Response, UploadFile
+from fastapi import Depends, FastAPI, File, Form, HTTPException, Request, Response, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse, PlainTextResponse
 from fastapi.staticfiles import StaticFiles
@@ -42,7 +42,14 @@ from app.auth import (
     session_secret,
 )
 from app.db import SessionLocal, get_db, init_db
-from app.evidence import EvidenceError, ParsedEvidence, parse_evidence, safe_filename
+from app.evidence import (
+    REFERENCE_SOURCE_LABELS,
+    EvidenceError,
+    ParsedEvidence,
+    SourcePurpose,
+    parse_evidence,
+    safe_filename,
+)
 from app.exercise_access import (
     EDIT_ROLES,
     READ_ROLES,
@@ -331,7 +338,12 @@ def _store_parsed(
     parsed: ParsedEvidence,
     content_bytes: bytes,
     scan_status: str = "not_scanned",
+    source_purpose: SourcePurpose | None = None,
 ) -> Source:
+    provenance = parsed.provenance
+    if source_purpose is not None:
+        provenance = {**provenance, "source_purpose": source_purpose}
+    is_reference = source_purpose in REFERENCE_SOURCE_LABELS
     source = Source(
         id=str(uuid.uuid4()),
         exercise_id=exercise_id,
@@ -341,7 +353,7 @@ def _store_parsed(
         sha256=hashlib.sha256(content_bytes).hexdigest(),
         content_text=parsed.content_text,
         source_bytes=content_bytes,
-        provenance_json=_dump(parsed.provenance),
+        provenance_json=_dump(provenance),
         scan_status=scan_status,
     )
     db.add(source)
@@ -354,10 +366,14 @@ def _store_parsed(
                 source_id=source.id,
                 text=item.text,
                 event_time_raw=item.event_time_raw,
-                event_time_normalized=item.event_time_normalized,
-                time_confidence=item.time_confidence,
+                event_time_normalized=None if is_reference else item.event_time_normalized,
+                time_confidence=(
+                    "unknown"
+                    if is_reference and item.time_confidence != "uncertain"
+                    else item.time_confidence
+                ),
                 source_locator=item.source_locator,
-                observation_type=item.observation_type,
+                observation_type=source_purpose if is_reference else item.observation_type,
                 extraction_method=item.extraction_method,
                 recognition_confidence=item.recognition_confidence,
             )
@@ -868,6 +884,8 @@ def _detail(db: Session, exercise: Exercise) -> dict:
     )
     conflicts = []
     for row in observations:
+        if row.observation_type in REFERENCE_SOURCE_LABELS:
+            continue
         low = row.text.casefold()
         if "unresolved" in low and any(
             term in low for term in ("acknowledgement", "acknowledgment", "time")
@@ -1015,6 +1033,7 @@ def exercise_detail(
 async def upload_evidence(
     exercise_id: str,
     files: list[UploadFile] = File(...),
+    source_purpose: SourcePurpose = Form("performance"),
     identity: Identity = Depends(current_identity),
     db: Session = Depends(get_db),
 ) -> dict:
@@ -1152,6 +1171,7 @@ async def upload_evidence(
             parsed,
             raw,
             scan_result.status,
+            source_purpose,
         )
         committed.append((source, parsed, scan_result, processing_duration))
         created.append(
@@ -1172,6 +1192,7 @@ async def upload_evidence(
                 "sha256": source.sha256,
                 "scan_status": scan_result.status,
                 "processing_status": "accepted",
+                "source_purpose": source_purpose,
                 "scanner_version": scan_result.engine_version,
                 "signature_timestamp": scan_result.signature_timestamp,
                 "scan_duration_seconds": scan_result.duration_seconds,

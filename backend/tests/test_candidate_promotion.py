@@ -14,7 +14,7 @@ from pathlib import Path
 
 import pytest
 from alembic import command
-from app import ai_candidates, main
+from app import ai_candidates, ai_evaluation, candidate_evidence, main
 from app import db as database
 from app.ai_evaluation import AiService
 from app.db import SessionLocal
@@ -43,11 +43,13 @@ from test_ai_candidates import (
     configure_provider,
     create_exercise,
     entry,
+    generate,
     grant,
     login,
     persisted,
     prepare,
     review,
+    save,
     upload_text,
 )
 
@@ -136,6 +138,34 @@ def assert_no_promotions():
         assert not db.scalars(
             select(AiCandidateRequest).where(AiCandidateRequest.operation == "promote")
         ).all()
+
+
+def test_old_candidate_citing_a_workflow_override_remains_historical(promotion_client, monkeypatch):
+    from scripts.evaluate_real_evidence import INSTRUCTION_FIXTURE
+
+    client = promotion_client
+    wording = INSTRUCTION_FIXTURE.decode()
+    create_exercise(client)
+    upload_text(client, "fictional-instruction.txt", wording)
+    configure_provider(entry((1, wording)))
+    with monkeypatch.context() as prior:
+        prior.setattr(ai_evaluation, "contains_workflow_override", lambda _: False)
+        prior.setattr(candidate_evidence, "contains_workflow_override", lambda _: False)
+        url = accept(client)
+        old_token = generate(client)[0]["save_token"]
+
+    reply = save(client, old_token, key="unsaved-before-review")
+    assert reply.status_code == 422, reply.text
+    assert reply.json()["detail"]["code"] == "AI_CITATIONS_INVALID"
+    response = promote(client, url)
+    assert response.status_code == 409, response.text
+    assert response.json()["detail"]["code"] == "AI_CANDIDATE_STALE"
+    saved = client.get(url).json()
+    assert saved["freshness"] == "stale"
+    assert saved["review_state"] == "accepted_for_consideration"
+    assert saved["evidence"][0]["text"] == wording
+    assert "citation_invalid" in saved["stale_reasons"]
+    assert_no_promotions()
 
 
 @pytest.mark.parametrize("decision", ["approved", "rejected"])

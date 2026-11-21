@@ -6,20 +6,16 @@ import argparse
 import json
 import os
 import secrets
-import socket
 import subprocess
 import sys
 import tempfile
-import threading
-import time
-from collections.abc import Iterator
-from contextlib import asynccontextmanager, contextmanager
+from contextlib import asynccontextmanager
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 
-from scripts.isolated_runtime import configure  # noqa: E402
+from scripts.isolated_runtime import configure, serve  # noqa: E402
 
 WORDING = "No matching handoff entry was found in the fictional dispatch notebook."
 EXCERPT = "matching handoff entry was found in the fictional dispatch notebook"
@@ -59,31 +55,6 @@ class FictionalProvider:
                     }
                 )
         return ProviderReply(json.dumps({"suggestions": suggestions}))
-
-
-@contextmanager
-def serve(app, *, port: int = 0) -> Iterator[int]:
-    import uvicorn
-
-    with socket.socket() as listener:
-        listener.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        listener.bind(("127.0.0.1", port))
-        port = listener.getsockname()[1]
-        server = uvicorn.Server(uvicorn.Config(app, log_level="warning", access_log=False))
-        thread = threading.Thread(target=server.run, kwargs={"sockets": [listener]}, daemon=True)
-        thread.start()
-        try:
-            deadline = time.monotonic() + 10
-            while not server.started and thread.is_alive() and time.monotonic() < deadline:
-                time.sleep(0.05)
-            if not server.started:
-                raise RuntimeError("The disposable candidate browser server did not start.")
-            yield port
-        finally:
-            server.should_exit = True
-            thread.join(timeout=10)
-            if thread.is_alive():
-                raise RuntimeError("The disposable candidate browser server did not stop.")
 
 
 def main() -> None:
