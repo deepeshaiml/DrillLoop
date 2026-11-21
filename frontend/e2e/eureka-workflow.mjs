@@ -95,7 +95,19 @@ async function grantReviewer(page) {
 async function upload(page, filenames, purpose) {
   await nav(page, 'Evidence').click()
   await page.locator('.et-select-files input[type=file]').setInputFiles(filenames)
-  if (purpose) await page.getByLabel('Source purpose').selectOption(purpose)
+  const purposeSelect = page.getByLabel('Source purpose')
+  if (purpose) await purposeSelect.selectOption(purpose)
+  if (mode === 'fictional' && axeFile) {
+    const viewport = page.viewportSize()
+    for (const width of [390, 768, 1440]) {
+      await page.setViewportSize({ width, height: viewport.height })
+      await purposeSelect.focus()
+      assert.ok(await purposeSelect.evaluate(node => node === document.activeElement))
+      assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth))
+      await checkAxe(page, '.et-upload-review', `upload review at ${width}px`)
+    }
+    await page.setViewportSize(viewport)
+  }
   await page.getByRole('button', { name: `Upload ${filenames.length} file${filenames.length > 1 ? 's' : ''}`, exact: true }).click()
   for (const name of filenames) {
     await page.locator('.et-source-card').filter({ hasText: basename(name) }).waitFor()
@@ -120,7 +132,7 @@ async function generate(page, status) {
   return reply.json()
 }
 
-async function checkAxe(page, selector) {
+async function checkAxe(page, selector, label = selector) {
   if (!axeFile) return
   if (!await page.evaluate(() => Boolean(window.axe))) await page.addScriptTag({ path: axeFile })
   const violations = await page.evaluate(async selector => {
@@ -130,7 +142,7 @@ async function checkAxe(page, selector) {
     return scan.violations.map(({ id, nodes }) => ({ id, nodes: nodes.map(node => node.target) }))
   }, selector)
   assert.deepEqual(violations, [])
-  checks.push(`axe ${selector}`)
+  checks.push(`axe ${label}`)
 }
 
 async function approveFinding(page, card) {

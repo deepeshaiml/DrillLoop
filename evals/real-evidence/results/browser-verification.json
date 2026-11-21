@@ -3,6 +3,9 @@
     "mode": "fictional",
     "status": "PASS",
     "checks": [
+      "axe upload review at 390px",
+      "axe upload review at 768px",
+      "axe upload review at 1440px",
       "axe .cr-promotion-dialog",
       "seeded objectives, evidence upload, scan OCR and source page, timeline conflicts, five rule proposals, viewer denial",
       "controlled inference, save, independent acceptance, promotion, separate finding approval, action review and closure, PDF download, refresh"
