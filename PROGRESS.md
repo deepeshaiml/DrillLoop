@@ -2,6 +2,12 @@
 
 Updated: 21 November 2026
 
+## Final Eureka release review (21 November 2026)
+
+- Verified PR #10 and the prior merged PR #9. Confirmed the five publisher links, regenerated source fingerprints from the preserved files, and fixed the incorrect LA25-AAR hash printed in the registry. The real-document replay verified 20/20 sampled passages and 4/4 planned clocks outside observed chronology. It produced zero performance findings for the reference-only corpora.
+- Reproduced and fixed an example clock in bracketed PDF prose being mistaken for an event time. Fixed explicit workflow-override wording being eligible as supporting AI evidence. The scoped tests cover exact citation rejection for an advisory and abstention, replay of an older save token, and preservation of a stale candidate's history while blocking promotion. A fresh real-model control abstained with zero citations and no workflow changes.
+- Rehearsed from a fresh owner-marked database. The real browser checked rule execution, original candidate source inspection, human acceptance, a decision-free proposed finding, separate approval, corrective-action closure, refresh, and AI-disabled restart. The six-page PDF passed visual inspection and 13 content checks. The existing 73-second backup decoded successfully and was reused. The public browser cases passed on separate new data. Local backend verification reported 353 passed and one optional scanner skip.
+
 ## V2 authentic evidence and Eureka rehearsal (21 November 2026)
 
 - Verified PR #9 merged at `bea3de957afd6a8c405075387163b6020bd6fe28` with post-merge main CI 44800921506 successful. Started an isolated worktree from that origin/main. The original branch, untracked files, databases, models and worktrees were preserved.

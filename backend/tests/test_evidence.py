@@ -101,12 +101,18 @@ def test_pdf_keeps_bracketed_prose_and_still_extracts_clock_prefixes():
     output = BytesIO()
     pdf = canvas.Canvas(output)
     pdf.drawString(72, 720, "[Insert site name] Exercise planning guide")
-    pdf.drawString(72, 700, "[09:14] Scheduled exercise start")
+    pdf.drawString(72, 700, "[Insert start time, e.g. 09:00] Briefing template")
+    pdf.drawString(72, 680, "[2026-10-16T09:08:00Z] Controller called")
+    pdf.drawString(72, 660, "[09:14] Scheduled exercise start")
     pdf.save()
     parsed = parse_evidence("plan.pdf", "application/pdf", output.getvalue(), date(2026, 10, 16))
-    heading, entry = parsed.observations
+    heading, timed_placeholder, iso_entry, entry = parsed.observations
     assert heading.text == "[Insert site name] Exercise planning guide"
     assert heading.event_time_raw is None
     assert heading.source_locator == "page 1, line 1"
+    assert timed_placeholder.text == "[Insert start time, e.g. 09:00] Briefing template"
+    assert timed_placeholder.event_time_raw is None
+    assert timed_placeholder.event_time_normalized is None
+    assert iso_entry.event_time_normalized == "2026-10-16T09:08:00+00:00"
     assert entry.event_time_raw == "09:14"
     assert entry.event_time_normalized == "2026-10-16T09:14:00"

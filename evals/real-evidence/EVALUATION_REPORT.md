@@ -51,6 +51,12 @@ Citation fidelity and semantic support are separate. None of the research previe
 
 Artifacts: [first deterministic baseline](results/baseline-deterministic.json), [baseline local AI preview](results/baseline-hybrid.json), [final metrics](results/final.json), [browser and PDF checks](results/browser-verification.json), [frozen labels](reference-labels.json), [case setups](cases.json).
 
+## Final release recheck
+
+Recomputed the original and tested PDF hashes, verified the five publisher links and physical page counts, and corrected the LA25-AAR Office fingerprint in the source registry. A fresh API replay recovered 13/13 planning passages and 7/7 published-report passages. All 4/4 schedule clocks remained reference clocks. The replay yielded zero performance findings for the classified public sources.
+
+A focused control showed that the historical instruction-bearing line could also be accepted as a relevant advisory when a scripted provider supplied it as an exact citation. The release rejects that line as AI citation support, keeps its source wording available for inspection, and blocks saving or promotion where a prior token or candidate relies on it. Existing evidence and past decisions retain their recorded history. A fresh local Ollama run returned one abstention with zero citation attempts and no workflow change. The narrower scripted regressions exercise actual citation rejection and historical candidate guards. Different instruction forms and semantic citation quality still require evaluator judgment.
+
 ## Reproduce and adjudicate
 
 1. Download the five public files from the manifest’s `download_url` fields into `.eureka-private/sources/` under their recorded filenames. Verify SHA-256 before using them. If an export changes upstream, acquire and version it separately. Full documents and traces remain private.

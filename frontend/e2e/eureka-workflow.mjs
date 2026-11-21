@@ -79,7 +79,11 @@ async function seed(session) {
   const { page } = session
   const load = page.getByRole('button', { name: 'Load fictional demo', exact: true })
   await load.waitFor()
+  const analysis = page.waitForResponse(response => response.url().endsWith('/api/demo/seed'))
   await load.click()
+  const response = await analysis
+  assert.equal(response.status(), 200)
+  assert.equal((await response.json()).analysis.candidate_count, 5)
   await view(page, exerciseId, title)
 }
 
@@ -198,6 +202,13 @@ async function fictional() {
   await view(rp, exerciseId, title)
   await nav(rp, 'Findings').click()
   await rp.getByRole('button', { name: 'Open candidate for OBJ-03', exact: true }).click()
+  const evidence = candidate(rp).getByRole('region', { name: 'Original evidence' })
+  await evidence.getByRole('button', { name: /Inspect source/ }).click()
+  const handoff = rp.getByRole('dialog', { name: 'fictional_pharmacy_handoff.txt' })
+  await handoff.getByText(observation, { exact: true }).waitFor()
+  await handoff.getByText('line 1', { exact: true }).waitFor()
+  await rp.keyboard.press('Escape')
+  await handoff.waitFor({ state: 'hidden' })
   await candidate(rp).getByRole('button', { name: 'Accept for consideration', exact: true }).click()
   await rp.getByRole('dialog', { name: 'Accept for consideration', exact: true })
     .getByRole('button', { name: 'Confirm decision' }).click()
@@ -261,7 +272,7 @@ async function fictional() {
   await view(page, exerciseId, title)
   assert.deepEqual(await request(operator, path, 200), closed)
   checks.push('seeded objectives, evidence upload, scan OCR and source page, timeline conflicts, five rule proposals, viewer denial',
-    'controlled inference, save, independent acceptance, promotion, separate finding approval, action review and closure, PDF download, refresh')
+    'controlled inference, save, original citation inspection, independent acceptance, promotion, separate finding approval, action review and closure, PDF download, refresh')
 }
 
 async function restart() {

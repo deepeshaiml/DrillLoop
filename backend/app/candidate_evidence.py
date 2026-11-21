@@ -27,6 +27,7 @@ from app.ai_evaluation import (
     ProviderReply,
     StrictModel,
     Suggestion,
+    contains_workflow_override,
     read_context,
     validate_suggestions,
 )
@@ -410,6 +411,7 @@ def stale_reasons(
     if any(
         context.observations.get(cite.observation_id) != cite.observation_fingerprint
         or cite != context.citation(current_citations[cite.observation_id])
+        or contains_workflow_override(current_citations[cite.observation_id].text)
         for cite in citations
     ):
         reasons.append("citation_invalid")

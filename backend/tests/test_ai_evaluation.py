@@ -1036,3 +1036,30 @@ def test_invalid_reference_purpose_does_not_import_evidence(ai_client):
     )
     assert reply.status_code == 422
     assert ai_client.get(base).json()["sources"] == []
+
+
+@pytest.mark.parametrize("kind", ["relevant_observation", "insufficient_evidence"])
+def test_workflow_override_line_cannot_support_an_ai_candidate(ai_client, kind):
+    from scripts.evaluate_real_evidence import INSTRUCTION_FIXTURE
+
+    base = create(ai_client)
+    upload(ai_client, base, INSTRUCTION_FIXTURE, "fictional-instruction.txt")
+    before = ai_client.get(base).json()
+    assert before["timeline"][0]["text"] == INSTRUCTION_FIXTURE.decode()
+    fake(
+        lambda _: {
+            "suggestions": [
+                suggestion(
+                    excerpt=INSTRUCTION_FIXTURE.decode(),
+                    kind=kind,
+                    missing_information=["completion_record"],
+                )
+            ]
+        }
+    )
+    response = ai_client.post(AI)
+    assert response.status_code == 200, response.text
+    assert response.json()["suggestions"] == []
+    assert response.json()["unassessed_objective_ids"] == ["PUMP"]
+    assert ai_client.get(base).json() == before
+    assert ai_client.get(f"{base}/ai-candidates").json()["candidates"] == []
