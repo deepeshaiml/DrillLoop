@@ -1,6 +1,14 @@
 # DrillLoop Progress
 
-Updated: 20 November 2026
+Updated: 21 November 2026
+
+## V2 authentic evidence and Eureka rehearsal (21 November 2026)
+
+- Verified PR #9 merged at `bea3de957afd6a8c405075387163b6020bd6fe28` with post-merge main CI 44800921506 successful. Started an isolated worktree from that origin/main. The original branch, untracked files, databases, models and worktrees were preserved.
+- Registered four publisher-linked LA County 2025 FRC Office files and the original NWHRN completed report PDF. The County files were rendered to PDFs privately. The 2025 MSEL and published County AAR were unavailable, restricted data were excluded, and Case C was omitted. Evidence and traces remained local. [Source manifest](evals/real-evidence/SOURCE_REGISTRY.md).
+- Confirmed and fixed two P1 defects. Square-bracket editorial placeholders could reject a PDF. Expected critical tasks could produce positive performance proposals when imported as observed records. Reference purpose now preserves references and source clocks while excluding them from performance inference. Frozen samples improved from 10/20 to 20/20 exact passages at their expected pages, and 4/4 scheduled clocks stayed outside observed chronology. [Measured results](evals/real-evidence/EVALUATION_REPORT.md).
+- The final local suite reported 350 passed and one ClamAV skip. Ruff, frontend build and both dependency audits passed. Existing Chromium live, scanned and mixed OCR, and candidate guard scenarios passed. The controlled Eureka journey passed independent finding approval, closure, download and AI-disabled restart. Both public UI flows passed. The real local fictional AI run returned 5 advisories with 10/10 exact citations and no workflow changes. Two timing interpretations needed review. The instruction negative control abstained but retained the instruction-bearing citation.
+- Generated and checked the six-page fictional output and sampled the public exports. Captured and decoded two real Playwright session recordings. [Demo readiness and artifacts](docs/demo/EUREKA_FINAL_READINESS.md).
 
 ## V2 Phase 4C.3 — Saved AI candidate review (20 November 2026)
 

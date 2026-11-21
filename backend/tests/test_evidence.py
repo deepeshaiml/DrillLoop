@@ -95,3 +95,18 @@ def test_selectable_text_pdf_is_extracted_with_page_locator():
     assert parsed.kind == "pdf"
     assert parsed.observations[0].source_locator == "page 1, line 1"
     assert parsed.observations[0].event_time_normalized == "2026-10-16T09:14:00"
+
+
+def test_pdf_keeps_bracketed_prose_and_still_extracts_clock_prefixes():
+    output = BytesIO()
+    pdf = canvas.Canvas(output)
+    pdf.drawString(72, 720, "[Insert site name] Exercise planning guide")
+    pdf.drawString(72, 700, "[09:14] Scheduled exercise start")
+    pdf.save()
+    parsed = parse_evidence("plan.pdf", "application/pdf", output.getvalue(), date(2026, 10, 16))
+    heading, entry = parsed.observations
+    assert heading.text == "[Insert site name] Exercise planning guide"
+    assert heading.event_time_raw is None
+    assert heading.source_locator == "page 1, line 1"
+    assert entry.event_time_raw == "09:14"
+    assert entry.event_time_normalized == "2026-10-16T09:14:00"

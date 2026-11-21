@@ -984,3 +984,55 @@ def test_ollama_transport_is_local_bounded_and_rejects_unavailable_models(
 class _OversizedBody(httpx.AsyncByteStream):
     async def __aiter__(self):
         yield b"X" * (MAX_REPLY_BYTES + 1)
+
+
+@pytest.mark.parametrize("purpose", ["planning", "published_evaluation"])
+def test_reference_upload_is_citable_but_excluded_from_performance_and_ai(ai_client, purpose):
+    base = create(ai_client)
+    wording = "Backup pump reached stable pressure."
+    provider = fake(lambda _: {"suggestions": []})
+    reply = ai_client.post(
+        f"{base}/evidence",
+        files={
+            "files": (
+                "reference.txt",
+                f"[14:03] {wording}\nThe exercise time is unresolved.",
+                "text/plain",
+            )
+        },
+        data={"source_purpose": purpose},
+    )
+    assert reply.status_code == 201, reply.text
+    detail = ai_client.get(base).json()
+    (source,) = detail["sources"]
+    assert source["provenance"]["source_purpose"] == purpose
+    clock = next(row for row in detail["timeline"] if row["event_time_raw"])
+    assert (clock["event_time_raw"], clock["event_time_normalized"]) == ("14:03", None)
+    assert clock["observation_type"] == purpose
+    assert clock["source_locator"] == "line 1"
+    assert detail["timeline_conflicts"] == []
+    document = ai_client.get(f"/api/sources/{source['id']}/download")
+    assert document.status_code == 200
+    assert wording.encode() in document.content
+    proposal = ai_client.post(f"{base}/analyze")
+    assert proposal.json()["candidate_count"] == 0
+    reply = ai_client.post(AI)
+    assert reply.status_code == 422
+    assert reply.json()["detail"]["code"] == "AI_EVIDENCE_REQUIRED"
+    assert provider.inputs == []
+    upload(ai_client, base, NORMAL.encode(), "observed.txt")
+    assert ai_client.post(f"{base}/analyze").json()["candidate_count"] == 1
+    reply = ai_client.post(AI)
+    assert reply.status_code == 200, reply.text
+    assert [item["text"] for item in provider.inputs[0]["records"]] == [NORMAL]
+
+
+def test_invalid_reference_purpose_does_not_import_evidence(ai_client):
+    base = create(ai_client)
+    reply = ai_client.post(
+        f"{base}/evidence",
+        files={"files": ("reference.txt", NORMAL, "text/plain")},
+        data={"source_purpose": "unrecognized-purpose"},
+    )
+    assert reply.status_code == 422
+    assert ai_client.get(base).json()["sources"] == []

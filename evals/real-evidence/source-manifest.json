@@ -1,0 +1,313 @@
+{
+  "schema_version": 1,
+  "sources": [
+    {
+      "id": "LA25-PLAN",
+      "url": "https://docs.google.com/document/d/18dKfXWqGLYgoO0xu-xVfGf7mHJ2ENDrF/edit?usp=sharing",
+      "download_url": "https://docs.google.com/document/d/18dKfXWqGLYgoO0xu-xVfGf7mHJ2ENDrF/export?format=docx",
+      "downloaded_at": "2026-11-21T05:26:54+00:00",
+      "filename": "LA25-PLAN.docx",
+      "bytes": 457580,
+      "sha256": "a952c1af6d2c4292ddb41445945764db0e3fc5fd6dc648008d48960d31ce1c35",
+      "title": "2025 FRC Exercise Plan",
+      "publisher": "Los Angeles County EMS Agency / Hospital Preparedness Program",
+      "publication_date": null,
+      "exercise_date": "2025-07-24",
+      "county_catalog_file_url": "https://file.lacounty.gov/SDSInter/dhs/1181127_1-2025FRCExercisePlan.docx",
+      "county_catalog_download_status": "Public asset downloads returned redirect loops or HTTP 403 in this environment; the publisher-linked Coalition copy is the alternate.",
+      "classification": [
+        "ORIGINAL PUBLIC DOCUMENT"
+      ],
+      "access": "Public anonymous download",
+      "reuse": "Redistribution rights unverified. Local evaluation only; keep originals and derivatives private.",
+      "sensitive_data": "Public professional contact/organization details may appear. Desk review found no patient-identifiable records; no restricted patient/seeker spreadsheets accessed.",
+      "original_page_count": null,
+      "page_count_note": "DOCX has no fixed pagination, and the available Office export does not supply a page count.",
+      "source_format_note": "Publisher-listed DOCX downloaded through Google Docs Office export; identity to the County file server copy is unverified.",
+      "evaluation_input": {
+        "filename": "LA25-PLAN.pdf",
+        "kind": "local PDF rendering of publisher-linked DOCX",
+        "sha256": "a5e033884b6f486f1a5e6fabca4465e0c6e24407618de22ab6ea4779cd4c1d8b",
+        "bytes": 342143,
+        "page_count": 27,
+        "converter": "LibreOffice 26.8.1.1"
+      }
+    },
+    {
+      "id": "LA25-EEG",
+      "url": "https://docs.google.com/document/d/1ItxpOMNXp0TdK88TbrQofhRD9O3UX4Ff/edit?usp=sharing",
+      "download_url": "https://docs.google.com/document/d/1ItxpOMNXp0TdK88TbrQofhRD9O3UX4Ff/export?format=docx",
+      "downloaded_at": "2026-11-21T05:26:54+00:00",
+      "filename": "LA25-EEG.docx",
+      "bytes": 431423,
+      "sha256": "20b9281df6fb073f2694f5711ee107123473a664d83ed038b1893f565304c2cd",
+      "title": "2025 FRC Exercise Evaluation Guide",
+      "publisher": "Los Angeles County EMS Agency / Hospital Preparedness Program",
+      "publication_date": null,
+      "exercise_date": "2025-07-24",
+      "county_catalog_file_url": "https://file.lacounty.gov/SDSInter/dhs/1181128_2-2025FRCExerciseEvaluationGuide.docx",
+      "county_catalog_download_status": "Public asset downloads returned redirect loops or HTTP 403 in this environment; the publisher-linked Coalition copy is the alternate.",
+      "classification": [
+        "ORIGINAL PUBLIC DOCUMENT"
+      ],
+      "access": "Public anonymous download",
+      "reuse": "Redistribution rights unverified. Local evaluation only; keep originals and derivatives private.",
+      "sensitive_data": "Public professional contact/organization details may appear. Desk review found no patient-identifiable records; no restricted patient/seeker spreadsheets accessed.",
+      "original_page_count": null,
+      "page_count_note": "DOCX has no fixed pagination, and the available Office export does not supply a page count.",
+      "source_format_note": "Publisher-listed DOCX downloaded through Google Docs Office export; identity to the County file server copy is unverified.",
+      "evaluation_input": {
+        "filename": "LA25-EEG.pdf",
+        "kind": "local PDF rendering of publisher-linked DOCX",
+        "sha256": "008f1a6f21e3478ead230cc87b64baa0da143a81a41789c636df5ac60d85163b",
+        "bytes": 108155,
+        "page_count": 7,
+        "converter": "LibreOffice 26.8.1.1"
+      }
+    },
+    {
+      "id": "LA25-CEH",
+      "url": "https://docs.google.com/document/d/1PQ0SHaduR5TqxPnrnazI_5-zXrshxltk/edit?usp=sharing",
+      "download_url": "https://docs.google.com/document/d/1PQ0SHaduR5TqxPnrnazI_5-zXrshxltk/export?format=docx",
+      "downloaded_at": "2026-11-21T05:26:54+00:00",
+      "filename": "LA25-CEH.docx",
+      "bytes": 474841,
+      "sha256": "0fc3a8d71dc86b8e0941c2ed7a7a40082894eb08d15f8315115b273c87ee54e6",
+      "title": "2025 FRC Controller Evaluator Handbook",
+      "publisher": "Los Angeles County EMS Agency / Hospital Preparedness Program",
+      "publication_date": null,
+      "exercise_date": "2025-07-24",
+      "county_catalog_file_url": "https://file.lacounty.gov/SDSInter/dhs/1181129_3-2025FRCControllerEvaluatorHandbook.docx",
+      "county_catalog_download_status": "Public asset downloads returned redirect loops or HTTP 403 in this environment; the publisher-linked Coalition copy is the alternate.",
+      "classification": [
+        "ORIGINAL PUBLIC DOCUMENT"
+      ],
+      "access": "Public anonymous download",
+      "reuse": "Redistribution rights unverified. Local evaluation only; keep originals and derivatives private.",
+      "sensitive_data": "Public professional contact/organization details may appear. Desk review found no patient-identifiable records; no restricted patient/seeker spreadsheets accessed.",
+      "original_page_count": null,
+      "page_count_note": "DOCX has no fixed pagination, and the available Office export does not supply a page count.",
+      "source_format_note": "Publisher-listed DOCX downloaded through Google Docs Office export; identity to the County file server copy is unverified.",
+      "evaluation_input": {
+        "filename": "LA25-CEH.pdf",
+        "kind": "local PDF rendering of publisher-linked DOCX",
+        "sha256": "62da92b03a1f38d3a3797e22a6b16648435ddc89aa2a78fc7f44ee4205e162f2",
+        "bytes": 510818,
+        "page_count": 32,
+        "converter": "LibreOffice 26.8.1.1"
+      }
+    },
+    {
+      "id": "LA25-MSEL",
+      "url": "https://drive.google.com/file/d/1KEZsS9OKXUX3fFwBpVavwU5jO11qADjL/view?usp=sharing",
+      "download_url": "https://drive.google.com/uc?export=download&id=1KEZsS9OKXUX3fFwBpVavwU5jO11qADjL",
+      "error": "curl: (56) The requested URL returned error: 403",
+      "alternate_download_error": "curl: (56) The requested URL returned error: 403",
+      "title": "2025 FRC Master Scenario Event List",
+      "publisher": "Los Angeles County EMS Agency / Hospital Preparedness Program",
+      "publication_date": null,
+      "exercise_date": "2025-07-24",
+      "county_catalog_file_url": "https://file.lacounty.gov/SDSInter/dhs/1181132_6-2025FRCMSEL.pdf",
+      "county_catalog_download_status": "Public asset downloads returned redirect loops or HTTP 403 in this environment; the publisher-linked Coalition copy is the alternate.",
+      "classification": [
+        "UNAVAILABLE OR RESTRICTED",
+        "PLANNED EXERCISE INJECT"
+      ],
+      "access": "Unavailable from download endpoints tried; public viewer listing alone is insufficient to verify file contents.",
+      "reuse": "Unknown; no bytes acquired.",
+      "sensitive_data": "Not assessed."
+    },
+    {
+      "id": "LA25-AAR",
+      "url": "https://docs.google.com/document/d/14UE1jX3dsBKbx2T90UVKiteIy9fT4HJF/edit?usp=sharing",
+      "download_url": "https://docs.google.com/document/d/14UE1jX3dsBKbx2T90UVKiteIy9fT4HJF/export?format=docx",
+      "downloaded_at": "2026-11-21T05:26:54+00:00",
+      "filename": "LA25-AAR.docx",
+      "bytes": 440265,
+      "sha256": "c96468328c46fa71b722bbe2d381210d5ce44d2d0ee326426f32fa4813c1cddc",
+      "title": "2025 FRC After-Action Report / Improvement Plan (Guide)",
+      "publisher": "Los Angeles County EMS Agency / Hospital Preparedness Program",
+      "publication_date": null,
+      "exercise_date": "2025-07-24",
+      "county_catalog_file_url": "https://file.lacounty.gov/SDSInter/dhs/1181130_4-2025FRCAfter-ActionReportImprovementPlan_Guide_.docx",
+      "county_catalog_download_status": "Public asset downloads returned redirect loops or HTTP 403 in this environment; the publisher-linked Coalition copy is the alternate.",
+      "classification": [
+        "ORIGINAL PUBLIC DOCUMENT",
+        "REFERENCE TEMPLATE"
+      ],
+      "access": "Public anonymous download",
+      "reuse": "Redistribution rights unverified. Local evaluation only; keep originals and derivatives private.",
+      "sensitive_data": "Public professional contact/organization details may appear. Desk review found no patient-identifiable records; no restricted patient/seeker spreadsheets accessed.",
+      "original_page_count": null,
+      "page_count_note": "DOCX has no fixed pagination, and the available Office export does not supply a page count.",
+      "source_format_note": "Publisher-listed DOCX downloaded through Google Docs Office export; identity to the County file server copy is unverified.",
+      "evaluation_input": {
+        "filename": "LA25-AAR.pdf",
+        "kind": "local PDF rendering of publisher-linked DOCX",
+        "sha256": "d08ddb1cf3d505e011a06132b2424a10b1adc62131e3765f2dec5273209e504b",
+        "bytes": 216656,
+        "page_count": 11,
+        "converter": "LibreOffice 26.8.1.1"
+      }
+    },
+    {
+      "id": "LA25-PUBLISHED",
+      "url": "https://drive.google.com/file/d/1G4wINdCIkBpeL4a-ZrgbWMW_tgphloXU/view?usp=sharing",
+      "download_url": "https://drive.google.com/uc?export=download&id=1G4wINdCIkBpeL4a-ZrgbWMW_tgphloXU",
+      "error": "curl: (56) The requested URL returned error: 403",
+      "alternate_download_error": "curl: (56) The requested URL returned error: 403",
+      "title": "2025 FRC Completed After-Action Report / Improvement Plan",
+      "publisher": "Los Angeles County EMS Agency / Hospital Preparedness Program",
+      "publication_date": null,
+      "exercise_date": "2025-07-24",
+      "classification": [
+        "UNAVAILABLE OR RESTRICTED"
+      ],
+      "access": "Unavailable from download endpoints tried; public viewer listing alone is insufficient to verify file contents.",
+      "reuse": "Unknown; no bytes acquired.",
+      "sensitive_data": "Not assessed.",
+      "assessment_note": "Coalition lists this under After-Action Reports. Contents could not be authenticated from a usable public download."
+    },
+    {
+      "id": "LA26-PLAN",
+      "url": "https://drive.google.com/file/d/1xJdG90_vPpk-tpB_MGTexPmiPMvO_cqR/view?usp=sharing",
+      "download_url": "https://drive.google.com/uc?export=download&id=1xJdG90_vPpk-tpB_MGTexPmiPMvO_cqR",
+      "error": "curl: (56) The requested URL returned error: 403",
+      "alternate_download_error": "curl: (56) The requested URL returned error: 403",
+      "title": "2026 FRC Exercise Plan",
+      "publisher": "Los Angeles County EMS Agency / Hospital Preparedness Program",
+      "publication_date": null,
+      "exercise_date": "2026-07-23",
+      "county_catalog_file_url": "https://file.lacounty.gov/SDSInter/dhs/1204718_1-2026FRCExercisePlan-ADA.pdf",
+      "county_catalog_download_status": "Public asset downloads returned redirect loops or HTTP 403 in this environment; the publisher-linked Coalition copy is the alternate.",
+      "classification": [
+        "UNAVAILABLE OR RESTRICTED"
+      ],
+      "access": "Unavailable from download endpoints tried; public viewer listing alone is insufficient to verify file contents.",
+      "reuse": "Unknown; no bytes acquired.",
+      "sensitive_data": "Not assessed.",
+      "publisher_web_view_page_count": 18,
+      "assessment_note": "County-hosted web viewer copy reviewed for scenario separation. Local public download did not return usable bytes."
+    },
+    {
+      "id": "LA26-EEG",
+      "url": "https://drive.google.com/file/d/1hdOhOzcEUe964fLTDTYJObLQJ_iFdQDR/view?usp=sharing",
+      "download_url": "https://drive.google.com/uc?export=download&id=1hdOhOzcEUe964fLTDTYJObLQJ_iFdQDR",
+      "error": "curl: (56) The requested URL returned error: 403",
+      "alternate_download_error": "curl: (56) The requested URL returned error: 403",
+      "title": "2026 FRC Exercise Evaluation Guide",
+      "publisher": "Los Angeles County EMS Agency / Hospital Preparedness Program",
+      "publication_date": null,
+      "exercise_date": "2026-07-23",
+      "county_catalog_file_url": "https://file.lacounty.gov/SDSInter/dhs/1204719_2-2026FRCExerciseEvaluationGuide-ADA.pdf",
+      "county_catalog_download_status": "Public asset downloads returned redirect loops or HTTP 403 in this environment; the publisher-linked Coalition copy is the alternate.",
+      "classification": [
+        "UNAVAILABLE OR RESTRICTED"
+      ],
+      "access": "Unavailable from download endpoints tried; public viewer listing alone is insufficient to verify file contents.",
+      "reuse": "Unknown; no bytes acquired.",
+      "sensitive_data": "Not assessed."
+    },
+    {
+      "id": "LA26-CEH",
+      "url": "https://drive.google.com/file/d/1ckr6GKZHGGN1OZZMH8Qtjn1cpRY9swxJ/view?usp=sharing",
+      "download_url": "https://drive.google.com/uc?export=download&id=1ckr6GKZHGGN1OZZMH8Qtjn1cpRY9swxJ",
+      "error": "curl: (56) The requested URL returned error: 403",
+      "alternate_download_error": "curl: (56) The requested URL returned error: 403",
+      "title": "2026 FRC Controller Evaluator Handbook",
+      "publisher": "Los Angeles County EMS Agency / Hospital Preparedness Program",
+      "publication_date": null,
+      "exercise_date": "2026-07-23",
+      "county_catalog_file_url": "https://file.lacounty.gov/SDSInter/dhs/1204721_3-2026FRCControllerEvaluatorHandbook-ADA.pdf",
+      "county_catalog_download_status": "Public asset downloads returned redirect loops or HTTP 403 in this environment; the publisher-linked Coalition copy is the alternate.",
+      "classification": [
+        "UNAVAILABLE OR RESTRICTED"
+      ],
+      "access": "Unavailable from download endpoints tried; public viewer listing alone is insufficient to verify file contents.",
+      "reuse": "Unknown; no bytes acquired.",
+      "sensitive_data": "Not assessed."
+    },
+    {
+      "id": "LA26-MSEL",
+      "url": "https://drive.google.com/file/d/1KxBgXqCgTeishaHHK_HEz_fyzTZlVc74/view?usp=sharing",
+      "download_url": "https://drive.google.com/uc?export=download&id=1KxBgXqCgTeishaHHK_HEz_fyzTZlVc74",
+      "error": "curl: (56) The requested URL returned error: 403",
+      "alternate_download_error": "curl: (56) The requested URL returned error: 403",
+      "title": "2026 FRC Master Scenario Event List",
+      "publisher": "Los Angeles County EMS Agency / Hospital Preparedness Program",
+      "publication_date": null,
+      "exercise_date": "2026-07-23",
+      "county_catalog_file_url": "https://file.lacounty.gov/SDSInter/dhs/1204727_2026FRCMSEL-ADA.pdf",
+      "county_catalog_download_status": "Public asset downloads returned redirect loops or HTTP 403 in this environment; the publisher-linked Coalition copy is the alternate.",
+      "classification": [
+        "UNAVAILABLE OR RESTRICTED",
+        "PLANNED EXERCISE INJECT"
+      ],
+      "access": "Unavailable from download endpoints tried; public viewer listing alone is insufficient to verify file contents.",
+      "reuse": "Unknown; no bytes acquired.",
+      "sensitive_data": "Not assessed."
+    },
+    {
+      "id": "LA26-AAR",
+      "url": "https://drive.google.com/file/d/1buhqdYRHOCdelaNOYzvikS7-AxZeecIJ/view?usp=sharing",
+      "download_url": "https://drive.google.com/uc?export=download&id=1buhqdYRHOCdelaNOYzvikS7-AxZeecIJ",
+      "error": "curl: (56) The requested URL returned error: 403",
+      "alternate_download_error": "curl: (56) The requested URL returned error: 403",
+      "title": "2026 FRC After-Action Report / Improvement Plan (Guide)",
+      "publisher": "Los Angeles County EMS Agency / Hospital Preparedness Program",
+      "publication_date": null,
+      "exercise_date": "2026-07-23",
+      "county_catalog_file_url": "https://file.lacounty.gov/SDSInter/dhs/1204723_4-2026FRCAfter-ActionReportImprovementPlan_Guide_-ADA.pdf",
+      "county_catalog_download_status": "Public asset downloads returned redirect loops or HTTP 403 in this environment; the publisher-linked Coalition copy is the alternate.",
+      "classification": [
+        "UNAVAILABLE OR RESTRICTED",
+        "REFERENCE TEMPLATE"
+      ],
+      "access": "Unavailable from download endpoints tried; public viewer listing alone is insufficient to verify file contents.",
+      "reuse": "Unknown; no bytes acquired.",
+      "sensitive_data": "Not assessed.",
+      "publisher_web_view_page_count": 9,
+      "assessment_note": "County-hosted web viewer copy is a guidance/template with placeholders. Local public download did not return usable bytes."
+    },
+    {
+      "id": "NWHRN-AAR",
+      "url": "https://nwhrn.org/wp-content/uploads/2018/01/NDMS_Regional-Surge_-Surge-Squared-Exercise-AAR_FINAL.pdf",
+      "download_url": "https://nwhrn.org/wp-content/uploads/2018/01/NDMS_Regional-Surge_-Surge-Squared-Exercise-AAR_FINAL.pdf",
+      "downloaded_at": "2026-11-21T05:26:02Z",
+      "filename": "NDMS_Regional-Surge_-Surge-Squared-Exercise-AAR_FINAL.pdf",
+      "bytes": 276129,
+      "sha256": "3d75cf1184214a25be7abe1357d90d660a1247183953a39a746ec3c984ae38bd",
+      "title": "Regional Surge and Regional Surge Squared Functional Exercises After-Action Report/Improvement Plan",
+      "publisher": "Northwest Healthcare Response Network",
+      "publication_date": "2018-01",
+      "exercise_date": "2017-08-01/2017-08-04",
+      "classification": [
+        "ORIGINAL PUBLIC DOCUMENT",
+        "PUBLISHED EVALUATOR CONCLUSION"
+      ],
+      "access": "Public anonymous download",
+      "reuse": "Redistribution rights unverified. Local evaluation only; keep originals and derivatives private.",
+      "sensitive_data": "Public professional contact/organization details may appear. Desk review found no patient-identifiable records; no restricted patient/seeker spreadsheets accessed.",
+      "original_page_count": 24,
+      "evaluation_input": {
+        "filename": "NDMS_Regional-Surge_-Surge-Squared-Exercise-AAR_FINAL.pdf",
+        "kind": "original PDF",
+        "sha256": "3d75cf1184214a25be7abe1357d90d660a1247183953a39a746ec3c984ae38bd",
+        "bytes": 276129,
+        "page_count": 24
+      }
+    },
+    {
+      "id": "LA-FRC-PATIENT-SEEKER",
+      "publisher": "Los Angeles County EMS Agency / Hospital Preparedness Program",
+      "title": "2025/2026 FRC patient and seeker data",
+      "url": "https://lahs.lacounty.gov/emergency-medical-services-agency/home/disaster-programs/exercise-drills/",
+      "classification": [
+        "UNAVAILABLE OR RESTRICTED"
+      ],
+      "access": "EMO access only. No file requested.",
+      "sensitive_data": "Excluded.",
+      "reuse": "Restricted."
+    }
+  ]
+}

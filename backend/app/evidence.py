@@ -9,6 +9,13 @@ import re
 import time
 from dataclasses import dataclass
 from datetime import date, datetime
+from typing import Literal
+
+SourcePurpose = Literal["performance", "planning", "published_evaluation"]
+REFERENCE_SOURCE_LABELS = {
+    "planning": "Planning document",
+    "published_evaluation": "Published evaluation",
+}
 
 
 @dataclass
@@ -567,6 +574,11 @@ def parse_evidence(
                     continue
                 match = PREFIX_TIME_RE.match(line)
                 raw_time = (match.group(1) or match.group(2)) if match else None
+                # PDF lines can start with ordinary bracketed editorial text. Only a
+                # parseable time prefix should be taken out of the source wording.
+                if match and match.group(1) and normalize_time(raw_time, exercise_date)[0] is None:
+                    match = None
+                    raw_time = None
                 text = match.group(3) if match else line
                 observations.append(
                     _observation(

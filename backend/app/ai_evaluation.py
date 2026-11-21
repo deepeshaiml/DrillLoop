@@ -18,7 +18,7 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 from starlette.concurrency import run_in_threadpool
 
-from app.evidence import TIME_RE
+from app.evidence import REFERENCE_SOURCE_LABELS, TIME_RE
 from app.models import Exercise, Observation, Source
 
 MAX_RECORDS = 128
@@ -405,7 +405,11 @@ def read_context(db: Session, exercise: Exercise, max_input_bytes: int) -> AiCon
             Observation.recognition_confidence,
         )
         .join(Source, Source.id == Observation.source_id)
-        .where(Observation.exercise_id == exercise.id, Source.exercise_id == exercise.id)
+        .where(
+            Observation.exercise_id == exercise.id,
+            Source.exercise_id == exercise.id,
+            Observation.observation_type.not_in(REFERENCE_SOURCE_LABELS),
+        )
         .order_by(Source.created_at, Source.id, Observation.created_at, Observation.id)
         .limit(MAX_RECORDS + 1)
     )
@@ -447,7 +451,7 @@ def read_context(db: Session, exercise: Exercise, max_input_bytes: int) -> AiCon
         raise AiFailure(
             422,
             "AI_EVIDENCE_REQUIRED",
-            "Upload evidence with extracted observations before requesting AI suggestions.",
+            "Upload observed performance evidence before requesting AI suggestions. Planning documents and published evaluations are reference sources.",
         )
     source_order = {source_id: index for index, source_id in enumerate(source_hashes)}
     records.sort(

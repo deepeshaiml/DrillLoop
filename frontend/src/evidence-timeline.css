@@ -2010,3 +2010,11 @@
     transition: none;
   }
 }
+
+.et-upload-purpose {
+  max-width: 22rem;
+}
+
+.et-upload-purpose select {
+  width: 100%;
+}

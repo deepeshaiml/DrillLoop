@@ -1,0 +1,162 @@
+{
+  "fictional": {
+    "mode": "fictional",
+    "status": "PASS",
+    "checks": [
+      "axe .cr-promotion-dialog",
+      "seeded objectives, evidence upload, scan OCR and source page, timeline conflicts, five rule proposals, viewer denial",
+      "controlled inference, save, independent acceptance, promotion, separate finding approval, action review and closure, PDF download, refresh"
+    ],
+    "browser_errors": [],
+    "screenshots": [
+      "01-fictional-overview.png",
+      "02-objectives.png",
+      "03-ocr-and-source.png",
+      "04-timeline-and-conflicts.png",
+      "05-deterministic-findings.png",
+      "06-controlled-suggestion.png",
+      "07-human-acceptance.png",
+      "08-promotion-390px.png",
+      "09-separate-finding-approval.png",
+      "10-human-closure-confirmation.png",
+      "11-action-closed.png",
+      "12-report-and-audit.png"
+    ],
+    "videos": [
+      "video/eureka-operator.webm",
+      "video/eureka-reviewer.webm"
+    ]
+  },
+  "restart": {
+    "mode": "restart",
+    "status": "PASS",
+    "checks": [
+      "AI-disabled API restart preserves approved finding, closure, candidate source and audit history"
+    ],
+    "browser_errors": [],
+    "screenshots": [
+      "13-ai-disabled-candidate-history.png"
+    ],
+    "videos": []
+  },
+  "public": {
+    "mode": "public",
+    "status": "PASS",
+    "checks": [
+      "public case A: login, objectives, classified PDF upload, page locator, timeline, analysis, AI evidence guard, export and refresh",
+      "public case B: login, objectives, classified PDF upload, page locator, timeline, analysis, AI evidence guard, export and refresh"
+    ],
+    "browser_errors": [],
+    "screenshots": [
+      "public-A-source.png",
+      "public-A-planned-time.png",
+      "public-A-no-performance-evidence.png",
+      "public-B-source.png",
+      "public-B-no-performance-evidence.png"
+    ],
+    "videos": []
+  },
+  "ollama": {
+    "mode": "ollama",
+    "status": "PASS",
+    "checks": [
+      {
+        "model": "qwen3.6:35b-a3b-coding-nvfp4",
+        "latency_ms": 10230,
+        "input_tokens": 2989,
+        "output_tokens": 734,
+        "kinds": [
+          {
+            "objective_id": "OBJ-01",
+            "kind": "corroboration"
+          },
+          {
+            "objective_id": "OBJ-02",
+            "kind": "contradiction"
+          },
+          {
+            "objective_id": "OBJ-03",
+            "kind": "corroboration"
+          },
+          {
+            "objective_id": "OBJ-04",
+            "kind": "contradiction"
+          },
+          {
+            "objective_id": "OBJ-05",
+            "kind": "corroboration"
+          }
+        ],
+        "attempted_citations": 10,
+        "matched_citations": 10,
+        "returned_citations": 10,
+        "exercise_state_unchanged": true
+      }
+    ],
+    "browser_errors": [],
+    "screenshots": [
+      "ollama-fictional-advisories.png"
+    ]
+  },
+  "pdfs": {
+    "fictional": {
+      "pages": 6,
+      "assertions_passed": 13,
+      "text_checks": {
+        "HOSP-PO-2026-01": true,
+        "Night Shift: Extended Power Loss": true,
+        "Source AI candidate": true,
+        "fictional_pharmacy_handoff.txt": true,
+        "line 1": true,
+        "Fictional Independent Reviewer": true,
+        "Fictional Facilities Operations": true,
+        "DEMO-PO-01": true,
+        "54 seconds": true,
+        "Closure attribution": true,
+        "[APPROVED]": true,
+        "2027-01-15": true,
+        "FEMA certification": true
+      },
+      "visually_rendered_pages": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ]
+    },
+    "public_A": {
+      "pages": 31,
+      "assertions_passed": 5,
+      "text_checks": {
+        "A-LA25-FRC": true,
+        "Source clock 08:00": true,
+        "Planning document": true,
+        "No findings are recorded": true,
+        "No corrective actions are recorded": true
+      },
+      "visually_rendered_pages": [
+        1,
+        16,
+        31
+      ]
+    },
+    "public_B": {
+      "pages": 52,
+      "assertions_passed": 5,
+      "text_checks": {
+        "B-NWHRN-2017": true,
+        "August 1": true,
+        "Published evaluation": true,
+        "No findings are recorded": true,
+        "No corrective actions are recorded": true
+      },
+      "visually_rendered_pages": [
+        1,
+        27,
+        52
+      ]
+    }
+  }
+}
